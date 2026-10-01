@@ -1,0 +1,45 @@
+{
+  "manifest_schema_version": "1.0.0",
+  "binding_id": "NOAA_OISST_V2_1",
+  "metadata": {
+    "collection_id": "NOAA_OISST_V2_1",
+    "collection_name": "NOAA 1/4\u00b0 Daily Optimum Interpolation Sea Surface Temperature (OISST) v2.1",
+    "version": "v2.1",
+    "doi": "10.25921/RE9P-PT57",
+    "provider": "NOAA NCEI",
+    "source_url": "https://www.ncei.noaa.gov/products/optimum-interpolation-sst",
+    "citation": "Huang, B. et al. (2021). Improvements of the Daily Optimum Interpolation Sea Surface Temperature (DOISST) Version 2.1. J. Climate, 34, 2923-2939.",
+    "variable_name": "sst",
+    "canonical_unit": "\u00b0C",
+    "display_unit": "\u00b0C",
+    "native_spatial_resolution": "0.25\u00b0 latitude x 0.25\u00b0 longitude",
+    "temporal_cadence": "daily",
+    "availability_state": "analysis_ready"
+  },
+  "verified_at_utc": "2026-10-01T08:00:00Z",
+  "series_count": 2,
+  "series": [
+    {
+      "region_id": "BAY_OF_BENGAL",
+      "file_name": "NOAA_OISST_V2_1_BAY_OF_BENGAL.parquet",
+      "sha256": "4d21a99b2e547df50891fc8e83383c6db2fce17c5fe89dbb2ac8f8a8bd16c4b7",
+      "size_bytes": 4980,
+      "row_count": 43,
+      "first_year": 1982,
+      "last_year": 2024,
+      "qa_column": "qa_passed",
+      "coverage_column": "valid_coverage_pct"
+    },
+    {
+      "region_id": "NORTH_ATLANTIC",
+      "file_name": "NOAA_OISST_V2_1_NORTH_ATLANTIC.parquet",
+      "sha256": "e13e846a7cc846a608ae89f8600185a42d535d59f2d2390711ea8a81d44478c0",
+      "size_bytes": 4958,
+      "row_count": 43,
+      "first_year": 1982,
+      "last_year": 2024,
+      "qa_column": "qa_passed",
+      "coverage_column": "valid_coverage_pct"
+    }
+  ]
+}

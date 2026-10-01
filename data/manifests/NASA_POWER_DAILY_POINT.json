@@ -1,0 +1,89 @@
+{
+  "manifest_schema_version": "1.0.0",
+  "binding_id": "NASA_POWER_DAILY_POINT",
+  "metadata": {
+    "collection_id": "NASA_POWER_POINT_DAILY",
+    "collection_name": "NASA Prediction Of Worldwide Energy Resources (POWER) Daily Point Meteorology",
+    "version": "v2.0",
+    "doi": null,
+    "provider": "NASA LaRC",
+    "source_url": "https://power.larc.nasa.gov/",
+    "citation": "NASA Langley Research Center (LaRC) POWER Project. Single-point daily meteorological parameters derived from GMAO reanalyses.",
+    "variable_name": "T2M",
+    "canonical_unit": "\u00b0C",
+    "display_unit": "\u00b0C",
+    "native_spatial_resolution": "Point sample at explicit centroid coordinate",
+    "temporal_cadence": "daily",
+    "availability_state": "analysis_ready"
+  },
+  "verified_at_utc": "2026-10-01T08:00:00Z",
+  "series_count": 6,
+  "series": [
+    {
+      "region_id": "BGD",
+      "file_name": "NASA_POWER_DAILY_POINT_BGD.parquet",
+      "sha256": "fe0b7b72187d5bf07c8d6962d136d6cf5a7c4619745a329ef55e36e2f7fbb4cf",
+      "size_bytes": 6000,
+      "row_count": 44,
+      "first_year": 1981,
+      "last_year": 2024,
+      "qa_column": "qa_passed",
+      "coverage_column": null
+    },
+    {
+      "region_id": "BRA",
+      "file_name": "NASA_POWER_DAILY_POINT_BRA.parquet",
+      "sha256": "cf3dc461ad46acc744300dccb995139936e72bcf8d9c7cad451d9e7681917371",
+      "size_bytes": 5964,
+      "row_count": 44,
+      "first_year": 1981,
+      "last_year": 2024,
+      "qa_column": "qa_passed",
+      "coverage_column": null
+    },
+    {
+      "region_id": "DEU",
+      "file_name": "NASA_POWER_DAILY_POINT_DEU.parquet",
+      "sha256": "fb9a8969b59269c6f54ef5b9d446777adaf9aced744f218ce8ef0b0d99070d38",
+      "size_bytes": 5992,
+      "row_count": 44,
+      "first_year": 1981,
+      "last_year": 2024,
+      "qa_column": "qa_passed",
+      "coverage_column": null
+    },
+    {
+      "region_id": "KEN",
+      "file_name": "NASA_POWER_DAILY_POINT_KEN.parquet",
+      "sha256": "a15055de3a820e354da0c729062757134a3e99d82d67804fc8253d35bc7fd1fb",
+      "size_bytes": 5983,
+      "row_count": 44,
+      "first_year": 1981,
+      "last_year": 2024,
+      "qa_column": "qa_passed",
+      "coverage_column": null
+    },
+    {
+      "region_id": "MDV",
+      "file_name": "NASA_POWER_DAILY_POINT_MDV.parquet",
+      "sha256": "29b28c8f6bdf690850ff9abdd17fa412b6818dd6cc5c59778c3fa40fbe2bd92e",
+      "size_bytes": 6017,
+      "row_count": 44,
+      "first_year": 1981,
+      "last_year": 2024,
+      "qa_column": "qa_passed",
+      "coverage_column": null
+    },
+    {
+      "region_id": "USA",
+      "file_name": "NASA_POWER_DAILY_POINT_USA.parquet",
+      "sha256": "7d54ca307f33559e8081463fc95bdb815c0821b616b2e2949d5ff28b5afab0de",
+      "size_bytes": 5988,
+      "row_count": 44,
+      "first_year": 1981,
+      "last_year": 2024,
+      "qa_column": "qa_passed",
+      "coverage_column": null
+    }
+  ]
+}
