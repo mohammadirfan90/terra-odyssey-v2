@@ -3,9 +3,9 @@
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.13-blue)](backend/pyproject.toml)
 [![FastAPI](https://img.shields.io/badge/FastAPI-1.0.0-009688.svg)](backend/src/main.py)
-[![Next.js](https://img.shields.io/badge/Next.js-15.5-black)](frontend/package.json)
+[![Next.js](https://img.shields.io/badge/Next.js-16.3.8-black)](frontend/package.json)
 [![Offline](https://img.shields.io/badge/Mode-OFFLINE=1_Enforced-emerald.svg)](backend/src/cache/guard.py)
-[![Tests](https://img.shields.io/badge/Tests-37%20Passed%20(100%25)-brightgreen)](backend/tests/)
+[![Tests](https://img.shields.io/badge/Tests-79%20Passed%20(100%25)-brightgreen)](backend/tests/)
 
 Welcome to **Earth System Trend Detective**, an offline-first, scientifically rigorous web investigation platform for Earth observations and climate change detection. Users select administrative countries, territories, or ocean basins on an interactive 2D flat map, choose a physical parameter (such as near-surface air temperature, day/night land-surface temperature, sea-surface temperature, or precipitation) and a temporal window, and receive an auditable, statistically defensible change investigation.
 
@@ -97,30 +97,37 @@ $$\hat{\beta} = \operatorname{median}_{i < j} \left( \frac{y_j - y_i}{t_j - t_i}
 - Python 3.11, 3.12, or 3.13
 - Node.js 20+ or 24+ and npm
 
-### 1. Launch FastAPI Scientific Backend
+### 1. Launch FastAPI Scientific Backend & Single-Port Delivery
 ```bash
 cd backend
 python -m uvicorn src.main:app --host 127.0.0.1 --port 8005
 ```
 Backend API interactive documentation is available at: `http://127.0.0.1:8005/docs`.
+When the Next.js frontend export is built (`frontend/out`), the FastAPI service serves the complete static web application on the same port at `http://127.0.0.1:8005/`.
 
-### 2. Launch Next.js Frontend Workspace
+#### Environment Configuration
+- `OFFLINE=1`: Enforces strict offline isolation; blocks all non-local socket creation.
+- `FRONTEND_ROOT` / `STATIC_DIR`: Path to the compiled static frontend directory (`out`). Defaults to repo `frontend/out`.
+- `DATA_ROOT`: Optional path to external data directory containing `cache/`, `manifests/`, and `regions/`.
+- `PORT`: Port to bind the uvicorn server (default: `8005`).
+
+### 2. Frontend Development Server (Optional)
 ```bash
 cd frontend
 npm install
 npm run dev
-# Or run production bundle:
-# npm run build && npm run start
+# Or build static export:
+# npm run build
 ```
-Open `http://localhost:3005` in your browser.
+When running the development server separately, open `http://localhost:3005` in your browser.
 
 ### 3. Run Scientific Verification Test Suite
-Execute the full test matrix verifying all 12 Table 19 criteria and API contracts:
+Execute the full test matrix verifying all Table 19 criteria, API contracts, and Audit Revisions 1–5:
 ```bash
 cd backend
 python -m pytest tests/ -v
 ```
-*(All backend unit and regression tests execute and pass in offline mode).*
+*(All 79 backend unit and regression tests execute and pass in offline mode).*
 
 ---
 

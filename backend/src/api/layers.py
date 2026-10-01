@@ -144,6 +144,7 @@ def get_layer_geojson(
     region_results: Dict[str, Dict[str, Any]] = {}
     p_values_list = []
     reg_keys = []
+    exclusions: Dict[str, str] = {}
 
     for reg_id in REGION_REGISTRY.keys():
         if store.has_series(bind_id, reg_id):
@@ -188,8 +189,13 @@ def get_layer_geojson(
                     }
                     p_values_list.append(mk.p_value)
                     reg_keys.append(reg_id)
-            except Exception:
+                else:
+                    exclusions[reg_id] = f"Insufficient temporal support: only {len(ann_df)} years available (requires >= 3)"
+            except Exception as exc:
+                exclusions[reg_id] = f"Data integrity error: {str(exc)}"
                 continue
+        else:
+            exclusions[reg_id] = "No verified cached series found in local repository"
 
     # Apply FDR correction (Section 6.7)
     if p_values_list:
@@ -218,6 +224,7 @@ def get_layer_geojson(
             props["q_value"] = stats.get("q_value")
             props["is_significant_fdr"] = stats.get("is_significant_fdr", False)
             props["evidence_state"] = stats.get("evidence_state", "insufficient")
+            props["exclusion_reason"] = None
         else:
             props["has_data"] = False
             props["slope_per_decade"] = None
@@ -225,6 +232,7 @@ def get_layer_geojson(
             props["q_value"] = None
             props["is_significant_fdr"] = False
             props["evidence_state"] = "unavailable"
+            props["exclusion_reason"] = exclusions.get(reg_id, "Not included in statistical family")
 
         enriched_features.append({
             "type": "Feature",
@@ -237,8 +245,12 @@ def get_layer_geojson(
         "type": "FeatureCollection",
         "layer_id": layer_id,
         "parameter_id": param_id,
+        "policy_id": policy.id,
+        "fdr_method": "benjamini_hochberg",
         "time_window": {"start_year": start_year, "end_year": end_year},
         "fdr_family_size": len(p_values_list),
+        "fdr_family_members": reg_keys,
         "fdr_significant_count": sum(1 for r in region_results.values() if r.get("is_significant_fdr")),
+        "exclusions": exclusions,
         "features": enriched_features,
     }

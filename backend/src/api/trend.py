@@ -160,6 +160,17 @@ def calculate_trend(
                 "code": "UNKNOWN_POLICY",
             },
         )
+    if pol_id == "precipitation_total_policy" and param_id != "precipitation_total":
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "type": "https://errors.earthtrenddetective.org/POLICY_PARAMETER_INCOMPATIBLE",
+                "title": "Incompatible Analysis Policy for Parameter",
+                "status": 422,
+                "detail": f"Policy '{pol_id}' is designated for precipitation accumulation, not compatible with '{param_id}'.",
+                "code": "POLICY_PARAMETER_INCOMPATIBLE",
+            },
+        )
     policy: AnalysisPolicy = ANALYSIS_POLICIES[pol_id]
 
     # Load local Parquet cache (Zero synthetic generation, verified manifest gate)
@@ -496,7 +507,7 @@ def calculate_trend(
         result["narration_status"] = "fallback"
         result["narration_validation_errors"] = err_en + err_bn
 
-    # Persist immutable result in SQLite (Append-Only)
-    store.save_result(result_id, result["identity"]["normalized_query"], result)
+    # Persist immutable result in SQLite (Append-Only) and return canonical winner
+    saved_result = store.save_result(result_id, result["identity"]["normalized_query"], result)
 
-    return result
+    return saved_result

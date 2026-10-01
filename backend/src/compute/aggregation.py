@@ -78,17 +78,42 @@ def aggregate_annual_series(
         else:
             raw_vals = can_vals
     elif "value_display" in df.columns:
-        raw_vals = df["value_display"].to_numpy(dtype=float)
+        val_series = df["value_display"]
     elif "value" in df.columns:
-        raw_vals = df["value"].to_numpy(dtype=float)
+        val_series = df["value"]
     elif "val" in df.columns:
-        raw_vals = df["val"].to_numpy(dtype=float)
+        val_series = df["val"]
     else:
         raise ManifestSchemaError("DataFrame missing recognized value column ('value_canonical', 'value_display', 'value', 'val').")
+
+    if "value_canonical" not in df.columns:
+        try:
+            raw_vals = pd.to_numeric(val_series, errors="raise").to_numpy(dtype=float)
+        except Exception as e:
+            raise ManifestSchemaError(f"Observation values contain non-numeric data: {e}")
 
     working_df = df.copy()
     working_df["year"] = year_vals.astype(int)
     working_df["_val_sci"] = raw_vals
+
+    # Parse timestamps or dates into calendar columns if present
+    date_col = None
+    for cand in ["timestamp", "date", "time", "datetime"]:
+        if cand in working_df.columns:
+            date_col = cand
+            break
+    if date_col is not None:
+        try:
+            parsed_dt = pd.to_datetime(working_df[date_col], errors="coerce")
+            if not parsed_dt.isna().all():
+                if "month" not in working_df.columns:
+                    working_df["month"] = parsed_dt.dt.month
+                if "day" not in working_df.columns:
+                    working_df["day"] = parsed_dt.dt.day
+                if "year" not in working_df.columns:
+                    working_df["year"] = parsed_dt.dt.year
+        except Exception:
+            pass
 
     # 2. Quality and coverage filtering
     if "qa_passed" in working_df.columns:
@@ -158,9 +183,23 @@ def aggregate_annual_series(
         except Exception as e:
             raise ManifestSchemaError(f"Invalid calendar date parsing error: {e}")
 
-    is_precip = (param_id == "precipitation_total") or (policy.id == "precipitation_total_policy")
-    if param and param.supported_temporal_statistics and param.supported_temporal_statistics[0] in ("annual_total", "total"):
-        is_precip = True
+    # Enforce verified month counts for pre-aggregated annual records if declared
+    if "valid_month_count" in working_df.columns:
+        try:
+            vmc = pd.to_numeric(working_df["valid_month_count"], errors="coerce")
+            # Precipitation requires 12 valid months; temperature requires at least 10
+            req_m = 12 if param_id == "precipitation_total" else 10
+            working_df = working_df[vmc >= req_m]
+        except Exception:
+            pass
+
+    # Physical estimand: only precipitation or parameters declaring 'total'/'annual_total' statistic are accumulated!
+    # Air temperature and surface temperature are ALWAYS averaged (mean), never summed!
+    is_precip = (param_id == "precipitation_total") or (
+        param is not None
+        and param.supported_temporal_statistics
+        and param.supported_temporal_statistics[0] in ("annual_total", "total")
+    )
 
     # 4. Cadence determination
     # Distinguish raw daily inputs with 'day' column from pre-aggregated annual series

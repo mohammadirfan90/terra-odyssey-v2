@@ -148,7 +148,13 @@ def test_r04_precipitation_twelve_months_one_nan_rejected(bgd_merra2_fixture):
         df.to_parquet(p_path, index=False)
         m_data = {
             "binding_id": "GPM_IMERG_FINAL_V07",
-            "metadata": {"availability_state": "analysis_ready", "canonical_unit": "mm"},
+            "metadata": {
+                "availability_state": "analysis_ready",
+                "canonical_unit": "mm",
+                "display_unit": "mm",
+                "variable_name": "precipitation",
+                "temporal_cadence": "monthly",
+            },
             "series": [{
                 "region_id": "BGD",
                 "file_name": p_path.name,
