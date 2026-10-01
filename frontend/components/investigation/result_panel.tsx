@@ -50,11 +50,25 @@ export default function ResultPanel({
           icon: <Minus className="w-4 h-4 text-slate-400" />,
           title: isBangla ? "অমীমাংসিত প্রমাণ (কোনো একক ধারা নেই)" : "Inconclusive Statistical Evidence",
         };
-      case "limited":
+      case "limited": {
+        const isGap = evidence?.interpretation_en?.includes("missing gap");
         return {
           bg: "bg-amber-500/15 border-amber-500/40 text-amber-300",
           icon: <AlertTriangle className="w-4 h-4 text-amber-400" />,
-          title: isBangla ? "সীমিত তথ্যাদি / অনুসন্ধানমূলক" : "Limited Record Duration (<20 Yrs)",
+          title: isGap
+            ? isBangla
+              ? "সীমিত তথ্যাদি (অনুপস্থিত ব্যবধান)"
+              : "Limited Record (Missing Gap)"
+            : isBangla
+            ? "সীমিত তথ্যাদি / অনুসন্ধানমূলক"
+            : "Limited Record Duration (<20 Yrs)",
+        };
+      }
+      case "flat":
+        return {
+          bg: "bg-slate-700/30 border-slate-600 text-slate-300",
+          icon: <Minus className="w-4 h-4 text-slate-400" />,
+          title: isBangla ? "ধারাবাহিক পরিবর্তনহীন (প্রায় শূন্য)" : "Flat / Near-Zero Rate",
         };
       default:
         return {
@@ -73,7 +87,7 @@ export default function ResultPanel({
       <div className="border-b border-slate-800 pb-3">
         <div className="flex items-center justify-between">
           <span className="text-[11px] font-mono text-cyan-400 uppercase tracking-wider">
-            {isBangla ? "তদন্তের ফলাফল" : "Verified Finding"}
+            {isBangla ? "তদন্তের ফলাফল" : (result?.identity?.verification_status === "verified" ? "Verified Finding" : "Investigative Finding")}
           </span>
           <span className="text-[11px] font-mono text-slate-500">
             {isBangla ? `${toBengaliDigits(data_support.retained_interval[0])}-${toBengaliDigits(data_support.retained_interval[1])}` : `${data_support.retained_interval[0]}-${data_support.retained_interval[1]}`}

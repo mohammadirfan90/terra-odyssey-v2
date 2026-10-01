@@ -1,0 +1,2907 @@
+{
+  "audit_metadata": {
+    "date": "2026-10-01",
+    "reviewed_archive": "earth-system-trend-detective(3).zip",
+    "scope": "Independent audit against revision 2; no application repairs or production data mutations.",
+    "published_artifact_parity": "Not revalidated; latest supplied archive is authoritative for this follow-up.",
+    "limitations": [
+      "No complete browser visual/accessibility/map audit.",
+      "No remote scientific acquisition or independent regeneration from provider granules.",
+      "Wheel smoke tests validate imports/API health and data-path failure, not a complete offline distribution."
+    ],
+    "report_file": "Earth_System_Trend_Detective_Revision_3_Audit.md"
+  },
+  "archive": {
+    "file_count": 182,
+    "uncompressed_bytes": 33049511,
+    "sha256": "1503a1d274a3534db8d6350cccfa6373ff8665267fd2cc4d5396e91566af314a",
+    "extracted_source_modified_entries": []
+  },
+  "archive_diff": {
+    "added": [
+      "Earth_System_Trend_Detective_Revision_2_Audit.md",
+      "Earth_System_Trend_Detective_Revision_2_Evidence.json",
+      "backend/build/lib/src/__init__.py",
+      "backend/build/lib/src/api/__init__.py",
+      "backend/build/lib/src/api/comparisons.py",
+      "backend/build/lib/src/api/coverage.py",
+      "backend/build/lib/src/api/layers.py",
+      "backend/build/lib/src/api/parameters.py",
+      "backend/build/lib/src/api/regions.py",
+      "backend/build/lib/src/api/results.py",
+      "backend/build/lib/src/api/schemas.py",
+      "backend/build/lib/src/api/sources.py",
+      "backend/build/lib/src/api/trend.py",
+      "backend/build/lib/src/cache/__init__.py",
+      "backend/build/lib/src/cache/guard.py",
+      "backend/build/lib/src/cache/hasher.py",
+      "backend/build/lib/src/cache/store.py",
+      "backend/build/lib/src/compute/__init__.py",
+      "backend/build/lib/src/compute/mann_kendall.py",
+      "backend/build/lib/src/compute/multiple_testing.py",
+      "backend/build/lib/src/compute/seasonal.py",
+      "backend/build/lib/src/compute/serial_corr.py",
+      "backend/build/lib/src/compute/spatial.py",
+      "backend/build/lib/src/compute/theil_sen.py",
+      "backend/build/lib/src/compute/uncertainty.py",
+      "backend/build/lib/src/ingest/fetch_world_geojson.py",
+      "backend/build/lib/src/main.py",
+      "backend/build/lib/src/narration/__init__.py",
+      "backend/build/lib/src/narration/claims.py",
+      "backend/build/lib/src/narration/templates_bn.py",
+      "backend/build/lib/src/narration/templates_en.py",
+      "backend/build/lib/src/narration/validator.py",
+      "backend/build/lib/src/registry/__init__.py",
+      "backend/build/lib/src/registry/bindings.py",
+      "backend/build/lib/src/registry/layers.py",
+      "backend/build/lib/src/registry/parameters.py",
+      "backend/build/lib/src/registry/policies.py",
+      "backend/build/lib/src/registry/regions.py",
+      "backend/dist/earth_system_trend_detective-0.1.0-py3-none-any.whl",
+      "backend/dist/earth_system_trend_detective-0.1.0.tar.gz",
+      "backend/earth_system_trend_detective.egg-info/PKG-INFO",
+      "backend/earth_system_trend_detective.egg-info/SOURCES.txt",
+      "backend/earth_system_trend_detective.egg-info/dependency_links.txt",
+      "backend/earth_system_trend_detective.egg-info/entry_points.txt",
+      "backend/earth_system_trend_detective.egg-info/requires.txt",
+      "backend/earth_system_trend_detective.egg-info/top_level.txt",
+      "backend/tests/test_audit_revision_2_regressions.py",
+      "frontend/tsconfig.tsbuildinfo"
+    ],
+    "removed": [],
+    "changed": [
+      "README.md",
+      "backend/pyproject.toml",
+      "backend/src/api/comparisons.py",
+      "backend/src/api/coverage.py",
+      "backend/src/api/layers.py",
+      "backend/src/api/results.py",
+      "backend/src/api/trend.py",
+      "backend/src/cache/store.py",
+      "backend/src/compute/serial_corr.py",
+      "backend/src/main.py",
+      "backend/src/narration/validator.py",
+      "backend/src/registry/regions.py",
+      "backend/tests/test_audit_findings_f01_f22.py",
+      "data/cache/index.db",
+      "frontend/app/page.tsx",
+      "frontend/components/investigation/chart_area.tsx",
+      "verify_e2e.py"
+    ],
+    "unchanged_count": 117,
+    "counts": {
+      "added": 48,
+      "changed": 17,
+      "removed": 0,
+      "unchanged": 117
+    }
+  },
+  "data_inventory": {
+    "parquet_count": 30,
+    "unchanged_from_previous_review_count": 30,
+    "known_exact_generator_match_count": 26,
+    "generator_match_basis": "Previous audit reproduced 26 DataFrames exactly from the original generator. This revision retains their recorded bytes/hash identities.",
+    "manifest_count": 5,
+    "manifests_unchanged": true,
+    "raw_scientific_assets": [],
+    "scientific_acquisition_adapters": [],
+    "files": [
+      {
+        "path": "data/cache/MODIS_MOD11A1_061_DAY_BGD.parquet",
+        "sha256": "d9c3388b399545c0ab5f17fbe5a181818144c023ec70ed134f858eb693a5cdcc",
+        "identical_to_previous_reviewed_hash": true,
+        "previous_exact_generator_match": true
+      },
+      {
+        "path": "data/cache/MODIS_MOD11A1_061_DAY_BRA.parquet",
+        "sha256": "8ffd15e35355cdcd5ae98efb921a8ad7f7555908b9bcac91d4d87335a8726b05",
+        "identical_to_previous_reviewed_hash": true,
+        "previous_exact_generator_match": true
+      },
+      {
+        "path": "data/cache/MODIS_MOD11A1_061_DAY_DEU.parquet",
+        "sha256": "73f1ab3995da28b05af0941da434b38a6921afbf86472348a99b659135dcc316",
+        "identical_to_previous_reviewed_hash": true,
+        "previous_exact_generator_match": true
+      },
+      {
+        "path": "data/cache/MODIS_MOD11A1_061_DAY_KEN.parquet",
+        "sha256": "8fd9290b4ad9a41a2680213327c9c84dcc215555ba33572c6b2c315d5940dea0",
+        "identical_to_previous_reviewed_hash": true,
+        "previous_exact_generator_match": true
+      },
+      {
+        "path": "data/cache/MODIS_MOD11A1_061_DAY_MDV.parquet",
+        "sha256": "47fa859289ed429aff7f1e367a09affae1a7d4b42c074f6fae19c8934284c000",
+        "identical_to_previous_reviewed_hash": true,
+        "previous_exact_generator_match": true
+      },
+      {
+        "path": "data/cache/MODIS_MOD11A1_061_DAY_USA.parquet",
+        "sha256": "d7366fae39801bd8bda7ff43601361a11247e58c9a9f8a745412ef636ceeddab",
+        "identical_to_previous_reviewed_hash": true,
+        "previous_exact_generator_match": true
+      },
+      {
+        "path": "data/cache/MODIS_MOD11A1_061_NIGHT_BGD.parquet",
+        "sha256": "d9612ea8be4ca0805605240d75d00dfb924614abadeb0a5d4843b1a6ff672767",
+        "identical_to_previous_reviewed_hash": true,
+        "previous_exact_generator_match": true
+      },
+      {
+        "path": "data/cache/MODIS_MOD11A1_061_NIGHT_BRA.parquet",
+        "sha256": "db86117ac005a406f758a0900c63c866687f8ba06c709d1b225431cbda7793fa",
+        "identical_to_previous_reviewed_hash": true,
+        "previous_exact_generator_match": true
+      },
+      {
+        "path": "data/cache/MODIS_MOD11A1_061_NIGHT_DEU.parquet",
+        "sha256": "6d0c2d082ab6735ebf89c739ed2c242841a0ab69327332683673240e97b40223",
+        "identical_to_previous_reviewed_hash": true,
+        "previous_exact_generator_match": true
+      },
+      {
+        "path": "data/cache/MODIS_MOD11A1_061_NIGHT_KEN.parquet",
+        "sha256": "c50e79715387830a627d470a8b7957976857e31ebf7e9f0717faf0c22baade33",
+        "identical_to_previous_reviewed_hash": true,
+        "previous_exact_generator_match": true
+      },
+      {
+        "path": "data/cache/MODIS_MOD11A1_061_NIGHT_MDV.parquet",
+        "sha256": "213f6395a6df61755e6998cbf61ba755f44d3b0ed2c78e797c5861190ff6b739",
+        "identical_to_previous_reviewed_hash": true,
+        "previous_exact_generator_match": true
+      },
+      {
+        "path": "data/cache/MODIS_MOD11A1_061_NIGHT_USA.parquet",
+        "sha256": "f7f67f2e8a7231db28f3c4ca7eeb0c97b3e43f630696c4a5793e059b3565feb5",
+        "identical_to_previous_reviewed_hash": true,
+        "previous_exact_generator_match": true
+      },
+      {
+        "path": "data/cache/NASA_MERRA2_M2TMNXSLV_BAY_OF_BENGAL.parquet",
+        "sha256": "5ed10f797c199be1ed3ee01ec1c725c74848282bf80e1e3b1270b8e725080d1a",
+        "identical_to_previous_reviewed_hash": true,
+        "previous_exact_generator_match": false
+      },
+      {
+        "path": "data/cache/NASA_MERRA2_M2TMNXSLV_BGD.parquet",
+        "sha256": "be335e3408d33b9488a30ca64688a1a113351caf89fa1f4f6c78425eb5a344ed",
+        "identical_to_previous_reviewed_hash": true,
+        "previous_exact_generator_match": true
+      },
+      {
+        "path": "data/cache/NASA_MERRA2_M2TMNXSLV_BRA.parquet",
+        "sha256": "63178be027c93171e124a0548266bcb7d8f7df35d0662ae91565cc577a6141a8",
+        "identical_to_previous_reviewed_hash": true,
+        "previous_exact_generator_match": true
+      },
+      {
+        "path": "data/cache/NASA_MERRA2_M2TMNXSLV_DEU.parquet",
+        "sha256": "f5bef9b35d1ad9eb3d780b49cced90c6c5f1c7349c31e7b9b8e28dd3a473b30a",
+        "identical_to_previous_reviewed_hash": true,
+        "previous_exact_generator_match": true
+      },
+      {
+        "path": "data/cache/NASA_MERRA2_M2TMNXSLV_IND.parquet",
+        "sha256": "c65e5d530df10d50a89f7ee2289d3393047e65b277bb13dc539b0d96a1597a98",
+        "identical_to_previous_reviewed_hash": true,
+        "previous_exact_generator_match": false
+      },
+      {
+        "path": "data/cache/NASA_MERRA2_M2TMNXSLV_KEN.parquet",
+        "sha256": "26c71e88c23fb6a45c39bbbc7d48b5a4ae4860cfa4cdc7d7d7b12f47866efdfd",
+        "identical_to_previous_reviewed_hash": true,
+        "previous_exact_generator_match": true
+      },
+      {
+        "path": "data/cache/NASA_MERRA2_M2TMNXSLV_MDV.parquet",
+        "sha256": "b189dc1e13263c37eb888a3c44025b9fb555dd9ee6cfd139c4ebea084193276a",
+        "identical_to_previous_reviewed_hash": true,
+        "previous_exact_generator_match": true
+      },
+      {
+        "path": "data/cache/NASA_MERRA2_M2TMNXSLV_MOZ.parquet",
+        "sha256": "451b1f86b58522c59a2dc9106893c8c61e43caddde0c4f96439c035b5efc6be8",
+        "identical_to_previous_reviewed_hash": true,
+        "previous_exact_generator_match": false
+      },
+      {
+        "path": "data/cache/NASA_MERRA2_M2TMNXSLV_USA.parquet",
+        "sha256": "bfb95abf4d9d9e3412f4ac2d3489c797754c2d95d3afd7baa166b473922ea5b4",
+        "identical_to_previous_reviewed_hash": true,
+        "previous_exact_generator_match": true
+      },
+      {
+        "path": "data/cache/NASA_MERRA2_M2TMNXSLV_ZMB.parquet",
+        "sha256": "afdbbfed9268247e6d155afe1026a024f1d530e30c6f90b8ee0276cbd11dc05c",
+        "identical_to_previous_reviewed_hash": true,
+        "previous_exact_generator_match": false
+      },
+      {
+        "path": "data/cache/NASA_POWER_DAILY_POINT_BGD.parquet",
+        "sha256": "fe0b7b72187d5bf07c8d6962d136d6cf5a7c4619745a329ef55e36e2f7fbb4cf",
+        "identical_to_previous_reviewed_hash": true,
+        "previous_exact_generator_match": true
+      },
+      {
+        "path": "data/cache/NASA_POWER_DAILY_POINT_BRA.parquet",
+        "sha256": "cf3dc461ad46acc744300dccb995139936e72bcf8d9c7cad451d9e7681917371",
+        "identical_to_previous_reviewed_hash": true,
+        "previous_exact_generator_match": true
+      },
+      {
+        "path": "data/cache/NASA_POWER_DAILY_POINT_DEU.parquet",
+        "sha256": "fb9a8969b59269c6f54ef5b9d446777adaf9aced744f218ce8ef0b0d99070d38",
+        "identical_to_previous_reviewed_hash": true,
+        "previous_exact_generator_match": true
+      },
+      {
+        "path": "data/cache/NASA_POWER_DAILY_POINT_KEN.parquet",
+        "sha256": "a15055de3a820e354da0c729062757134a3e99d82d67804fc8253d35bc7fd1fb",
+        "identical_to_previous_reviewed_hash": true,
+        "previous_exact_generator_match": true
+      },
+      {
+        "path": "data/cache/NASA_POWER_DAILY_POINT_MDV.parquet",
+        "sha256": "29b28c8f6bdf690850ff9abdd17fa412b6818dd6cc5c59778c3fa40fbe2bd92e",
+        "identical_to_previous_reviewed_hash": true,
+        "previous_exact_generator_match": true
+      },
+      {
+        "path": "data/cache/NASA_POWER_DAILY_POINT_USA.parquet",
+        "sha256": "7d54ca307f33559e8081463fc95bdb815c0821b616b2e2949d5ff28b5afab0de",
+        "identical_to_previous_reviewed_hash": true,
+        "previous_exact_generator_match": true
+      },
+      {
+        "path": "data/cache/NOAA_OISST_V2_1_BAY_OF_BENGAL.parquet",
+        "sha256": "4d21a99b2e547df50891fc8e83383c6db2fce17c5fe89dbb2ac8f8a8bd16c4b7",
+        "identical_to_previous_reviewed_hash": true,
+        "previous_exact_generator_match": true
+      },
+      {
+        "path": "data/cache/NOAA_OISST_V2_1_NORTH_ATLANTIC.parquet",
+        "sha256": "e13e846a7cc846a608ae89f8600185a42d535d59f2d2390711ea8a81d44478c0",
+        "identical_to_previous_reviewed_hash": true,
+        "previous_exact_generator_match": true
+      }
+    ],
+    "isolated_runtime_restoration": [
+      {
+        "path": "data/cache/MODIS_MOD11A1_061_DAY_KEN.parquet",
+        "restored_identically": true
+      },
+      {
+        "path": "data/cache/MODIS_MOD11A1_061_NIGHT_DEU.parquet",
+        "restored_identically": true
+      },
+      {
+        "path": "data/cache/NASA_POWER_DAILY_POINT_DEU.parquet",
+        "restored_identically": true
+      },
+      {
+        "path": "data/cache/NASA_MERRA2_M2TMNXSLV_MOZ.parquet",
+        "restored_identically": true
+      },
+      {
+        "path": "data/cache/NASA_MERRA2_M2TMNXSLV_KEN.parquet",
+        "restored_identically": true
+      },
+      {
+        "path": "data/cache/NOAA_OISST_V2_1_NORTH_ATLANTIC.parquet",
+        "restored_identically": true
+      },
+      {
+        "path": "data/cache/NASA_POWER_DAILY_POINT_BGD.parquet",
+        "restored_identically": true
+      },
+      {
+        "path": "data/cache/MODIS_MOD11A1_061_NIGHT_BRA.parquet",
+        "restored_identically": true
+      },
+      {
+        "path": "data/cache/MODIS_MOD11A1_061_DAY_BGD.parquet",
+        "restored_identically": true
+      },
+      {
+        "path": "data/cache/NASA_MERRA2_M2TMNXSLV_DEU.parquet",
+        "restored_identically": true
+      },
+      {
+        "path": "data/cache/NASA_MERRA2_M2TMNXSLV_BRA.parquet",
+        "restored_identically": true
+      },
+      {
+        "path": "data/cache/NASA_POWER_DAILY_POINT_BRA.parquet",
+        "restored_identically": true
+      },
+      {
+        "path": "data/cache/NASA_MERRA2_M2TMNXSLV_MDV.parquet",
+        "restored_identically": true
+      },
+      {
+        "path": "data/cache/MODIS_MOD11A1_061_NIGHT_MDV.parquet",
+        "restored_identically": true
+      },
+      {
+        "path": "data/cache/MODIS_MOD11A1_061_DAY_USA.parquet",
+        "restored_identically": true
+      },
+      {
+        "path": "data/cache/NASA_MERRA2_M2TMNXSLV_USA.parquet",
+        "restored_identically": true
+      },
+      {
+        "path": "data/cache/NASA_MERRA2_M2TMNXSLV_BAY_OF_BENGAL.parquet",
+        "restored_identically": true
+      },
+      {
+        "path": "data/cache/NASA_MERRA2_M2TMNXSLV_IND.parquet",
+        "restored_identically": true
+      },
+      {
+        "path": "data/cache/MODIS_MOD11A1_061_NIGHT_BGD.parquet",
+        "restored_identically": true
+      },
+      {
+        "path": "data/cache/NASA_MERRA2_M2TMNXSLV_ZMB.parquet",
+        "restored_identically": true
+      },
+      {
+        "path": "data/cache/MODIS_MOD11A1_061_NIGHT_USA.parquet",
+        "restored_identically": true
+      },
+      {
+        "path": "data/cache/NASA_MERRA2_M2TMNXSLV_BGD.parquet",
+        "restored_identically": true
+      },
+      {
+        "path": "data/cache/NASA_POWER_DAILY_POINT_USA.parquet",
+        "restored_identically": true
+      },
+      {
+        "path": "data/cache/NASA_POWER_DAILY_POINT_MDV.parquet",
+        "restored_identically": true
+      },
+      {
+        "path": "data/cache/MODIS_MOD11A1_061_DAY_BRA.parquet",
+        "restored_identically": true
+      },
+      {
+        "path": "data/cache/MODIS_MOD11A1_061_DAY_DEU.parquet",
+        "restored_identically": true
+      },
+      {
+        "path": "data/cache/NOAA_OISST_V2_1_BAY_OF_BENGAL.parquet",
+        "restored_identically": true
+      },
+      {
+        "path": "data/cache/NASA_POWER_DAILY_POINT_KEN.parquet",
+        "restored_identically": true
+      },
+      {
+        "path": "data/cache/MODIS_MOD11A1_061_DAY_MDV.parquet",
+        "restored_identically": true
+      },
+      {
+        "path": "data/cache/MODIS_MOD11A1_061_NIGHT_KEN.parquet",
+        "restored_identically": true
+      },
+      {
+        "path": "data/manifests/NASA_POWER_DAILY_POINT.json",
+        "restored_identically": true
+      },
+      {
+        "path": "data/manifests/NOAA_OISST_V2_1.json",
+        "restored_identically": true
+      },
+      {
+        "path": "data/manifests/MODIS_MOD11A1_061_NIGHT.json",
+        "restored_identically": true
+      },
+      {
+        "path": "data/manifests/MODIS_MOD11A1_061_DAY.json",
+        "restored_identically": true
+      },
+      {
+        "path": "data/manifests/NASA_MERRA2_M2TMNXSLV.json",
+        "restored_identically": true
+      }
+    ]
+  },
+  "audit_2_status": [
+    {
+      "id": "R01",
+      "status": "Partial",
+      "assessment": "Generated observations remain active despite seven legacy result quarantines."
+    },
+    {
+      "id": "R02",
+      "status": "Partial",
+      "assessment": "Membership and ordinary checksum/declared-column enforcement repaired; strict manifest contract still optional."
+    },
+    {
+      "id": "R03",
+      "status": "Closed",
+      "assessment": "Actual null/result/null/different-result lifecycle passes; separate hover defect remains under R12."
+    },
+    {
+      "id": "R04",
+      "status": "Partial",
+      "assessment": "Duplicate January, ten-month totals and primary gap downgrade repaired; finite-month completeness/daily aggregation fail."
+    },
+    {
+      "id": "R05",
+      "status": "Partial",
+      "assessment": "One-to-one aggregation/coverage/policy-ID validation repaired; climate duration/gaps/dependence inference remains incomplete."
+    },
+    {
+      "id": "R06",
+      "status": "Partial",
+      "assessment": "Honest raster unavailability and QA/date filters repaired; missing pandas, ignored map policy, scientific UI and family context remain."
+    },
+    {
+      "id": "R07",
+      "status": "Partial",
+      "assessment": "English fallback and pointer validation improved; Bangla publication and semantic number matching remain unsafe."
+    },
+    {
+      "id": "R08",
+      "status": "Partial",
+      "assessment": "Frozen cached payload reuse repaired; current request context and scientific revision/geometry/acquisition identity remain incomplete."
+    },
+    {
+      "id": "R09",
+      "status": "Closed for tested defects",
+      "assessment": "Infinite coverage and strict JSON serialization repaired; broader source contracts/completeness remain R02/R04."
+    },
+    {
+      "id": "R10",
+      "status": "Partial",
+      "assessment": "Exact spherical triangle repaired; real spatial acquisition, dependent uncertainty, datelines and lineage remain."
+    },
+    {
+      "id": "R11",
+      "status": "Partial",
+      "assessment": "Both installed wheels import and health works; application-wide data configuration and scientific installed routes fail."
+    },
+    {
+      "id": "R12",
+      "status": "Partial",
+      "assessment": "Loading-finally guard/policy forwarding improved; hovered shorter-result crash, stale comparisons and delivery remain."
+    }
+  ],
+  "original_29_status": [
+    {
+      "id": "F01",
+      "original_finding": "Synthetic scientific records",
+      "status": "Partial",
+      "current_assessment": "Runtime generation stays removed; seven result rows quarantined, but all generated cache data remains enabled."
+    },
+    {
+      "id": "F02",
+      "original_finding": "Acquisition/lineage/readiness",
+      "status": "Partial",
+      "current_assessment": "Manifest membership and conditional integrity enforced; real acquisition, full manifest schema/readiness and lineage absent."
+    },
+    {
+      "id": "F03",
+      "original_finding": "Binding/path validation",
+      "status": "Fixed",
+      "current_assessment": "Trend, comparison and coverage binding/path incompatibility checks repaired for the original counterexamples."
+    },
+    {
+      "id": "F04",
+      "original_finding": "QA/temporal eligibility",
+      "status": "Partial",
+      "current_assessment": "Unique-month and initial totals/gap repairs work; missing-valued months, full daily calendar aggregation and source precision fail."
+    },
+    {
+      "id": "F05",
+      "original_finding": "Immutable identity/provenance",
+      "status": "Partial",
+      "current_assessment": "Frozen responses now agree with stored objects; actual revision/geometry/transformation identity and request envelope remain incomplete."
+    },
+    {
+      "id": "F06",
+      "original_finding": "Short-record/evidence states",
+      "status": "Partial",
+      "current_assessment": "Primary short/gapped records gated; comparison gates, flat badge and limitation explanations remain incorrect."
+    },
+    {
+      "id": "F07",
+      "original_finding": "Later-lag dependence",
+      "status": "Partial",
+      "current_assessment": "Later-lag detection preserved; positive-only variant now named in a comment but not independently calibrated."
+    },
+    {
+      "id": "F08",
+      "original_finding": "Dependence-aware uncertainty",
+      "status": "Unfixed",
+      "current_assessment": "Independent residual resampling and dependence-disconnected slope intervals unchanged."
+    },
+    {
+      "id": "F09",
+      "original_finding": "Nonfinite support/exports",
+      "status": "Partial",
+      "current_assessment": "Infinity coverage and strict save/export fixed; nonfinite monthly values still count toward valid temporal completeness."
+    },
+    {
+      "id": "F10",
+      "original_finding": "Comparison science",
+      "status": "Partial",
+      "current_assessment": "Annual one-to-one join, coverage and policy validation repaired; duration, gaps, alpha/dependence and frozen contrast incomplete."
+    },
+    {
+      "id": "F11",
+      "original_finding": "Comparison context/UI",
+      "status": "Partial",
+      "current_assessment": "Hook order and policy forwarding repaired; comparison target/context changes still display late/stale results."
+    },
+    {
+      "id": "F12",
+      "original_finding": "Numerical narration safeguards",
+      "status": "Partial",
+      "current_assessment": "Pointer equality/English fallback improved; field-specific coverage/point/CI matching and production Bangla validation incomplete."
+    },
+    {
+      "id": "F13",
+      "original_finding": "Totals/points/flatness narration",
+      "status": "Partial",
+      "current_assessment": "Point series still described with regional mean/100% area coverage; flat and limited explanations remain misleading."
+    },
+    {
+      "id": "F14",
+      "original_finding": "Geographic metadata",
+      "status": "Partial",
+      "current_assessment": "Spherical area counterexample fixed and supplied orientations validated; datelines, geometry/mask lineage and actual sample coordinates remain."
+    },
+    {
+      "id": "F15",
+      "original_finding": "Real spatial aggregation",
+      "status": "Unfixed",
+      "current_assessment": "Real provider grids are still not used by a production scientific acquisition/aggregation adapter."
+    },
+    {
+      "id": "F16",
+      "original_finding": "Scientific map products",
+      "status": "Partial",
+      "current_assessment": "Raster endpoint honestly unavailable; vector monthly records silently disappear and frontend scientific layers remain unwired."
+    },
+    {
+      "id": "F17",
+      "original_finding": "Spatial FDR",
+      "status": "Partial",
+      "current_assessment": "QA/date filters added; inference policy, predeclared family/support and immutable FDR context incomplete."
+    },
+    {
+      "id": "F18",
+      "original_finding": "Map recreation on parent renders",
+      "status": "Fixed",
+      "current_assessment": "Previous stable map effect/callback fix retained; no new full browser verification claimed."
+    },
+    {
+      "id": "F19",
+      "original_finding": "Map/form region divergence",
+      "status": "Fixed",
+      "current_assessment": "Previous committed/draft synchronization fix retained."
+    },
+    {
+      "id": "F20",
+      "original_finding": "Request races/stale display",
+      "status": "Partial",
+      "current_assessment": "Abort loading-finally issue repaired; old primary content and stale comparison context remain."
+    },
+    {
+      "id": "F21",
+      "original_finding": "Seasonal/timeline implementation",
+      "status": "Unfixed",
+      "current_assessment": "Seasonal explanatory tab and hard-coded windows remain; scientific timeline not implemented."
+    },
+    {
+      "id": "F22",
+      "original_finding": "Verified offline operation",
+      "status": "Partial",
+      "current_assessment": "Previous font removal retained; hard-coded badge and narrow guard do not establish complete offline workflow."
+    },
+    {
+      "id": "F23",
+      "original_finding": "Installed backend packaging",
+      "status": "Partial",
+      "current_assessment": "Namespace and CLI imports repaired; installed data/boundary lookup remains checkout-relative and configuration ignored."
+    },
+    {
+      "id": "F24",
+      "original_finding": "Deployment contract",
+      "status": "Unfixed",
+      "current_assessment": "Static export/single-port FastAPI workflow absent; two-service proxy configuration remains."
+    },
+    {
+      "id": "F25",
+      "original_finding": "Framework/locks/lint/tests",
+      "status": "Partial",
+      "current_assessment": "44 supplied tests pass; target stack, Python lock, configured lint and semantic regressions remain."
+    },
+    {
+      "id": "F26",
+      "original_finding": "Performance/scaling",
+      "status": "Partial",
+      "current_assessment": "Previous highlight cache retained; large asset/hover/race/compute performance work remains unmeasured."
+    },
+    {
+      "id": "F27",
+      "original_finding": "Accessibility/language",
+      "status": "Partial",
+      "current_assessment": "Previous dialog/language fixes retained; complete browser keyboard/accessibility validation not performed."
+    },
+    {
+      "id": "F28",
+      "original_finding": "Honest documentation/types",
+      "status": "Partial",
+      "current_assessment": "Raster-unavailability documentation corrected; inaccurate test counts/scientific guarantees and loose response/frontend types remain."
+    },
+    {
+      "id": "F29",
+      "original_finding": "Multi-domain catalogue",
+      "status": "Unfixed",
+      "current_assessment": "Seven-parameter catalogue unchanged; additional Earth-system domains and real acquisition absent."
+    }
+  ],
+  "original_29_status_counts": {
+    "Partial": 21,
+    "Fixed": 3,
+    "Unfixed": 5
+  },
+  "verification": {
+    "backend_tests": {
+      "passed": 44,
+      "failed": 0,
+      "warnings": 1
+    },
+    "fresh_typescript": "Passed",
+    "next_build": "Passed",
+    "lint": "Exit 1; interactive configuration prompt; no configured gate.",
+    "frontend_versions": {
+      "next": "15.5.27",
+      "react": "19.3.0",
+      "tailwindcss": "3.4.19",
+      "maplibre-gl": "5.24.0",
+      "typescript": "5.9.3"
+    },
+    "python_versions": {
+      "python": "3.12.14",
+      "fastapi": "0.142.2",
+      "pydantic": "2.13.5",
+      "numpy": "2.3.5",
+      "scipy": "1.17.0",
+      "pandas": "2.2.3",
+      "pyarrow": "25.0.1",
+      "statsmodels": "0.15.0",
+      "pytest": "9.1.1",
+      "pyproj": "3.8.0"
+    },
+    "dependency_note": "Declared pyproj dependency was missing from the reused audit environment; installed before the successful supplied suite. Initial environment collection errors are not application findings.",
+    "root_route_kb": 287,
+    "first_load_js_kb": 389,
+    "logs": {
+      "pytest-output.txt": "............................................                             [100%]",
+      "typescript-output.txt": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n",
+      "build-output.txt": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n\n> earth-system-trend-detective-frontend@1.0.0 build\n> next build\n\nAttention: Next.js now collects completely anonymous telemetry regarding usage.\nThis information is used to shape Next.js' roadmap and prioritize features.\nYou can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:\nhttps://nextjs.org/telemetry\n\n",
+      "build-debug-output.txt": "   ▲ Next.js 15.5.27\n\n   Creating an optimized production build ...\n ✓ Compiled successfully in 1152ms\n   Linting and checking validity of types ...\n   Collecting page data ...\n   Generating static pages (0/4) ...\n   Generating static pages (1/4) \n   Generating static pages (2/4) \n   Generating static pages (3/4) \n ✓ Generating static pages (4/4)\n   Finalizing page optimization ...\n   Collecting build traces ...\n\n\nRedirects\n┌ source: /:path+/\n├ destination: /:path+\n└ permanent: true\n\n\nRewrites\n┌ source: /api/:path*\n└ destination: http://127.0.0.1:8005/:path*\n\n\nRoute (app)                                 Size  First Load JS\n┌ ○ /                                     287 kB         389 kB\n└ ○ /_not-found                            991 B         103 kB\n+ First Load JS shared by all             102 kB\n  ├ chunks/504-65103b3b1c6ebdea.js       46.3 kB\n  ├ chunks/c890805b-93f2c34c59403a0b.js  54.2 kB\n  └ other shared chunks (total)          1.94 kB\n\n\n○  (Static)  prerendered as static content\n\n",
+      "lint-output.txt": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n\n> earth-system-trend-detective-frontend@1.0.0 lint\n> next lint\n\n`next lint` is deprecated and will be removed in Next.js 16.\nFor new projects, use create-next-app to choose your preferred linter.\nFor existing projects, migrate to the ESLint CLI:\nnpx @next/codemod@canary next-lint-to-eslint-cli .\n\n? How would you like to configure ESLint? https://nextjs.org/docs/app/api-reference/config/eslint\n\u001b[?25l❯  Strict (recommended)\n   Base\n   Cancel ⚠ If you set up ESLint yourself, we recommend adding the Next.js ESLint plugin. See https://nextjs.org/docs/app/api-reference/config/eslint#migrating-existing-config\n",
+      "wheel-build.txt": "Processing /workspace/scratch/95441b1b3a97/review-v3/runtime/backend\n  Preparing metadata (pyproject.toml): started\n  Preparing metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: earth-system-trend-detective\n  Building wheel for earth-system-trend-detective (pyproject.toml): started\n  Building wheel for earth-system-trend-detective (pyproject.toml): finished with status 'done'\n  Created wheel for earth-system-trend-detective: filename=earth_system_trend_detective-0.1.0-py3-none-any.whl size=62908 sha256=39d5d904e852a91f35310bdf7aa1fb816d7a126e4c8e478576f18812f5b7bb39\n  Stored in directory: /tmp/pip-ephem-wheel-cache-1h6rlpfw/wheels/f5/eb/ab/846fd291892ad7c150abe44c1d2914b8e39d84ccca5cd2c2f9\nSuccessfully built earth-system-trend-detective\n",
+      "dependency-setup.txt": "Collecting pyproj>=3.6.0\n  Downloading pyproj-3.8.0-cp312-cp312-manylinux_2_28_x86_64.whl.metadata (40 kB)\nCollecting pytest-asyncio\n  Downloading pytest_asyncio-1.4.0-py3-none-any.whl.metadata (4.1 kB)\nRequirement already satisfied: certifi in ./review/audit-venv/lib/python3.12/site-packages (from pyproj>=3.6.0) (2026.7.22)\nRequirement already satisfied: pytest<10,>=8.4 in ./review/audit-venv/lib/python3.12/site-packages (from pytest-asyncio) (9.1.1)\nRequirement already satisfied: typing-extensions>=4.12 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from pytest-asyncio) (4.16.0)\nRequirement already satisfied: iniconfig>=1.0.1 in ./review/audit-venv/lib/python3.12/site-packages (from pytest<10,>=8.4->pytest-asyncio) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from pytest<10,>=8.4->pytest-asyncio) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in ./review/audit-venv/lib/python3.12/site-packages (from pytest<10,>=8.4->pytest-asyncio) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in ./review/audit-venv/lib/python3.12/site-packages (from pytest<10,>=8.4->pytest-asyncio) (2.21.0)\nDownloading pyproj-3.8.0-cp312-cp312-manylinux_2_28_x86_64.whl (10.0 MB)\n   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.0/10.0 MB 59.9 MB/s eta 0:00:00\nDownloading pytest_asyncio-1.4.0-py3-none-any.whl (16 kB)\nInstalling collected packages: pyproj, pytest-asyncio\nSuccessfully installed pyproj-3.8.0 pytest-asyncio-1.4.0\n"
+    }
+  },
+  "runtime": {
+    "scope": "Revision 3; artificial fixtures are audit-only and are restored.",
+    "probes": {
+      "normal": {
+        "status": 200,
+        "result_id": "a4f1a3979b3075c7680db6dc8eb51084db99ac1039ea2419728c89a478c7cea1",
+        "created_at": "2026-10-01T08:19:20.593580+00:00",
+        "query": {
+          "binding_id": "NASA_MERRA2_M2TMNXSLV",
+          "end_year": 2024,
+          "parameter_id": "air_temperature_2m",
+          "policy_id": "standard_climate_temperature",
+          "region_id": "BGD",
+          "start_year": 1980
+        },
+        "support": {
+          "native_spatial_resolution": "0.5° latitude x 0.625° longitude",
+          "requested_interval": [
+            1980,
+            2024
+          ],
+          "retained_interval": [
+            1980,
+            2024
+          ],
+          "sample_count": 45,
+          "temporal_cadence": "monthly",
+          "valid_area_coverage_pct": 100.0
+        },
+        "slope": 0.29957513416815745,
+        "p_value": 3.252794073675723e-09,
+        "evidence": {
+          "alpha": 0.05,
+          "direction": "increasing",
+          "interpretation_bn": "1980-2024 সময়কালে পরিসংখ্যানগতভাবে সমর্থিত প্রবণতা।",
+          "interpretation_en": "Statistically supported increasing trend over 1980-2024.",
+          "state": "supported_increase"
+        },
+        "series_first": [
+          25.469,
+          25.733,
+          25.378
+        ],
+        "narration": {
+          "bn": [
+            "১৯৮০ থেকে ২০২৪ সময়ে বাংলাদেশ অঞ্চলে বার্ষিক গড় ভূপৃষ্ঠ সংলগ্ন বায়ুর তাপমাত্রা (২ মিটার) বৃদ্ধির আনুমানিক হার ছিল +০.৩০ °C/দশক।",
+            "নির্ধারিত শর্তাবলী অনুযায়ী ম্যান-কেন্ডাল পরীক্ষা এই প্রবণতার পক্ষে সুস্পষ্ট পরিসংখ্যানগত প্রমাণ দেয়; ৯৫% নির্ভরযোগ্যতার ব্যবধান ০.২৩ থেকে ০.৩৬ °C/দশক এবং তথ্যের প্রাপ্যতা ১০০.০%।"
+          ],
+          "en": [
+            "The estimated annual mean Near-Surface Air Temperature (2m) in Bangladesh increased at a rate of +0.30 °C/decade over 1980 to 2024.",
+            "The Mann-Kendall test (continuity-corrected) supports this direction under the stated assumptions, with a 95% confidence interval of 0.23 to 0.36 °C/decade and 100.0% spatial coverage."
+          ]
+        },
+        "narration_status": null,
+        "provenance": {
+          "access_mode": "cache",
+          "citation": "Global Modeling and Assimilation Office (GMAO) (2015), MERRA-2 tavgM_2d_slv_Nx, Goddard Earth Sciences Data and Information Services Center (GES DISC), doi:10.5067/AP1B0BA5PD2K.",
+          "collection_id": "M2TMNXSLV",
+          "collection_name": "MERRA-2 tavgM_2d_slv_Nx: 2d, Monthly mean, Time-Averaged, Single-Level, Assimilation, Diagnostics V5.12.4",
+          "data_sha256": "be335e3408d33b9488a30ca64688a1a113351caf89fa1f4f6c78425eb5a344ed",
+          "dataset_id": "NASA_MERRA2_M2TMNXSLV",
+          "doi": "10.5067/AP1B0BA5PD2K",
+          "retrieved_at": "2026-10-01T08:00:00Z",
+          "source_url": "https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2/M2TMNXSLV.5.12.4/",
+          "version": "5.12.4"
+        }
+      },
+      "limited_15_years": {
+        "status": 200,
+        "result_id": "46b0cfa5c01bd2e51ccc3e146c9abed1757d96eddef0fd5fcf33ce68c19f0a19",
+        "created_at": "2026-10-01T08:21:30.996873+00:00",
+        "query": {
+          "binding_id": "NASA_MERRA2_M2TMNXSLV",
+          "end_year": 2024,
+          "parameter_id": "air_temperature_2m",
+          "policy_id": "standard_climate_temperature",
+          "region_id": "BGD",
+          "start_year": 2010
+        },
+        "support": {
+          "native_spatial_resolution": "0.5° latitude x 0.625° longitude",
+          "requested_interval": [
+            2010,
+            2024
+          ],
+          "retained_interval": [
+            2010,
+            2024
+          ],
+          "sample_count": 15,
+          "temporal_cadence": "monthly",
+          "valid_area_coverage_pct": 100.0
+        },
+        "slope": 0.3025000000000011,
+        "p_value": 0.23495478370334333,
+        "evidence": {
+          "alpha": 0.05,
+          "direction": "increasing",
+          "interpretation_bn": "2010-2024 সময়কালে প্রাথমিক অনুসন্ধানী প্রমাণ (সময়কাল < 20 বছর)।",
+          "interpretation_en": "Exploratory trend evidence over 2010-2024 (record span < 20 years).",
+          "state": "limited"
+        },
+        "series_first": [
+          26.576,
+          26.435,
+          27.042
+        ],
+        "narration": {
+          "bn": [
+            "২০১০ থেকে ২০২৪ সময়ে বাংলাদেশ অঞ্চলে বার্ষিক গড় ভূপৃষ্ঠ সংলগ্ন বায়ুর তাপমাত্রা (২ মিটার) বৃদ্ধির আনুমানিক হার ছিল +০.৩০ °C/দশক।",
+            "এই পর্যবেক্ষণটি ১৫ বছরব্যাপী বিস্তৃত যা একটি পূর্ণাঙ্গ জলবায়ু মূল্যায়নের পরিবর্তে প্রাথমিক অনুসন্ধানী প্রমাণ নির্দেশ করে; ৯৫% নির্ভরযোগ্যতার ব্যবধান -০.৩০ থেকে ০.৭৫ °C/দশক এবং তথ্যের প্রাপ্যতা ১০০.০%।"
+          ],
+          "en": [
+            "The estimated annual mean Near-Surface Air Temperature (2m) in Bangladesh increased at a rate of +0.30 °C/decade over 2010 to 2024.",
+            "This observation record spans 15 years, providing exploratory evidence rather than a standard 20-year climate assessment, with a 95% confidence interval of -0.30 to 0.75 °C/decade and 100.0% spatial coverage."
+          ]
+        },
+        "narration_status": null,
+        "provenance": {
+          "access_mode": "cache",
+          "citation": "Global Modeling and Assimilation Office (GMAO) (2015), MERRA-2 tavgM_2d_slv_Nx, Goddard Earth Sciences Data and Information Services Center (GES DISC), doi:10.5067/AP1B0BA5PD2K.",
+          "collection_id": "M2TMNXSLV",
+          "collection_name": "MERRA-2 tavgM_2d_slv_Nx: 2d, Monthly mean, Time-Averaged, Single-Level, Assimilation, Diagnostics V5.12.4",
+          "data_sha256": "be335e3408d33b9488a30ca64688a1a113351caf89fa1f4f6c78425eb5a344ed",
+          "dataset_id": "NASA_MERRA2_M2TMNXSLV",
+          "doi": "10.5067/AP1B0BA5PD2K",
+          "retrieved_at": "2026-10-01T08:00:00Z",
+          "source_url": "https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2/M2TMNXSLV.5.12.4/",
+          "version": "5.12.4"
+        }
+      },
+      "missing_region": {
+        "status": 404,
+        "body": {
+          "type": "https://errors.earthtrenddetective.org/CACHE_MISS_OFFLINE",
+          "title": "Offline Cache Miss",
+          "status": 404,
+          "detail": "\"Series for region 'NPL' under binding 'NASA_MERRA2_M2TMNXSLV' is not registered in the verified acquisition manifest.\"",
+          "code": "CACHE_MISS_OFFLINE",
+          "instance": "http://testserver/trend?region_id=NPL&parameter_id=air_temperature_2m"
+        }
+      },
+      "missing_precipitation": {
+        "status": 404,
+        "body": {
+          "type": "https://errors.earthtrenddetective.org/CACHE_MISS_OFFLINE",
+          "title": "Offline Cache Miss",
+          "status": 404,
+          "detail": "No verified acquisition manifest found for binding 'GPM_IMERG_FINAL_V07'. Only datasets with verified manifests can be loaded.",
+          "code": "CACHE_MISS_OFFLINE",
+          "instance": "http://testserver/trend?region_id=BGD&parameter_id=precipitation_total"
+        }
+      },
+      "wrong_binding": {
+        "status": 400,
+        "body": {
+          "type": "https://errors.earthtrenddetective.org/INCOMPATIBLE_BINDING_PARAMETER",
+          "title": "Incompatible Dataset Binding for Parameter",
+          "status": 400,
+          "detail": "Binding 'NASA_MERRA2_M2TMNXSLV' provides 'air_temperature_2m', not requested parameter 'precipitation_total'.",
+          "code": "INCOMPATIBLE_BINDING_PARAMETER",
+          "instance": "http://testserver/trend?region_id=BGD&parameter_id=precipitation_total&binding_id=NASA_MERRA2_M2TMNXSLV"
+        }
+      },
+      "unknown_policy": {
+        "status": 400,
+        "body": {
+          "type": "https://errors.earthtrenddetective.org/UNKNOWN_POLICY",
+          "title": "Unknown Analysis Policy",
+          "status": 400,
+          "detail": "Policy 'invalid_policy' is not recognized in the policy registry.",
+          "code": "UNKNOWN_POLICY",
+          "instance": "http://testserver/trend?region_id=BGD&parameter_id=air_temperature_2m&policy_id=invalid_policy"
+        }
+      },
+      "power_point": {
+        "status": 200,
+        "result_id": "f4329d91f471b3914147b70a6096af4cb208b938948cd19382f340eb005c273f",
+        "created_at": "2026-10-01T10:50:00.657617+00:00",
+        "query": {
+          "region_id": "BGD",
+          "parameter_id": "point_air_temperature",
+          "binding_id": "NASA_POWER_DAILY_POINT",
+          "start_year": 1981,
+          "end_year": 2024,
+          "policy_id": "standard_climate_temperature"
+        },
+        "support": {
+          "requested_interval": [
+            1981,
+            2024
+          ],
+          "retained_interval": [
+            1981,
+            2024
+          ],
+          "sample_count": 44,
+          "native_spatial_resolution": "Point sample at explicit centroid coordinate",
+          "temporal_cadence": "daily",
+          "valid_area_coverage_pct": 100.0
+        },
+        "slope": 0.28597222222222335,
+        "p_value": 4.9922181681278244e-08,
+        "evidence": {
+          "state": "supported_increase",
+          "direction": "increasing",
+          "alpha": 0.05,
+          "interpretation_en": "Statistically supported increasing trend over 1981-2024.",
+          "interpretation_bn": "1981-2024 সময়কালে পরিসংখ্যানগতভাবে সমর্থিত প্রবণতা।"
+        },
+        "series_first": [
+          25.493,
+          25.595,
+          25.221
+        ],
+        "narration": {
+          "en": [
+            "The estimated annual mean Point Sample Air Temperature (Centroid) in Bangladesh increased at a rate of +0.29 °C/decade over 1981 to 2024.",
+            "The Mann-Kendall test (Hamed-Rao adjusted) supports this direction under the stated assumptions, with a 95% confidence interval of 0.20 to 0.38 °C/decade and 100.0% spatial coverage."
+          ],
+          "bn": [
+            "১৯৮১ থেকে ২০২৪ সময়ে বাংলাদেশ অঞ্চলে বার্ষিক গড় বিন্দু নমুনা বায়ুর তাপমাত্রা (কেন্দ্রবিন্দু) বৃদ্ধির আনুমানিক হার ছিল +০.২৯ °C/দশক।",
+            "নির্ধারিত শর্তাবলী অনুযায়ী অটোকরিলেশন সমন্বিত ম্যান-কেন্ডাল পরীক্ষা এই প্রবণতার পক্ষে সুস্পষ্ট পরিসংখ্যানগত প্রমাণ দেয়; ৯৫% নির্ভরযোগ্যতার ব্যবধান ০.২০ থেকে ০.৩৮ °C/দশক এবং তথ্যের প্রাপ্যতা ১০০.০%।"
+          ]
+        },
+        "narration_status": null,
+        "provenance": {
+          "dataset_id": "NASA_POWER_DAILY_POINT",
+          "collection_id": "NASA_POWER_POINT_DAILY",
+          "collection_name": "NASA Prediction Of Worldwide Energy Resources (POWER) Daily Point Meteorology",
+          "version": "v2.0",
+          "doi": null,
+          "source_url": "https://power.larc.nasa.gov/",
+          "citation": "NASA Langley Research Center (LaRC) POWER Project. Single-point daily meteorological parameters derived from GMAO reanalyses.",
+          "access_mode": "cache",
+          "retrieved_at": "2026-10-01T08:00:00Z",
+          "data_sha256": "fe0b7b72187d5bf07c8d6962d136d6cf5a7c4619745a329ef55e36e2f7fbb4cf"
+        }
+      },
+      "coverage_binding_mismatch": {
+        "status": 400,
+        "body": {
+          "type": "https://errors.earthtrenddetective.org/INCOMPATIBLE_BINDING_PARAMETER",
+          "title": "Incompatible Binding for Parameter",
+          "status": 400,
+          "detail": "Binding 'GPM_IMERG_FINAL_V07' provides 'precipitation_total', not requested parameter 'air_temperature_2m'.",
+          "code": "INCOMPATIBLE_BINDING_PARAMETER",
+          "instance": "http://testserver/coverage?region_id=BGD&parameter_id=air_temperature_2m&binding_id=GPM_IMERG_FINAL_V07"
+        }
+      },
+      "comparison_unknown_policy": {
+        "status": 400,
+        "body": {
+          "type": "https://errors.earthtrenddetective.org/UNKNOWN_POLICY",
+          "title": "Unknown Analysis Policy",
+          "status": 400,
+          "detail": "Policy 'invalid_policy' is not recognized in the policy registry.",
+          "code": "UNKNOWN_POLICY",
+          "instance": "http://testserver/comparisons"
+        }
+      },
+      "frozen_response_consistency": {
+        "same_id": true,
+        "identical_response": true,
+        "response_equals_stored": true,
+        "actual_request_interval": [
+          1970,
+          2024
+        ],
+        "reported_requested_interval": [
+          1980,
+          2024
+        ]
+      },
+      "verified_cache_hit_skips_compute": {
+        "status": 200,
+        "result_id": "a4f1a3979b3075c7680db6dc8eb51084db99ac1039ea2419728c89a478c7cea1",
+        "created_at": "2026-10-01T08:19:20.593580+00:00",
+        "query": {
+          "binding_id": "NASA_MERRA2_M2TMNXSLV",
+          "end_year": 2024,
+          "parameter_id": "air_temperature_2m",
+          "policy_id": "standard_climate_temperature",
+          "region_id": "BGD",
+          "start_year": 1980
+        },
+        "support": {
+          "native_spatial_resolution": "0.5° latitude x 0.625° longitude",
+          "requested_interval": [
+            1980,
+            2024
+          ],
+          "retained_interval": [
+            1980,
+            2024
+          ],
+          "sample_count": 45,
+          "temporal_cadence": "monthly",
+          "valid_area_coverage_pct": 100.0
+        },
+        "slope": 0.29957513416815745,
+        "p_value": 3.252794073675723e-09,
+        "evidence": {
+          "alpha": 0.05,
+          "direction": "increasing",
+          "interpretation_bn": "1980-2024 সময়কালে পরিসংখ্যানগতভাবে সমর্থিত প্রবণতা।",
+          "interpretation_en": "Statistically supported increasing trend over 1980-2024.",
+          "state": "supported_increase"
+        },
+        "series_first": [
+          25.469,
+          25.733,
+          25.378
+        ],
+        "narration": {
+          "bn": [
+            "১৯৮০ থেকে ২০২৪ সময়ে বাংলাদেশ অঞ্চলে বার্ষিক গড় ভূপৃষ্ঠ সংলগ্ন বায়ুর তাপমাত্রা (২ মিটার) বৃদ্ধির আনুমানিক হার ছিল +০.৩০ °C/দশক।",
+            "নির্ধারিত শর্তাবলী অনুযায়ী ম্যান-কেন্ডাল পরীক্ষা এই প্রবণতার পক্ষে সুস্পষ্ট পরিসংখ্যানগত প্রমাণ দেয়; ৯৫% নির্ভরযোগ্যতার ব্যবধান ০.২৩ থেকে ০.৩৬ °C/দশক এবং তথ্যের প্রাপ্যতা ১০০.০%।"
+          ],
+          "en": [
+            "The estimated annual mean Near-Surface Air Temperature (2m) in Bangladesh increased at a rate of +0.30 °C/decade over 1980 to 2024.",
+            "The Mann-Kendall test (continuity-corrected) supports this direction under the stated assumptions, with a 95% confidence interval of 0.23 to 0.36 °C/decade and 100.0% spatial coverage."
+          ]
+        },
+        "narration_status": null,
+        "provenance": {
+          "access_mode": "cache",
+          "citation": "Global Modeling and Assimilation Office (GMAO) (2015), MERRA-2 tavgM_2d_slv_Nx, Goddard Earth Sciences Data and Information Services Center (GES DISC), doi:10.5067/AP1B0BA5PD2K.",
+          "collection_id": "M2TMNXSLV",
+          "collection_name": "MERRA-2 tavgM_2d_slv_Nx: 2d, Monthly mean, Time-Averaged, Single-Level, Assimilation, Diagnostics V5.12.4",
+          "data_sha256": "be335e3408d33b9488a30ca64688a1a113351caf89fa1f4f6c78425eb5a344ed",
+          "dataset_id": "NASA_MERRA2_M2TMNXSLV",
+          "doi": "10.5067/AP1B0BA5PD2K",
+          "retrieved_at": "2026-10-01T08:00:00Z",
+          "source_url": "https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2/M2TMNXSLV.5.12.4/",
+          "version": "5.12.4"
+        }
+      },
+      "tampered_file_rejected": {
+        "status": 422,
+        "body": {
+          "type": "https://errors.earthtrenddetective.org/DATA_INTEGRITY_ERROR",
+          "title": "Data Integrity Violation",
+          "status": 422,
+          "detail": "Data integrity violation for NASA_MERRA2_M2TMNXSLV_BGD: actual Parquet SHA-256 '918b5361c347f81ff69b53fb078bc130928ed8c04ea80f4b3d8a46d69dbfe972' does not match verified manifest 'be335e3408d33b9488a30ca64688a1a113351caf89fa1f4f6c78425eb5a344ed'.",
+          "code": "DATA_INTEGRITY_ERROR",
+          "instance": "http://testserver/trend?region_id=BGD&parameter_id=air_temperature_2m"
+        }
+      },
+      "unmanifested_file_rejected": {
+        "status": 404,
+        "body": {
+          "type": "https://errors.earthtrenddetective.org/CACHE_MISS_OFFLINE",
+          "title": "Offline Cache Miss",
+          "status": 404,
+          "detail": "\"Series for region 'NPL' under binding 'NASA_MERRA2_M2TMNXSLV' is not registered in the verified acquisition manifest.\"",
+          "code": "CACHE_MISS_OFFLINE",
+          "instance": "http://testserver/trend?region_id=NPL&parameter_id=air_temperature_2m"
+        }
+      },
+      "required_qa_columns_rejected": {
+        "status": 422,
+        "body": {
+          "type": "https://errors.earthtrenddetective.org/DATA_INTEGRITY_ERROR",
+          "title": "Data Integrity Violation",
+          "status": 422,
+          "detail": "Parquet file NASA_MERRA2_M2TMNXSLV_BGD.parquet violates manifest contract: required QA column 'qa_passed' missing.",
+          "code": "DATA_INTEGRITY_ERROR",
+          "instance": "http://testserver/trend?region_id=BGD&parameter_id=air_temperature_2m"
+        }
+      },
+      "manifest_omits_qa_and_coverage_contract": {
+        "status": 200,
+        "result_id": "01abc8a40f11e71181fc2b83e4f7e6a706751fd1f95d02d290ac451f769ab07e",
+        "created_at": "2026-10-01T10:50:00.871180+00:00",
+        "query": {
+          "region_id": "BGD",
+          "parameter_id": "air_temperature_2m",
+          "binding_id": "NASA_MERRA2_M2TMNXSLV",
+          "start_year": 1980,
+          "end_year": 2024,
+          "policy_id": "standard_climate_temperature"
+        },
+        "support": {
+          "requested_interval": [
+            1980,
+            2024
+          ],
+          "retained_interval": [
+            1980,
+            2024
+          ],
+          "sample_count": 45,
+          "native_spatial_resolution": "0.5° latitude x 0.625° longitude",
+          "temporal_cadence": "monthly",
+          "valid_area_coverage_pct": 100.0
+        },
+        "slope": 0.29957513416815745,
+        "p_value": 3.252794073675723e-09,
+        "evidence": {
+          "state": "supported_increase",
+          "direction": "increasing",
+          "alpha": 0.05,
+          "interpretation_en": "Statistically supported increasing trend over 1980-2024.",
+          "interpretation_bn": "1980-2024 সময়কালে পরিসংখ্যানগতভাবে সমর্থিত প্রবণতা।"
+        },
+        "series_first": [
+          25.469,
+          25.733,
+          25.378
+        ],
+        "narration": {
+          "en": [
+            "The estimated annual mean Near-Surface Air Temperature (2m) in Bangladesh increased at a rate of +0.30 °C/decade over 1980 to 2024.",
+            "The Mann-Kendall test (continuity-corrected) supports this direction under the stated assumptions, with a 95% confidence interval of 0.23 to 0.36 °C/decade and 100.0% spatial coverage."
+          ],
+          "bn": [
+            "১৯৮০ থেকে ২০২৪ সময়ে বাংলাদেশ অঞ্চলে বার্ষিক গড় ভূপৃষ্ঠ সংলগ্ন বায়ুর তাপমাত্রা (২ মিটার) বৃদ্ধির আনুমানিক হার ছিল +০.৩০ °C/দশক।",
+            "নির্ধারিত শর্তাবলী অনুযায়ী ম্যান-কেন্ডাল পরীক্ষা এই প্রবণতার পক্ষে সুস্পষ্ট পরিসংখ্যানগত প্রমাণ দেয়; ৯৫% নির্ভরযোগ্যতার ব্যবধান ০.২৩ থেকে ০.৩৬ °C/দশক এবং তথ্যের প্রাপ্যতা ১০০.০%।"
+          ]
+        },
+        "narration_status": null,
+        "provenance": {
+          "dataset_id": "NASA_MERRA2_M2TMNXSLV",
+          "collection_id": "M2TMNXSLV",
+          "collection_name": "MERRA-2 tavgM_2d_slv_Nx: 2d, Monthly mean, Time-Averaged, Single-Level, Assimilation, Diagnostics V5.12.4",
+          "version": "5.12.4",
+          "doi": "10.5067/AP1B0BA5PD2K",
+          "source_url": "https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2/M2TMNXSLV.5.12.4/",
+          "citation": "Global Modeling and Assimilation Office (GMAO) (2015), MERRA-2 tavgM_2d_slv_Nx, Goddard Earth Sciences Data and Information Services Center (GES DISC), doi:10.5067/AP1B0BA5PD2K.",
+          "access_mode": "cache",
+          "retrieved_at": "2026-10-01T08:00:00Z",
+          "data_sha256": "6d6326c1aced2b3cfe1ca84584aa0dad8cffa14c35f4eb43eabc622068f110a3"
+        }
+      },
+      "manifest_missing_sha_accepts_modified_data": {
+        "status": 200,
+        "result_id": "05ae91579bee11210833fdbd752d6dc7742bdbcaf8056a4d23bd0cadc68da588",
+        "created_at": "2026-10-01T10:50:01.036915+00:00",
+        "query": {
+          "region_id": "BGD",
+          "parameter_id": "air_temperature_2m",
+          "binding_id": "NASA_MERRA2_M2TMNXSLV",
+          "start_year": 1980,
+          "end_year": 2024,
+          "policy_id": "standard_climate_temperature"
+        },
+        "support": {
+          "requested_interval": [
+            1980,
+            2024
+          ],
+          "retained_interval": [
+            1980,
+            2024
+          ],
+          "sample_count": 45,
+          "native_spatial_resolution": "0.5° latitude x 0.625° longitude",
+          "temporal_cadence": "monthly",
+          "valid_area_coverage_pct": 100.0
+        },
+        "slope": 0.29957513416815745,
+        "p_value": 3.252794073675723e-09,
+        "evidence": {
+          "state": "supported_increase",
+          "direction": "increasing",
+          "alpha": 0.05,
+          "interpretation_en": "Statistically supported increasing trend over 1980-2024.",
+          "interpretation_bn": "1980-2024 সময়কালে পরিসংখ্যানগতভাবে সমর্থিত প্রবণতা।"
+        },
+        "series_first": [
+          27.469,
+          27.733,
+          27.378
+        ],
+        "narration": {
+          "en": [
+            "The estimated annual mean Near-Surface Air Temperature (2m) in Bangladesh increased at a rate of +0.30 °C/decade over 1980 to 2024.",
+            "The Mann-Kendall test (continuity-corrected) supports this direction under the stated assumptions, with a 95% confidence interval of 0.23 to 0.36 °C/decade and 100.0% spatial coverage."
+          ],
+          "bn": [
+            "১৯৮০ থেকে ২০২৪ সময়ে বাংলাদেশ অঞ্চলে বার্ষিক গড় ভূপৃষ্ঠ সংলগ্ন বায়ুর তাপমাত্রা (২ মিটার) বৃদ্ধির আনুমানিক হার ছিল +০.৩০ °C/দশক।",
+            "নির্ধারিত শর্তাবলী অনুযায়ী ম্যান-কেন্ডাল পরীক্ষা এই প্রবণতার পক্ষে সুস্পষ্ট পরিসংখ্যানগত প্রমাণ দেয়; ৯৫% নির্ভরযোগ্যতার ব্যবধান ০.২৩ থেকে ০.৩৬ °C/দশক এবং তথ্যের প্রাপ্যতা ১০০.০%।"
+          ]
+        },
+        "narration_status": null,
+        "provenance": {
+          "dataset_id": "NASA_MERRA2_M2TMNXSLV",
+          "collection_id": "M2TMNXSLV",
+          "collection_name": "MERRA-2 tavgM_2d_slv_Nx: 2d, Monthly mean, Time-Averaged, Single-Level, Assimilation, Diagnostics V5.12.4",
+          "version": "5.12.4",
+          "doi": "10.5067/AP1B0BA5PD2K",
+          "source_url": "https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2/M2TMNXSLV.5.12.4/",
+          "citation": "Global Modeling and Assimilation Office (GMAO) (2015), MERRA-2 tavgM_2d_slv_Nx, Goddard Earth Sciences Data and Information Services Center (GES DISC), doi:10.5067/AP1B0BA5PD2K.",
+          "access_mode": "cache",
+          "retrieved_at": "2026-10-01T08:00:00Z",
+          "data_sha256": "bc80ca89abf4dd21b4567d19de75869ef8de74ee62fa500225cc01f49e440da8"
+        }
+      },
+      "manifest_wrong_binding_units_readiness_accepted": {
+        "status": 200,
+        "result_id": "d26369c807c7304cdc24a16f59d5bfc48a6316656b70ed2f97dd95b3f1542632",
+        "created_at": "2026-10-01T10:50:01.235966+00:00",
+        "query": {
+          "region_id": "BGD",
+          "parameter_id": "air_temperature_2m",
+          "binding_id": "NASA_MERRA2_M2TMNXSLV",
+          "start_year": 1980,
+          "end_year": 2024,
+          "policy_id": "standard_climate_temperature"
+        },
+        "support": {
+          "requested_interval": [
+            1980,
+            2024
+          ],
+          "retained_interval": [
+            1980,
+            2024
+          ],
+          "sample_count": 45,
+          "native_spatial_resolution": "0.5° latitude x 0.625° longitude",
+          "temporal_cadence": "monthly",
+          "valid_area_coverage_pct": 100.0
+        },
+        "slope": 0.29957513416815745,
+        "p_value": 3.252794073675723e-09,
+        "evidence": {
+          "state": "supported_increase",
+          "direction": "increasing",
+          "alpha": 0.05,
+          "interpretation_en": "Statistically supported increasing trend over 1980-2024.",
+          "interpretation_bn": "1980-2024 সময়কালে পরিসংখ্যানগতভাবে সমর্থিত প্রবণতা।"
+        },
+        "series_first": [
+          25.469,
+          25.733,
+          25.378
+        ],
+        "narration": {
+          "en": [
+            "The estimated annual mean Near-Surface Air Temperature (2m) in Bangladesh increased at a rate of +0.30 °C/decade over 1980 to 2024.",
+            "The Mann-Kendall test (continuity-corrected) supports this direction under the stated assumptions, with a 95% confidence interval of 0.23 to 0.36 °C/decade and 100.0% spatial coverage."
+          ],
+          "bn": [
+            "১৯৮০ থেকে ২০২৪ সময়ে বাংলাদেশ অঞ্চলে বার্ষিক গড় ভূপৃষ্ঠ সংলগ্ন বায়ুর তাপমাত্রা (২ মিটার) বৃদ্ধির আনুমানিক হার ছিল +০.৩০ °C/দশক।",
+            "নির্ধারিত শর্তাবলী অনুযায়ী ম্যান-কেন্ডাল পরীক্ষা এই প্রবণতার পক্ষে সুস্পষ্ট পরিসংখ্যানগত প্রমাণ দেয়; ৯৫% নির্ভরযোগ্যতার ব্যবধান ০.২৩ থেকে ০.৩৬ °C/দশক এবং তথ্যের প্রাপ্যতা ১০০.০%।"
+          ]
+        },
+        "narration_status": null,
+        "provenance": {
+          "dataset_id": "NASA_MERRA2_M2TMNXSLV",
+          "collection_id": "M2TMNXSLV",
+          "collection_name": "MERRA-2 tavgM_2d_slv_Nx: 2d, Monthly mean, Time-Averaged, Single-Level, Assimilation, Diagnostics V5.12.4",
+          "version": "5.12.4",
+          "doi": "10.5067/AP1B0BA5PD2K",
+          "source_url": "https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2/M2TMNXSLV.5.12.4/",
+          "citation": "Global Modeling and Assimilation Office (GMAO) (2015), MERRA-2 tavgM_2d_slv_Nx, Goddard Earth Sciences Data and Information Services Center (GES DISC), doi:10.5067/AP1B0BA5PD2K.",
+          "access_mode": "cache",
+          "retrieved_at": "2026-10-01T08:00:00Z",
+          "data_sha256": "d181f1758e7380c2686637ad9d3601c0434886a33c2310b0ec612876d1449140"
+        }
+      },
+      "manifest_wrong_inventory_accepted": {
+        "status": 200,
+        "result_id": "d26369c807c7304cdc24a16f59d5bfc48a6316656b70ed2f97dd95b3f1542632",
+        "created_at": "2026-10-01T10:50:01.235966+00:00",
+        "query": {
+          "binding_id": "NASA_MERRA2_M2TMNXSLV",
+          "end_year": 2024,
+          "parameter_id": "air_temperature_2m",
+          "policy_id": "standard_climate_temperature",
+          "region_id": "BGD",
+          "start_year": 1980
+        },
+        "support": {
+          "native_spatial_resolution": "0.5° latitude x 0.625° longitude",
+          "requested_interval": [
+            1980,
+            2024
+          ],
+          "retained_interval": [
+            1980,
+            2024
+          ],
+          "sample_count": 45,
+          "temporal_cadence": "monthly",
+          "valid_area_coverage_pct": 100.0
+        },
+        "slope": 0.29957513416815745,
+        "p_value": 3.252794073675723e-09,
+        "evidence": {
+          "alpha": 0.05,
+          "direction": "increasing",
+          "interpretation_bn": "1980-2024 সময়কালে পরিসংখ্যানগতভাবে সমর্থিত প্রবণতা।",
+          "interpretation_en": "Statistically supported increasing trend over 1980-2024.",
+          "state": "supported_increase"
+        },
+        "series_first": [
+          25.469,
+          25.733,
+          25.378
+        ],
+        "narration": {
+          "bn": [
+            "১৯৮০ থেকে ২০২৪ সময়ে বাংলাদেশ অঞ্চলে বার্ষিক গড় ভূপৃষ্ঠ সংলগ্ন বায়ুর তাপমাত্রা (২ মিটার) বৃদ্ধির আনুমানিক হার ছিল +০.৩০ °C/দশক।",
+            "নির্ধারিত শর্তাবলী অনুযায়ী ম্যান-কেন্ডাল পরীক্ষা এই প্রবণতার পক্ষে সুস্পষ্ট পরিসংখ্যানগত প্রমাণ দেয়; ৯৫% নির্ভরযোগ্যতার ব্যবধান ০.২৩ থেকে ০.৩৬ °C/দশক এবং তথ্যের প্রাপ্যতা ১০০.০%।"
+          ],
+          "en": [
+            "The estimated annual mean Near-Surface Air Temperature (2m) in Bangladesh increased at a rate of +0.30 °C/decade over 1980 to 2024.",
+            "The Mann-Kendall test (continuity-corrected) supports this direction under the stated assumptions, with a 95% confidence interval of 0.23 to 0.36 °C/decade and 100.0% spatial coverage."
+          ]
+        },
+        "narration_status": null,
+        "provenance": {
+          "access_mode": "cache",
+          "citation": "Global Modeling and Assimilation Office (GMAO) (2015), MERRA-2 tavgM_2d_slv_Nx, Goddard Earth Sciences Data and Information Services Center (GES DISC), doi:10.5067/AP1B0BA5PD2K.",
+          "collection_id": "M2TMNXSLV",
+          "collection_name": "MERRA-2 tavgM_2d_slv_Nx: 2d, Monthly mean, Time-Averaged, Single-Level, Assimilation, Diagnostics V5.12.4",
+          "data_sha256": "d181f1758e7380c2686637ad9d3601c0434886a33c2310b0ec612876d1449140",
+          "dataset_id": "NASA_MERRA2_M2TMNXSLV",
+          "doi": "10.5067/AP1B0BA5PD2K",
+          "retrieved_at": "2026-10-01T08:00:00Z",
+          "source_url": "https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2/M2TMNXSLV.5.12.4/",
+          "version": "5.12.4"
+        }
+      },
+      "corrupt_parquet_error": {
+        "status": 500,
+        "text": "Internal Server Error"
+      },
+      "missing_year_schema_error": {
+        "status": 500,
+        "text": "Internal Server Error"
+      },
+      "qa_failed": {
+        "status": 422,
+        "body": {
+          "type": "https://errors.earthtrenddetective.org/INSUFFICIENT_OBSERVATIONS",
+          "title": "Insufficient Valid Observations",
+          "status": 422,
+          "detail": "Only 0 valid eligible observations remain after QA filtering (minimum 3 required).",
+          "code": "INSUFFICIENT_OBSERVATIONS",
+          "instance": "http://testserver/trend?region_id=BGD&parameter_id=air_temperature_2m"
+        }
+      },
+      "zero_coverage": {
+        "status": 422,
+        "body": {
+          "type": "https://errors.earthtrenddetective.org/INSUFFICIENT_OBSERVATIONS",
+          "title": "Insufficient Valid Observations",
+          "status": 422,
+          "detail": "Only 0 valid eligible observations remain after QA filtering (minimum 3 required).",
+          "code": "INSUFFICIENT_OBSERVATIONS",
+          "instance": "http://testserver/trend?region_id=BGD&parameter_id=air_temperature_2m"
+        }
+      },
+      "infinite_coverage": {
+        "status": 422,
+        "body": {
+          "type": "https://errors.earthtrenddetective.org/INSUFFICIENT_OBSERVATIONS",
+          "title": "Insufficient Valid Observations",
+          "status": 422,
+          "detail": "Only 0 valid eligible observations remain after QA filtering (minimum 3 required).",
+          "code": "INSUFFICIENT_OBSERVATIONS",
+          "instance": "http://testserver/trend?region_id=BGD&parameter_id=air_temperature_2m"
+        }
+      },
+      "coverage_above_100": {
+        "status": 422,
+        "body": {
+          "type": "https://errors.earthtrenddetective.org/INSUFFICIENT_OBSERVATIONS",
+          "title": "Insufficient Valid Observations",
+          "status": 422,
+          "detail": "Only 0 valid eligible observations remain after QA filtering (minimum 3 required).",
+          "code": "INSUFFICIENT_OBSERVATIONS",
+          "instance": "http://testserver/trend?region_id=BGD&parameter_id=air_temperature_2m"
+        }
+      },
+      "duplicate_january": {
+        "status": 422,
+        "body": {
+          "type": "https://errors.earthtrenddetective.org/INSUFFICIENT_OBSERVATIONS",
+          "title": "Insufficient Valid Observations",
+          "status": 422,
+          "detail": "Only 0 valid eligible observations remain after QA filtering (minimum 3 required).",
+          "code": "INSUFFICIENT_OBSERVATIONS",
+          "instance": "http://testserver/trend?region_id=BGD&parameter_id=air_temperature_2m"
+        }
+      },
+      "fractional_months": {
+        "status": 200,
+        "result_id": "e432872a2a12ae8626852bf510ada0393089b9785aaee5d1517d91ceae9545eb",
+        "created_at": "2026-10-01T10:50:01.336399+00:00",
+        "query": {
+          "region_id": "BGD",
+          "parameter_id": "air_temperature_2m",
+          "binding_id": "NASA_MERRA2_M2TMNXSLV",
+          "start_year": 2000,
+          "end_year": 2019,
+          "policy_id": "standard_climate_temperature"
+        },
+        "support": {
+          "requested_interval": [
+            2000,
+            2019
+          ],
+          "retained_interval": [
+            2000,
+            2019
+          ],
+          "sample_count": 20,
+          "native_spatial_resolution": "0.5° latitude x 0.625° longitude",
+          "temporal_cadence": "monthly",
+          "valid_area_coverage_pct": 100.0
+        },
+        "slope": 10.0,
+        "p_value": 8.679762763377867e-10,
+        "evidence": {
+          "state": "supported_increase",
+          "direction": "increasing",
+          "alpha": 0.05,
+          "interpretation_en": "Statistically supported increasing trend over 2000-2019.",
+          "interpretation_bn": "2000-2019 সময়কালে পরিসংখ্যানগতভাবে সমর্থিত প্রবণতা।"
+        },
+        "series_first": [
+          100.0,
+          101.0,
+          102.0
+        ],
+        "narration": {
+          "en": [
+            "The estimated annual mean Near-Surface Air Temperature (2m) in Bangladesh increased at a rate of +10.00 °C/decade over 2000 to 2019.",
+            "The Mann-Kendall test (continuity-corrected) supports this direction under the stated assumptions, with a 95% confidence interval of 10.00 to 10.00 °C/decade and 100.0% spatial coverage."
+          ],
+          "bn": [
+            "২০০০ থেকে ২০১৯ সময়ে বাংলাদেশ অঞ্চলে বার্ষিক গড় ভূপৃষ্ঠ সংলগ্ন বায়ুর তাপমাত্রা (২ মিটার) বৃদ্ধির আনুমানিক হার ছিল +১০.০০ °C/দশক।",
+            "নির্ধারিত শর্তাবলী অনুযায়ী ম্যান-কেন্ডাল পরীক্ষা এই প্রবণতার পক্ষে সুস্পষ্ট পরিসংখ্যানগত প্রমাণ দেয়; ৯৫% নির্ভরযোগ্যতার ব্যবধান ১০.০০ থেকে ১০.০০ °C/দশক এবং তথ্যের প্রাপ্যতা ১০০.০%।"
+          ]
+        },
+        "narration_status": null,
+        "provenance": {
+          "dataset_id": "NASA_MERRA2_M2TMNXSLV",
+          "collection_id": "M2TMNXSLV",
+          "collection_name": "MERRA-2 tavgM_2d_slv_Nx: 2d, Monthly mean, Time-Averaged, Single-Level, Assimilation, Diagnostics V5.12.4",
+          "version": "5.12.4",
+          "doi": "10.5067/AP1B0BA5PD2K",
+          "source_url": "https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2/M2TMNXSLV.5.12.4/",
+          "citation": "Global Modeling and Assimilation Office (GMAO) (2015), MERRA-2 tavgM_2d_slv_Nx, Goddard Earth Sciences Data and Information Services Center (GES DISC), doi:10.5067/AP1B0BA5PD2K.",
+          "access_mode": "cache",
+          "retrieved_at": "2026-10-01T08:00:00Z",
+          "data_sha256": "dc92146ee9cf19a8de86a33370f726460c5388d6b0b5e2df0fc51f1d5d49b72a"
+        }
+      },
+      "four_years_monthly": {
+        "status": 200,
+        "result_id": "df0f32c13eb58b323dbb11e884fd7cc476ac6dbf107006bbe854bd7ae0013f5d",
+        "created_at": "2026-10-01T10:50:01.347348+00:00",
+        "query": {
+          "region_id": "BGD",
+          "parameter_id": "air_temperature_2m",
+          "binding_id": "NASA_MERRA2_M2TMNXSLV",
+          "start_year": 2020,
+          "end_year": 2023,
+          "policy_id": "standard_climate_temperature"
+        },
+        "support": {
+          "requested_interval": [
+            2020,
+            2023
+          ],
+          "retained_interval": [
+            2020,
+            2023
+          ],
+          "sample_count": 4,
+          "native_spatial_resolution": "0.5° latitude x 0.625° longitude",
+          "temporal_cadence": "monthly",
+          "valid_area_coverage_pct": 100.0
+        },
+        "slope": 10.0,
+        "p_value": 0.08942935902899353,
+        "evidence": {
+          "state": "insufficient",
+          "direction": "increasing",
+          "alpha": 0.05,
+          "interpretation_en": "No statistically significant monotonic trend detected over 2020-2023.",
+          "interpretation_bn": "2020-2023 সময়কালে কোনো পরিসংখ্যানগতভাবে তাৎপর্যপূর্ণ একক পরিবর্তনের প্রমাণ নেই।"
+        },
+        "series_first": [
+          120.0,
+          121.0,
+          122.0
+        ],
+        "narration": {
+          "en": [
+            "Over the period 2020 to 2023, there are insufficient eligible observations to calculate a reliable Near-Surface Air Temperature (2m) trend for Bangladesh.",
+            "Available observations do not meet the minimum spatial coverage or duration requirements for climate inference."
+          ],
+          "bn": [
+            "২০২০ থেকে ২০২৩ সময়কালে বাংলাদেশ অঞ্চলে ভূপৃষ্ঠ সংলগ্ন বায়ুর তাপমাত্রা (২ মিটার) এর নির্ভরযোগ্য পরিবর্তনের ধারা মূল্যায়নের জন্য পর্যাপ্ত পর্যবেক্ষণ তথ্য নেই।",
+            "বিদ্যমান উপাত্ত জলবায়ু পূর্বাভাসের জন্য প্রয়োজনীয় ন্যূনতম স্থানিক বিস্তার বা সময়কাল পূরণ করে না।"
+          ]
+        },
+        "narration_status": null,
+        "provenance": {
+          "dataset_id": "NASA_MERRA2_M2TMNXSLV",
+          "collection_id": "M2TMNXSLV",
+          "collection_name": "MERRA-2 tavgM_2d_slv_Nx: 2d, Monthly mean, Time-Averaged, Single-Level, Assimilation, Diagnostics V5.12.4",
+          "version": "5.12.4",
+          "doi": "10.5067/AP1B0BA5PD2K",
+          "source_url": "https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2/M2TMNXSLV.5.12.4/",
+          "citation": "Global Modeling and Assimilation Office (GMAO) (2015), MERRA-2 tavgM_2d_slv_Nx, Goddard Earth Sciences Data and Information Services Center (GES DISC), doi:10.5067/AP1B0BA5PD2K.",
+          "access_mode": "cache",
+          "retrieved_at": "2026-10-01T08:00:00Z",
+          "data_sha256": "a17a7da00d90006f9dae0e656ec909f5fbd7a1e7c6a56131478e09c19b5e42cc"
+        }
+      },
+      "twenty_five_year_gap": {
+        "status": 200,
+        "result_id": "ea697bb9886386b6d5ee2061c0c3348339a68ca87e682e8383d365f357411dd9",
+        "created_at": "2026-10-01T10:50:01.358725+00:00",
+        "query": {
+          "region_id": "BGD",
+          "parameter_id": "air_temperature_2m",
+          "binding_id": "NASA_MERRA2_M2TMNXSLV",
+          "start_year": 1980,
+          "end_year": 2024,
+          "policy_id": "standard_climate_temperature"
+        },
+        "support": {
+          "requested_interval": [
+            1980,
+            2024
+          ],
+          "retained_interval": [
+            1980,
+            2024
+          ],
+          "sample_count": 20,
+          "native_spatial_resolution": "0.5° latitude x 0.625° longitude",
+          "temporal_cadence": "monthly",
+          "valid_area_coverage_pct": 100.0
+        },
+        "slope": 1.0,
+        "p_value": 8.679762763377867e-10,
+        "evidence": {
+          "state": "limited",
+          "direction": "increasing",
+          "alpha": 0.05,
+          "interpretation_en": "Exploratory trend evidence over 1980-2024 (record span < 20 years).",
+          "interpretation_bn": "1980-2024 সময়কালে প্রাথমিক অনুসন্ধানী প্রমাণ (সময়কাল < 20 বছর)।"
+        },
+        "series_first": [
+          8.0,
+          8.1,
+          8.2
+        ],
+        "narration": {
+          "en": [
+            "The estimated annual mean Near-Surface Air Temperature (2m) in Bangladesh increased at a rate of +1.00 °C/decade over 1980 to 2024.",
+            "This observation record spans 45 years, providing exploratory evidence rather than a standard 20-year climate assessment, with a 95% confidence interval of 1.00 to 1.00 °C/decade and 100.0% spatial coverage."
+          ],
+          "bn": [
+            "১৯৮০ থেকে ২০২৪ সময়ে বাংলাদেশ অঞ্চলে বার্ষিক গড় ভূপৃষ্ঠ সংলগ্ন বায়ুর তাপমাত্রা (২ মিটার) বৃদ্ধির আনুমানিক হার ছিল +১.০০ °C/দশক।",
+            "এই পর্যবেক্ষণটি ৪৫ বছরব্যাপী বিস্তৃত যা একটি পূর্ণাঙ্গ জলবায়ু মূল্যায়নের পরিবর্তে প্রাথমিক অনুসন্ধানী প্রমাণ নির্দেশ করে; ৯৫% নির্ভরযোগ্যতার ব্যবধান ১.০০ থেকে ১.০০ °C/দশক এবং তথ্যের প্রাপ্যতা ১০০.০%।"
+          ]
+        },
+        "narration_status": null,
+        "provenance": {
+          "dataset_id": "NASA_MERRA2_M2TMNXSLV",
+          "collection_id": "M2TMNXSLV",
+          "collection_name": "MERRA-2 tavgM_2d_slv_Nx: 2d, Monthly mean, Time-Averaged, Single-Level, Assimilation, Diagnostics V5.12.4",
+          "version": "5.12.4",
+          "doi": "10.5067/AP1B0BA5PD2K",
+          "source_url": "https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2/M2TMNXSLV.5.12.4/",
+          "citation": "Global Modeling and Assimilation Office (GMAO) (2015), MERRA-2 tavgM_2d_slv_Nx, Goddard Earth Sciences Data and Information Services Center (GES DISC), doi:10.5067/AP1B0BA5PD2K.",
+          "access_mode": "cache",
+          "retrieved_at": "2026-10-01T08:00:00Z",
+          "data_sha256": "7c6e5a21e732cb38cf19fdfee686feed02eb3a50d1fef8b0a34084e7c5b8ef1e"
+        }
+      },
+      "daily_one_day_per_year": {
+        "status": 200,
+        "result_id": "952f147ea26476fd95e096024c4cad6c5e2fa2d6117f740219a32ea5916020e8",
+        "created_at": "2026-10-01T10:50:01.370436+00:00",
+        "query": {
+          "region_id": "BGD",
+          "parameter_id": "air_temperature_2m",
+          "binding_id": "NASA_MERRA2_M2TMNXSLV",
+          "start_year": 2000,
+          "end_year": 2019,
+          "policy_id": "standard_climate_temperature"
+        },
+        "support": {
+          "requested_interval": [
+            2000,
+            2019
+          ],
+          "retained_interval": [
+            2000,
+            2019
+          ],
+          "sample_count": 20,
+          "native_spatial_resolution": "0.5° latitude x 0.625° longitude",
+          "temporal_cadence": "monthly",
+          "valid_area_coverage_pct": 100.0
+        },
+        "slope": 1.0,
+        "p_value": 8.679762763377867e-10,
+        "evidence": {
+          "state": "supported_increase",
+          "direction": "increasing",
+          "alpha": 0.05,
+          "interpretation_en": "Statistically supported increasing trend over 2000-2019.",
+          "interpretation_bn": "2000-2019 সময়কালে পরিসংখ্যানগতভাবে সমর্থিত প্রবণতা।"
+        },
+        "series_first": [
+          10.0,
+          10.1,
+          10.2
+        ],
+        "narration": {
+          "en": [
+            "The estimated annual mean Near-Surface Air Temperature (2m) in Bangladesh increased at a rate of +1.00 °C/decade over 2000 to 2019.",
+            "The Mann-Kendall test (continuity-corrected) supports this direction under the stated assumptions, with a 95% confidence interval of 1.00 to 1.00 °C/decade and 100.0% spatial coverage."
+          ],
+          "bn": [
+            "২০০০ থেকে ২০১৯ সময়ে বাংলাদেশ অঞ্চলে বার্ষিক গড় ভূপৃষ্ঠ সংলগ্ন বায়ুর তাপমাত্রা (২ মিটার) বৃদ্ধির আনুমানিক হার ছিল +১.০০ °C/দশক।",
+            "নির্ধারিত শর্তাবলী অনুযায়ী ম্যান-কেন্ডাল পরীক্ষা এই প্রবণতার পক্ষে সুস্পষ্ট পরিসংখ্যানগত প্রমাণ দেয়; ৯৫% নির্ভরযোগ্যতার ব্যবধান ১.০০ থেকে ১.০০ °C/দশক এবং তথ্যের প্রাপ্যতা ১০০.০%।"
+          ]
+        },
+        "narration_status": null,
+        "provenance": {
+          "dataset_id": "NASA_MERRA2_M2TMNXSLV",
+          "collection_id": "M2TMNXSLV",
+          "collection_name": "MERRA-2 tavgM_2d_slv_Nx: 2d, Monthly mean, Time-Averaged, Single-Level, Assimilation, Diagnostics V5.12.4",
+          "version": "5.12.4",
+          "doi": "10.5067/AP1B0BA5PD2K",
+          "source_url": "https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2/M2TMNXSLV.5.12.4/",
+          "citation": "Global Modeling and Assimilation Office (GMAO) (2015), MERRA-2 tavgM_2d_slv_Nx, Goddard Earth Sciences Data and Information Services Center (GES DISC), doi:10.5067/AP1B0BA5PD2K.",
+          "access_mode": "cache",
+          "retrieved_at": "2026-10-01T08:00:00Z",
+          "data_sha256": "4d422cf16c74b7e49e3dee6595a257b14f086e588dd33a0bc8e346cca04f9c92"
+        }
+      },
+      "daily_failed_qa": {
+        "status": 500,
+        "text": "Internal Server Error"
+      },
+      "precip_ten_months_rejected": {
+        "status": 422,
+        "body": {
+          "type": "https://errors.earthtrenddetective.org/INSUFFICIENT_OBSERVATIONS",
+          "title": "Insufficient Valid Observations",
+          "status": 422,
+          "detail": "Only 0 valid eligible observations remain after QA filtering (minimum 3 required).",
+          "code": "INSUFFICIENT_OBSERVATIONS",
+          "instance": "http://testserver/trend?region_id=BGD&parameter_id=precipitation_total"
+        }
+      },
+      "precip_twelve_months_one_nan_accepted": {
+        "status": 200,
+        "result_id": "65637bdfd26f135350d2bf29232c28cec4011eeb08330ae4aad89ff003418109",
+        "created_at": "2026-10-01T10:50:01.407946+00:00",
+        "query": {
+          "region_id": "BGD",
+          "parameter_id": "precipitation_total",
+          "binding_id": "GPM_IMERG_FINAL_V07",
+          "start_year": 2000,
+          "end_year": 2019,
+          "policy_id": "precipitation_total_policy"
+        },
+        "support": {
+          "requested_interval": [
+            2000,
+            2019
+          ],
+          "retained_interval": [
+            2000,
+            2019
+          ],
+          "sample_count": 20,
+          "native_spatial_resolution": "0.1° latitude x 0.1° longitude",
+          "temporal_cadence": "monthly",
+          "valid_area_coverage_pct": 100.0
+        },
+        "slope": 110.0,
+        "p_value": 8.679762763377867e-10,
+        "evidence": {
+          "state": "supported_increase",
+          "direction": "increasing",
+          "alpha": 0.05,
+          "interpretation_en": "Statistically supported increasing trend over 2000-2019.",
+          "interpretation_bn": "2000-2019 সময়কালে পরিসংখ্যানগতভাবে সমর্থিত প্রবণতা।"
+        },
+        "series_first": [
+          1100.0,
+          1111.0,
+          1122.0
+        ],
+        "narration": {
+          "en": [
+            "The estimated annual total Total Accumulated Precipitation in Bangladesh increased at a rate of +110.00 mm/decade over 2000 to 2019.",
+            "The Mann-Kendall test (continuity-corrected) supports this direction under the stated assumptions, with a 95% confidence interval of 110.00 to 110.00 mm/decade and 100.0% spatial coverage."
+          ],
+          "bn": [
+            "২০০০ থেকে ২০১৯ সময়ে বাংলাদেশ অঞ্চলে বার্ষিক মোট মোট বৃষ্টিপাত ও বারিপাত বৃদ্ধির আনুমানিক হার ছিল +১১০.০০ mm/দশক।",
+            "নির্ধারিত শর্তাবলী অনুযায়ী ম্যান-কেন্ডাল পরীক্ষা এই প্রবণতার পক্ষে সুস্পষ্ট পরিসংখ্যানগত প্রমাণ দেয়; ৯৫% নির্ভরযোগ্যতার ব্যবধান ১১০.০০ থেকে ১১০.০০ mm/দশক এবং তথ্যের প্রাপ্যতা ১০০.০%।"
+          ]
+        },
+        "narration_status": null,
+        "provenance": {
+          "dataset_id": "GPM_IMERG_FINAL_V07",
+          "collection_id": "GPM_3IMERGM",
+          "collection_name": "GPM IMERG Final Precipitation L3 1 month 0.1 degree x 0.1 degree V07",
+          "version": "V07B",
+          "doi": "10.5067/GPM/IMERG/3B-MONTH/07",
+          "source_url": "https://disc.gsfc.nasa.gov/datasets/GPM_3IMERGM_07/summary",
+          "citation": "Huffman, G.J. et al. (2023), GPM IMERG Final Precipitation L3 1 month 0.1 degree V07, Greenbelt, MD, Goddard Earth Sciences Data and Information Services Center (GES DISC).",
+          "access_mode": "cache",
+          "retrieved_at": "2026-10-01T08:00:00Z",
+          "data_sha256": "d47d98a988813645c2bfeacab26622ec26461fc25e38497cfa09f169b6fbb10e"
+        }
+      },
+      "precip_twelve_months_complete": {
+        "status": 200,
+        "result_id": "e175a017e866fee70585a6a10b1c901f54f929302b49a6d9561ede08fb3cf65f",
+        "created_at": "2026-10-01T10:50:01.424164+00:00",
+        "query": {
+          "region_id": "BGD",
+          "parameter_id": "precipitation_total",
+          "binding_id": "GPM_IMERG_FINAL_V07",
+          "start_year": 2000,
+          "end_year": 2019,
+          "policy_id": "precipitation_total_policy"
+        },
+        "support": {
+          "requested_interval": [
+            2000,
+            2019
+          ],
+          "retained_interval": [
+            2000,
+            2019
+          ],
+          "sample_count": 20,
+          "native_spatial_resolution": "0.1° latitude x 0.1° longitude",
+          "temporal_cadence": "monthly",
+          "valid_area_coverage_pct": 100.0
+        },
+        "slope": 120.0,
+        "p_value": 8.679762763377867e-10,
+        "evidence": {
+          "state": "supported_increase",
+          "direction": "increasing",
+          "alpha": 0.05,
+          "interpretation_en": "Statistically supported increasing trend over 2000-2019.",
+          "interpretation_bn": "2000-2019 সময়কালে পরিসংখ্যানগতভাবে সমর্থিত প্রবণতা।"
+        },
+        "series_first": [
+          1200.0,
+          1212.0,
+          1224.0
+        ],
+        "narration": {
+          "en": [
+            "The estimated annual total Total Accumulated Precipitation in Bangladesh increased at a rate of +120.00 mm/decade over 2000 to 2019.",
+            "The Mann-Kendall test (continuity-corrected) supports this direction under the stated assumptions, with a 95% confidence interval of 120.00 to 120.00 mm/decade and 100.0% spatial coverage."
+          ],
+          "bn": [
+            "২০০০ থেকে ২০১৯ সময়ে বাংলাদেশ অঞ্চলে বার্ষিক মোট মোট বৃষ্টিপাত ও বারিপাত বৃদ্ধির আনুমানিক হার ছিল +১২০.০০ mm/দশক।",
+            "নির্ধারিত শর্তাবলী অনুযায়ী ম্যান-কেন্ডাল পরীক্ষা এই প্রবণতার পক্ষে সুস্পষ্ট পরিসংখ্যানগত প্রমাণ দেয়; ৯৫% নির্ভরযোগ্যতার ব্যবধান ১২০.০০ থেকে ১২০.০০ mm/দশক এবং তথ্যের প্রাপ্যতা ১০০.০%।"
+          ]
+        },
+        "narration_status": null,
+        "provenance": {
+          "dataset_id": "GPM_IMERG_FINAL_V07",
+          "collection_id": "GPM_3IMERGM",
+          "collection_name": "GPM IMERG Final Precipitation L3 1 month 0.1 degree x 0.1 degree V07",
+          "version": "V07B",
+          "doi": "10.5067/GPM/IMERG/3B-MONTH/07",
+          "source_url": "https://disc.gsfc.nasa.gov/datasets/GPM_3IMERGM_07/summary",
+          "citation": "Huffman, G.J. et al. (2023), GPM IMERG Final Precipitation L3 1 month 0.1 degree V07, Greenbelt, MD, Goddard Earth Sciences Data and Information Services Center (GES DISC).",
+          "access_mode": "cache",
+          "retrieved_at": "2026-10-01T08:00:00Z",
+          "data_sha256": "fb079c1b8a537b22dbdf5b3116229891fce962ec95a5a3c2ab37fccdc985c661"
+        }
+      },
+      "canonical_precision_ignored": {
+        "status": 200,
+        "result_id": "2a70bae815b0dbdb1daab0c4b67a4c486ebc8b0362087b2ed870fa6f6f8e91a4",
+        "created_at": "2026-10-01T11:01:02.160582+00:00",
+        "query": {
+          "region_id": "BGD",
+          "parameter_id": "air_temperature_2m",
+          "binding_id": "NASA_MERRA2_M2TMNXSLV",
+          "start_year": 2000,
+          "end_year": 2019,
+          "policy_id": "standard_climate_temperature"
+        },
+        "support": {
+          "requested_interval": [
+            2000,
+            2019
+          ],
+          "retained_interval": [
+            2000,
+            2019
+          ],
+          "sample_count": 20,
+          "native_spatial_resolution": "0.5° latitude x 0.625° longitude",
+          "temporal_cadence": "monthly",
+          "valid_area_coverage_pct": 100.0
+        },
+        "slope": 0.0,
+        "p_value": 1.0,
+        "evidence": {
+          "state": "flat",
+          "direction": "flat",
+          "alpha": 0.05,
+          "interpretation_en": "No monotonic change detected over 2000-2019; slope is near-zero.",
+          "interpretation_bn": "2000-2019 সময়কালে কোনো ধারাবাহিক একক পরিবর্তন নেই; পরিবর্তনের হার প্রায় শূন্য।"
+        },
+        "series_first": [
+          25.0,
+          25.0,
+          25.0
+        ],
+        "narration": {
+          "en": [
+            "The estimated annual mean Near-Surface Air Temperature (2m) in Bangladesh remained essentially unchanged at a rate of 0.00 °C/decade over 2000 to 2019.",
+            "The estimated rate of change is zero or near-zero, and the Mann-Kendall test indicates no monotonic change, with a 95% confidence interval of 0.00 to 0.00 °C/decade and 100.0% spatial coverage."
+          ],
+          "bn": [
+            "২০০০ থেকে ২০১৯ সময়ে বাংলাদেশ অঞ্চলে বার্ষিক গড় ভূপৃষ্ঠ সংলগ্ন বায়ুর তাপমাত্রা (২ মিটার) পরিবর্তনের আনুমানিক হার ছিল ০.০০ °C/দশক।",
+            "আনুমানিক পরিবর্তনের হার প্রায় শূন্য এবং ম্যান-কেন্ডাল পরীক্ষা এই সময়কালে কোনো ধারাবাহিক একক পরিবর্তন নির্দেশ করে না; ৯৫% নির্ভরযোগ্যতার ব্যবধান ০.০০ থেকে ০.০০ °C/দশক এবং তথ্যের প্রাপ্যতা ১০০.০%।"
+          ]
+        },
+        "narration_status": null,
+        "provenance": {
+          "dataset_id": "NASA_MERRA2_M2TMNXSLV",
+          "collection_id": "M2TMNXSLV",
+          "collection_name": "MERRA-2 tavgM_2d_slv_Nx: 2d, Monthly mean, Time-Averaged, Single-Level, Assimilation, Diagnostics V5.12.4",
+          "version": "5.12.4",
+          "doi": "10.5067/AP1B0BA5PD2K",
+          "source_url": "https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2/M2TMNXSLV.5.12.4/",
+          "citation": "Global Modeling and Assimilation Office (GMAO) (2015), MERRA-2 tavgM_2d_slv_Nx, Goddard Earth Sciences Data and Information Services Center (GES DISC), doi:10.5067/AP1B0BA5PD2K.",
+          "access_mode": "cache",
+          "retrieved_at": "2026-10-01T08:00:00Z",
+          "data_sha256": "bbc405286a3bc6abd07496d06ed0fc3d8de6df69fa77a590e3c23c6399bcb440"
+        },
+        "expected_slope_per_decade": 0.001,
+        "display_rounding_decimals": 2
+      },
+      "daily_with_month_uses_first_day": {
+        "status": 200,
+        "result_id": "457392164745017dc72f3e56abdc8541a7a7e3ce4a4eacc669c6c9ed5053c489",
+        "created_at": "2026-10-01T10:50:01.451534+00:00",
+        "query": {
+          "region_id": "BGD",
+          "parameter_id": "air_temperature_2m",
+          "binding_id": "NASA_MERRA2_M2TMNXSLV",
+          "start_year": 2000,
+          "end_year": 2019,
+          "policy_id": "standard_climate_temperature"
+        },
+        "support": {
+          "requested_interval": [
+            2000,
+            2019
+          ],
+          "retained_interval": [
+            2000,
+            2019
+          ],
+          "sample_count": 20,
+          "native_spatial_resolution": "0.5° latitude x 0.625° longitude",
+          "temporal_cadence": "monthly",
+          "valid_area_coverage_pct": 100.0
+        },
+        "slope": 1.0,
+        "p_value": 8.679762763377867e-10,
+        "evidence": {
+          "state": "supported_increase",
+          "direction": "increasing",
+          "alpha": 0.05,
+          "interpretation_en": "Statistically supported increasing trend over 2000-2019.",
+          "interpretation_bn": "2000-2019 সময়কালে পরিসংখ্যানগতভাবে সমর্থিত প্রবণতা।"
+        },
+        "series_first": [
+          10.0,
+          10.1,
+          10.2
+        ],
+        "narration": {
+          "en": [
+            "The estimated annual mean Near-Surface Air Temperature (2m) in Bangladesh increased at a rate of +1.00 °C/decade over 2000 to 2019.",
+            "The Mann-Kendall test (Hamed-Rao adjusted) supports this direction under the stated assumptions, with a 95% confidence interval of 1.00 to 1.00 °C/decade and 100.0% spatial coverage."
+          ],
+          "bn": [
+            "২০০০ থেকে ২০১৯ সময়ে বাংলাদেশ অঞ্চলে বার্ষিক গড় ভূপৃষ্ঠ সংলগ্ন বায়ুর তাপমাত্রা (২ মিটার) বৃদ্ধির আনুমানিক হার ছিল +১.০০ °C/দশক।",
+            "নির্ধারিত শর্তাবলী অনুযায়ী অটোকরিলেশন সমন্বিত ম্যান-কেন্ডাল পরীক্ষা এই প্রবণতার পক্ষে সুস্পষ্ট পরিসংখ্যানগত প্রমাণ দেয়; ৯৫% নির্ভরযোগ্যতার ব্যবধান ১.০০ থেকে ১.০০ °C/দশক এবং তথ্যের প্রাপ্যতা ১০০.০%।"
+          ]
+        },
+        "narration_status": null,
+        "provenance": {
+          "dataset_id": "NASA_MERRA2_M2TMNXSLV",
+          "collection_id": "M2TMNXSLV",
+          "collection_name": "MERRA-2 tavgM_2d_slv_Nx: 2d, Monthly mean, Time-Averaged, Single-Level, Assimilation, Diagnostics V5.12.4",
+          "version": "5.12.4",
+          "doi": "10.5067/AP1B0BA5PD2K",
+          "source_url": "https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2/M2TMNXSLV.5.12.4/",
+          "citation": "Global Modeling and Assimilation Office (GMAO) (2015), MERRA-2 tavgM_2d_slv_Nx, Goddard Earth Sciences Data and Information Services Center (GES DISC), doi:10.5067/AP1B0BA5PD2K.",
+          "access_mode": "cache",
+          "retrieved_at": "2026-10-01T08:00:00Z",
+          "data_sha256": "28b9c6fa1ca86cd7cb4872b49353429f74513679026f74705ac0eda476a8a7b3"
+        },
+        "all_observations_mean_slope_per_decade": 1.5
+      },
+      "undeclared_value_column_overrides_display": {
+        "status": 200,
+        "result_id": "4b29b6223c3577862b0ab89c34d9b48f1c035bab00a3b3f7edd6d3ada3e3f509",
+        "created_at": "2026-10-01T10:50:01.463338+00:00",
+        "query": {
+          "region_id": "BGD",
+          "parameter_id": "air_temperature_2m",
+          "binding_id": "NASA_MERRA2_M2TMNXSLV",
+          "start_year": 2000,
+          "end_year": 2019,
+          "policy_id": "standard_climate_temperature"
+        },
+        "support": {
+          "requested_interval": [
+            2000,
+            2019
+          ],
+          "retained_interval": [
+            2000,
+            2019
+          ],
+          "sample_count": 20,
+          "native_spatial_resolution": "0.5° latitude x 0.625° longitude",
+          "temporal_cadence": "monthly",
+          "valid_area_coverage_pct": 100.0
+        },
+        "slope": 10.0,
+        "p_value": 8.679762763377867e-10,
+        "evidence": {
+          "state": "supported_increase",
+          "direction": "increasing",
+          "alpha": 0.05,
+          "interpretation_en": "Statistically supported increasing trend over 2000-2019.",
+          "interpretation_bn": "2000-2019 সময়কালে পরিসংখ্যানগতভাবে সমর্থিত প্রবণতা।"
+        },
+        "series_first": [
+          300.0,
+          301.0,
+          302.0
+        ],
+        "narration": {
+          "en": [
+            "The estimated annual mean Near-Surface Air Temperature (2m) in Bangladesh increased at a rate of +10.00 °C/decade over 2000 to 2019.",
+            "The Mann-Kendall test (continuity-corrected) supports this direction under the stated assumptions, with a 95% confidence interval of 10.00 to 10.00 °C/decade and 100.0% spatial coverage."
+          ],
+          "bn": [
+            "২০০০ থেকে ২০১৯ সময়ে বাংলাদেশ অঞ্চলে বার্ষিক গড় ভূপৃষ্ঠ সংলগ্ন বায়ুর তাপমাত্রা (২ মিটার) বৃদ্ধির আনুমানিক হার ছিল +১০.০০ °C/দশক।",
+            "নির্ধারিত শর্তাবলী অনুযায়ী ম্যান-কেন্ডাল পরীক্ষা এই প্রবণতার পক্ষে সুস্পষ্ট পরিসংখ্যানগত প্রমাণ দেয়; ৯৫% নির্ভরযোগ্যতার ব্যবধান ১০.০০ থেকে ১০.০০ °C/দশক এবং তথ্যের প্রাপ্যতা ১০০.০%।"
+          ]
+        },
+        "narration_status": null,
+        "provenance": {
+          "dataset_id": "NASA_MERRA2_M2TMNXSLV",
+          "collection_id": "M2TMNXSLV",
+          "collection_name": "MERRA-2 tavgM_2d_slv_Nx: 2d, Monthly mean, Time-Averaged, Single-Level, Assimilation, Diagnostics V5.12.4",
+          "version": "5.12.4",
+          "doi": "10.5067/AP1B0BA5PD2K",
+          "source_url": "https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2/M2TMNXSLV.5.12.4/",
+          "citation": "Global Modeling and Assimilation Office (GMAO) (2015), MERRA-2 tavgM_2d_slv_Nx, Goddard Earth Sciences Data and Information Services Center (GES DISC), doi:10.5067/AP1B0BA5PD2K.",
+          "access_mode": "cache",
+          "retrieved_at": "2026-10-01T08:00:00Z",
+          "data_sha256": "d160c4aab357b24b8f0ffcb23020938eee14a3f5536ba4f1527520dc791d8cb9"
+        }
+      },
+      "comparison_one_year_rejected": {
+        "status": 422,
+        "body": {
+          "type": "https://errors.earthtrenddetective.org/INCOMPATIBLE_COMPARISON",
+          "title": "Insufficient Valid Record",
+          "status": 422,
+          "detail": "One or both regions have 0% or insufficient coverage under policy rules.",
+          "code": "INCOMPATIBLE_COMPARISON",
+          "instance": "http://testserver/comparisons"
+        }
+      },
+      "comparison_zero_coverage_rejected": {
+        "status": 422,
+        "body": {
+          "type": "https://errors.earthtrenddetective.org/INCOMPATIBLE_COMPARISON",
+          "title": "Insufficient Valid Record",
+          "status": 422,
+          "detail": "One or both regions have 0% or insufficient coverage under policy rules.",
+          "code": "INCOMPATIBLE_COMPARISON",
+          "instance": "http://testserver/comparisons"
+        }
+      },
+      "comparison_five_years_supported": {
+        "status": 200,
+        "body": {
+          "parameter_id": "air_temperature_2m",
+          "binding_id": "NASA_MERRA2_M2TMNXSLV",
+          "unit": "°C",
+          "common_years_count": 5,
+          "interval": [
+            2000,
+            2004
+          ],
+          "region_a": {
+            "id": "BGD",
+            "name": "Bangladesh",
+            "slope_per_decade": 1.0000000000000018,
+            "ci_95_lower": 1.0000000000000018,
+            "ci_95_upper": 1.0000000000000018
+          },
+          "region_b": {
+            "id": "USA",
+            "name": "United States of America",
+            "slope_per_decade": 0.0,
+            "ci_95_lower": 0.0,
+            "ci_95_upper": 0.0
+          },
+          "contrast_difference_series": {
+            "years": [
+              2000,
+              2001,
+              2002,
+              2003,
+              2004
+            ],
+            "difference_values": [
+              10.0,
+              10.1,
+              10.2,
+              10.3,
+              10.4
+            ],
+            "slope_per_decade": 1.0000000000000018,
+            "ci_95_lower": 1.0000000000000018,
+            "ci_95_upper": 1.0000000000000018,
+            "p_value": 0.02748633611151033,
+            "direction": "a_higher_rate",
+            "evidence_state": "supported_increase"
+          }
+        }
+      },
+      "comparison_excessive_gap_supported": {
+        "status": 200,
+        "body": {
+          "parameter_id": "air_temperature_2m",
+          "binding_id": "NASA_MERRA2_M2TMNXSLV",
+          "unit": "°C",
+          "common_years_count": 20,
+          "interval": [
+            1980,
+            2024
+          ],
+          "region_a": {
+            "id": "BGD",
+            "name": "Bangladesh",
+            "slope_per_decade": 1.0,
+            "ci_95_lower": 1.0,
+            "ci_95_upper": 1.0
+          },
+          "region_b": {
+            "id": "USA",
+            "name": "United States of America",
+            "slope_per_decade": 0.0,
+            "ci_95_lower": 0.0,
+            "ci_95_upper": 0.0
+          },
+          "contrast_difference_series": {
+            "years": [
+              1980,
+              1981,
+              1982,
+              1983,
+              1984,
+              1985,
+              1986,
+              1987,
+              1988,
+              1989,
+              2015,
+              2016,
+              2017,
+              2018,
+              2019,
+              2020,
+              2021,
+              2022,
+              2023,
+              2024
+            ],
+            "difference_values": [
+              8.0,
+              8.1,
+              8.2,
+              8.3,
+              8.4,
+              8.5,
+              8.6,
+              8.7,
+              8.8,
+              8.9,
+              11.5,
+              11.6,
+              11.7,
+              11.8,
+              11.9,
+              12.0,
+              12.1,
+              12.2,
+              12.3,
+              12.4
+            ],
+            "slope_per_decade": 1.0,
+            "ci_95_lower": 1.0,
+            "ci_95_upper": 1.0,
+            "p_value": 8.679762763377867e-10,
+            "direction": "a_higher_rate",
+            "evidence_state": "supported_increase"
+          }
+        }
+      },
+      "comparison_single_day_per_year_accepted": {
+        "status": 200,
+        "body": {
+          "parameter_id": "air_temperature_2m",
+          "binding_id": "NASA_MERRA2_M2TMNXSLV",
+          "unit": "°C",
+          "common_years_count": 20,
+          "interval": [
+            2000,
+            2019
+          ],
+          "region_a": {
+            "id": "BGD",
+            "name": "Bangladesh",
+            "slope_per_decade": 1.0,
+            "ci_95_lower": 1.0,
+            "ci_95_upper": 1.0
+          },
+          "region_b": {
+            "id": "USA",
+            "name": "United States of America",
+            "slope_per_decade": 0.0,
+            "ci_95_lower": 0.0,
+            "ci_95_upper": 0.0
+          },
+          "contrast_difference_series": {
+            "years": [
+              2000,
+              2001,
+              2002,
+              2003,
+              2004,
+              2005,
+              2006,
+              2007,
+              2008,
+              2009,
+              2010,
+              2011,
+              2012,
+              2013,
+              2014,
+              2015,
+              2016,
+              2017,
+              2018,
+              2019
+            ],
+            "difference_values": [
+              10.0,
+              10.1,
+              10.2,
+              10.3,
+              10.4,
+              10.5,
+              10.6,
+              10.7,
+              10.8,
+              10.9,
+              11.0,
+              11.1,
+              11.2,
+              11.3,
+              11.4,
+              11.5,
+              11.6,
+              11.7,
+              11.8,
+              11.9
+            ],
+            "slope_per_decade": 1.0,
+            "ci_95_lower": 1.0,
+            "ci_95_upper": 1.0,
+            "p_value": 8.679762763377867e-10,
+            "direction": "a_higher_rate",
+            "evidence_state": "supported_increase"
+          }
+        }
+      },
+      "raster_tile_honest_501": {
+        "status": 501,
+        "body": {
+          "type": "https://errors.earthtrenddetective.org/RASTER_TILES_UNAVAILABLE",
+          "title": "Raster Tiles Not Implemented",
+          "status": 501,
+          "detail": "Raster XYZ tiles for layer 'merra2_trend_slope' are not rendered or available in this revision. Verified regional trend statistics and FDR corrections are available via the vector GeoJSON endpoint at /layers/merra2_trend_slope/geojson.",
+          "code": "RASTER_TILES_UNAVAILABLE",
+          "instance": "http://testserver/tiles/merra2_trend_slope/0/0/0.png"
+        }
+      },
+      "layer_normal": {
+        "status": 200,
+        "family_size": 10,
+        "significant_count": 10,
+        "window": {
+          "start_year": null,
+          "end_year": null
+        },
+        "BGD": {
+          "has_data": true,
+          "slope_per_decade": 0.29957513416815745,
+          "p_value": 3.252794073675723e-09,
+          "q_value": 6.505588147351446e-09,
+          "is_significant_fdr": true
+        }
+      },
+      "layer_six_year_climate_significance": {
+        "status": 200,
+        "family_size": 10,
+        "significant_count": 0,
+        "window": {
+          "start_year": 2000,
+          "end_year": 2005
+        },
+        "BGD": {
+          "has_data": true,
+          "slope_per_decade": -0.21000000000000796,
+          "p_value": 0.7071142312899612,
+          "q_value": 1.0,
+          "is_significant_fdr": false
+        }
+      },
+      "layer_unknown_policy_ignored": {
+        "status": 200,
+        "family_size": 10,
+        "significant_count": 10,
+        "window": {
+          "start_year": null,
+          "end_year": null
+        },
+        "BGD": {
+          "has_data": true,
+          "slope_per_decade": 0.29957513416815745,
+          "p_value": 3.252794073675723e-09,
+          "q_value": 6.505588147351446e-09,
+          "is_significant_fdr": true
+        }
+      },
+      "layer_time_window_2010": {
+        "status": 200,
+        "family_size": 10,
+        "significant_count": 0,
+        "window": {
+          "start_year": 2010,
+          "end_year": 2024
+        },
+        "BGD": {
+          "has_data": true,
+          "slope_per_decade": 0.3025000000000011,
+          "p_value": 0.23495478370334333,
+          "q_value": 0.3356496910047762,
+          "is_significant_fdr": false
+        }
+      },
+      "layer_failed_qa_excluded": {
+        "status": 200,
+        "family_size": 9,
+        "significant_count": 9,
+        "window": {
+          "start_year": null,
+          "end_year": null
+        },
+        "BGD": {
+          "has_data": false,
+          "slope_per_decade": null,
+          "p_value": null,
+          "q_value": null,
+          "is_significant_fdr": false
+        }
+      },
+      "layer_monthly_missing_pandas": {
+        "status": 200,
+        "family_size": 9,
+        "significant_count": 9,
+        "window": {
+          "start_year": null,
+          "end_year": null
+        },
+        "BGD": {
+          "has_data": false,
+          "slope_per_decade": null,
+          "p_value": null,
+          "q_value": null,
+          "is_significant_fdr": false
+        }
+      },
+      "layer_monthly_diagnostic_import_only": {
+        "status": 200,
+        "family_size": 10,
+        "significant_count": 10,
+        "window": {
+          "start_year": null,
+          "end_year": null
+        },
+        "BGD": {
+          "has_data": true,
+          "slope_per_decade": 10.0,
+          "p_value": 8.679762763377867e-10,
+          "q_value": 3.041348686250504e-09,
+          "is_significant_fdr": true
+        }
+      },
+      "modis_70pct_policy_trend": {
+        "status": 200,
+        "result_id": "00ce899606fc8d20e97af5ec1505a00eb5e015e5a5228bfd215e9bb9a3944850",
+        "created_at": "2026-10-01T10:50:05.163552+00:00",
+        "query": {
+          "region_id": "BGD",
+          "parameter_id": "land_surface_temperature_day",
+          "binding_id": "MODIS_MOD11A1_061_DAY",
+          "start_year": 1980,
+          "end_year": 2024,
+          "policy_id": "modis_lst_satellite_policy"
+        },
+        "support": {
+          "requested_interval": [
+            1980,
+            2024
+          ],
+          "retained_interval": [
+            1980,
+            2024
+          ],
+          "sample_count": 45,
+          "native_spatial_resolution": "1 km sinusoidal (~0.01°)",
+          "temporal_cadence": "daily",
+          "valid_area_coverage_pct": 75.0
+        },
+        "slope": 0.29957513416815745,
+        "p_value": 3.252794073675723e-09,
+        "evidence": {
+          "state": "supported_increase",
+          "direction": "increasing",
+          "alpha": 0.05,
+          "interpretation_en": "Statistically supported increasing trend over 1980-2024.",
+          "interpretation_bn": "1980-2024 সময়কালে পরিসংখ্যানগতভাবে সমর্থিত প্রবণতা।"
+        },
+        "series_first": [
+          25.469,
+          25.733,
+          25.378
+        ],
+        "narration": {
+          "en": [
+            "The estimated annual mean Land Surface Temperature (Daytime) in Bangladesh increased at a rate of +0.30 °C/decade over 1980 to 2024.",
+            "The Mann-Kendall test (continuity-corrected) supports this direction under the stated assumptions, with a 95% confidence interval of 0.23 to 0.36 °C/decade and 75.0% spatial coverage."
+          ],
+          "bn": [
+            "১৯৮০ থেকে ২০২৪ সময়ে বাংলাদেশ অঞ্চলে বার্ষিক গড় দিনের ভূপৃষ্ঠের তাপমাত্রা (এলএসটি) বৃদ্ধির আনুমানিক হার ছিল +০.৩০ °C/দশক।",
+            "নির্ধারিত শর্তাবলী অনুযায়ী ম্যান-কেন্ডাল পরীক্ষা এই প্রবণতার পক্ষে সুস্পষ্ট পরিসংখ্যানগত প্রমাণ দেয়; ৯৫% নির্ভরযোগ্যতার ব্যবধান ০.২৩ থেকে ০.৩৬ °C/দশক এবং তথ্যের প্রাপ্যতা ৭৫.০%।"
+          ]
+        },
+        "narration_status": null,
+        "provenance": {
+          "dataset_id": "MODIS_MOD11A1_061_DAY",
+          "collection_id": "MOD11A1",
+          "collection_name": "MODIS/Terra Land Surface Temperature/Emissivity Daily L3 Global 1km SIN Grid V061",
+          "version": "061",
+          "doi": "10.5067/MODIS/MOD11A1.061",
+          "source_url": "https://doi.org/10.5067/MODIS/MOD11A1.061",
+          "citation": "Wan, Z., Hook, S., Hulley, G. (2021). MOD11A1 MODIS/Terra Land Surface Temperature/Emissivity Daily L3 Global 1km SIN Grid V061. NASA EOSDIS Land Processes Distributed Active Archive Center.",
+          "access_mode": "cache",
+          "retrieved_at": "2026-10-01T08:00:00Z",
+          "data_sha256": "ae4dc54ec26009159e0124d234bae8ce8885e59cbfbc7ada5575eac7d8d5963c"
+        }
+      },
+      "modis_70pct_policy_layer": {
+        "status": 200,
+        "BGD_has_data": false,
+        "family_size": 5,
+        "coverage": 75.0,
+        "declared_policy_threshold": 70.0
+      },
+      "narration_cross_field_100_slope_rejected": {
+        "valid": false,
+        "errors": [
+          "Factual mismatch: Extracted slope quantity 100.0 does not match verified slope 0.3 (cross-field or invented number)."
+        ]
+      },
+      "narration_claim_pointer_disagreement_rejected": {
+        "valid": false,
+        "errors": [
+          "Claim/Pointer value disagreement for 'slope': claim=9.99 does not match pointer '/theil_sen/slope_per_decade' value=0.3"
+        ]
+      },
+      "narration_cross_field_coverage_still_passes": {
+        "valid": true,
+        "errors": []
+      },
+      "narration_ci_bound_used_as_point_slope": {
+        "valid": true,
+        "errors": []
+      },
+      "rejected_english_falls_back": {
+        "status": 200,
+        "result_id": "8458ec7c96e3657efbb94b9eec334903553458abb4b8541d7f6e3104c457b2ba",
+        "created_at": "2026-10-01T10:50:05.181658+00:00",
+        "query": {
+          "region_id": "BGD",
+          "parameter_id": "air_temperature_2m",
+          "binding_id": "NASA_MERRA2_M2TMNXSLV",
+          "start_year": 2000,
+          "end_year": 2019,
+          "policy_id": "standard_climate_temperature"
+        },
+        "support": {
+          "requested_interval": [
+            2000,
+            2019
+          ],
+          "retained_interval": [
+            2000,
+            2019
+          ],
+          "sample_count": 20,
+          "native_spatial_resolution": "0.5° latitude x 0.625° longitude",
+          "temporal_cadence": "monthly",
+          "valid_area_coverage_pct": 100.0
+        },
+        "slope": 1.0000000000000004,
+        "p_value": 8.679762763377867e-10,
+        "evidence": {
+          "state": "supported_increase",
+          "direction": "increasing",
+          "alpha": 0.05,
+          "interpretation_en": "Statistically supported increasing trend over 2000-2019.",
+          "interpretation_bn": "2000-2019 সময়কালে পরিসংখ্যানগতভাবে সমর্থিত প্রবণতা।"
+        },
+        "series_first": [
+          10.123,
+          10.223,
+          10.323
+        ],
+        "narration": {
+          "en": [
+            "Over 2000 to 2019, Bangladesh near-surface air temperature (2m) had an estimated rate of +1.00 °C/decade.",
+            "The statistical evidence is categorized as supported_increase."
+          ],
+          "bn": [
+            "2000 থেকে 2019 সময়কালে বাংলাদেশ-এ ভূপৃষ্ঠ সংলগ্ন বায়ুর তাপমাত্রা (২ মিটার)-এর পরিবর্তনের হার ছিল দশক প্রতি +1.00 °C।",
+            "পরিসংখ্যানগত প্রমাণের অবস্থা: supported_increase।"
+          ]
+        },
+        "narration_status": "fallback",
+        "provenance": {
+          "dataset_id": "NASA_MERRA2_M2TMNXSLV",
+          "collection_id": "M2TMNXSLV",
+          "collection_name": "MERRA-2 tavgM_2d_slv_Nx: 2d, Monthly mean, Time-Averaged, Single-Level, Assimilation, Diagnostics V5.12.4",
+          "version": "5.12.4",
+          "doi": "10.5067/AP1B0BA5PD2K",
+          "source_url": "https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2/M2TMNXSLV.5.12.4/",
+          "citation": "Global Modeling and Assimilation Office (GMAO) (2015), MERRA-2 tavgM_2d_slv_Nx, Goddard Earth Sciences Data and Information Services Center (GES DISC), doi:10.5067/AP1B0BA5PD2K.",
+          "access_mode": "cache",
+          "retrieved_at": "2026-10-01T08:00:00Z",
+          "data_sha256": "c7a0a81423a1c650dd6dfee0226959e269cc355e9453d99f11ada2e3b23b5621"
+        }
+      },
+      "unvalidated_bangla_published": {
+        "status": 200,
+        "result_id": "4e4f3becf2b20c05ba2398114272e0a9b38c69d7b21765340fae3a746a5f6a21",
+        "created_at": "2026-10-01T10:50:05.198242+00:00",
+        "query": {
+          "region_id": "BGD",
+          "parameter_id": "air_temperature_2m",
+          "binding_id": "NASA_MERRA2_M2TMNXSLV",
+          "start_year": 2000,
+          "end_year": 2019,
+          "policy_id": "standard_climate_temperature"
+        },
+        "support": {
+          "requested_interval": [
+            2000,
+            2019
+          ],
+          "retained_interval": [
+            2000,
+            2019
+          ],
+          "sample_count": 20,
+          "native_spatial_resolution": "0.5° latitude x 0.625° longitude",
+          "temporal_cadence": "monthly",
+          "valid_area_coverage_pct": 100.0
+        },
+        "slope": 1.0000000000000004,
+        "p_value": 8.679762763377867e-10,
+        "evidence": {
+          "state": "supported_increase",
+          "direction": "increasing",
+          "alpha": 0.05,
+          "interpretation_en": "Statistically supported increasing trend over 2000-2019.",
+          "interpretation_bn": "2000-2019 সময়কালে পরিসংখ্যানগতভাবে সমর্থিত প্রবণতা।"
+        },
+        "series_first": [
+          10.234,
+          10.334,
+          10.434
+        ],
+        "narration": {
+          "en": [
+            "The estimated annual mean Near-Surface Air Temperature (2m) in Bangladesh increased at a rate of +1.00 °C/decade over 2000 to 2019.",
+            "The Mann-Kendall test (continuity-corrected) supports this direction under the stated assumptions, with a 95% confidence interval of 1.00 to 1.00 °C/decade and 100.0% spatial coverage."
+          ],
+          "bn": [
+            "মানুষের কারণে দশক প্রতি ৯৯৯ ডিগ্রি বৃদ্ধি।",
+            "এটি বিপর্যয় প্রমাণ করে।"
+          ]
+        },
+        "narration_status": null,
+        "provenance": {
+          "dataset_id": "NASA_MERRA2_M2TMNXSLV",
+          "collection_id": "M2TMNXSLV",
+          "collection_name": "MERRA-2 tavgM_2d_slv_Nx: 2d, Monthly mean, Time-Averaged, Single-Level, Assimilation, Diagnostics V5.12.4",
+          "version": "5.12.4",
+          "doi": "10.5067/AP1B0BA5PD2K",
+          "source_url": "https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2/M2TMNXSLV.5.12.4/",
+          "citation": "Global Modeling and Assimilation Office (GMAO) (2015), MERRA-2 tavgM_2d_slv_Nx, Goddard Earth Sciences Data and Information Services Center (GES DISC), doi:10.5067/AP1B0BA5PD2K.",
+          "access_mode": "cache",
+          "retrieved_at": "2026-10-01T08:00:00Z",
+          "data_sha256": "becaa9e9f81d75f265cfea56313b29d3dabe2d9d1132a7d240313b7e66858e94"
+        }
+      },
+      "geodesic_triangle_fixed": {
+        "calculated_km2": 63758235.12160898,
+        "expected_km2": 63758235.12160897,
+        "relative_error": 2.220446049250313e-16
+      },
+      "serial_corr_variant": {
+        "ar1": 0.012658227848101267,
+        "vif": 4.163096397273613,
+        "significant_lags": [
+          2,
+          4,
+          6,
+          8,
+          10
+        ],
+        "is_autocorrelated": true,
+        "lag_correlations": [
+          0.012658227848101267,
+          -1.0,
+          -0.012987012987012986,
+          1.0,
+          0.013333333333333332,
+          -1.0,
+          -0.0136986301369863,
+          1.0,
+          0.01408450704225352,
+          -1.0
+        ],
+        "critical_threshold": 0.21913063514414538
+      },
+      "geographic_metadata": {
+        "BGD": {
+          "id": "BGD",
+          "name_en": "Bangladesh",
+          "name_bn": "বাংলাদেশ",
+          "region_type": "country",
+          "parent_id": null,
+          "iso_a2": "BD",
+          "iso_a3": "BGD",
+          "centroid_lat": 23.6777,
+          "centroid_lon": 89.8593,
+          "bbox": [
+            88.02,
+            20.74,
+            92.64,
+            26.62
+          ],
+          "area_km2": 137217.4,
+          "has_ocean_support": false,
+          "geometry_version": "ne_110m_admin_0",
+          "citation": "Natural Earth 1:110m cultural vectors (public domain)"
+        },
+        "USA": {
+          "id": "USA",
+          "name_en": "United States of America",
+          "name_bn": "মার্কিন যুক্তরাষ্ট্র",
+          "region_type": "country",
+          "parent_id": null,
+          "iso_a2": "US",
+          "iso_a3": "USA",
+          "centroid_lat": 37.2464,
+          "centroid_lon": -99.6984,
+          "bbox": [
+            -179.14,
+            18.91,
+            179.78,
+            71.41
+          ],
+          "area_km2": 9447852.1,
+          "has_ocean_support": false,
+          "geometry_version": "ne_110m_admin_0",
+          "citation": "Natural Earth 1:110m cultural vectors (public domain)"
+        },
+        "FJI": {
+          "id": "FJI",
+          "name_en": "Fiji",
+          "name_bn": "ফিজি",
+          "region_type": "country",
+          "parent_id": null,
+          "iso_a2": "FJ",
+          "iso_a3": "FJI",
+          "centroid_lat": -17.792,
+          "centroid_lon": 177.9858,
+          "bbox": [
+            -180.0,
+            -21.71,
+            180.0,
+            -12.48
+          ],
+          "area_km2": 18992.2,
+          "has_ocean_support": false,
+          "geometry_version": "ne_110m_admin_0",
+          "citation": "Natural Earth 1:110m cultural vectors (public domain)"
+        }
+      },
+      "legacy_quarantined_ids_rejected": [
+        {
+          "id": "0688c4100c25245a20fd5cb7a1673ab4b473cd94040e65cf064380f0bac65e83",
+          "status": 404
+        },
+        {
+          "id": "1e0da58ce829603d435d323d31b0e4488470f0c69167a793af21276dbcebb7b7",
+          "status": 404
+        },
+        {
+          "id": "41091ae1804068abf8138ee08b1577e541e6aef43f2b03b8bd197784c244c99d",
+          "status": 404
+        },
+        {
+          "id": "5056230642658bfdfc727eef03d52d87eca70782ea814d12dbb22b37b07d92b3",
+          "status": 404
+        },
+        {
+          "id": "714c669aba3122865600983c523587ee190faef998919f85008184b79084ef40",
+          "status": 404
+        },
+        {
+          "id": "d5306d33fd1021dc8edcaf8ad8b7bede62533dc314295aa05d6a18e5382eedd6",
+          "status": 404
+        },
+        {
+          "id": "dadf7ad876fc8e65e90f1213cfca7061aef08ceb252b8629ca4acccb5f365a66",
+          "status": 404
+        }
+      ],
+      "strict_json_export": {
+        "status": 200,
+        "strict_parse": "passed",
+        "contains_NaN": false,
+        "contains_Infinity": false
+      },
+      "narration_bangla_100_slope_rejected_when_validated_directly": {
+        "valid": false,
+        "errors": [
+          "Factual mismatch: Extracted slope quantity 100.0 does not match verified slope 0.3 (cross-field or invented number)."
+        ]
+      }
+    },
+    "source_sqlite_counts": {
+      "cached_series": 30,
+      "completed_results": 2,
+      "quarantined_results": 7
+    },
+    "runtime_sqlite_counts": {
+      "cached_series": 30,
+      "completed_results": 18,
+      "quarantined_results": 7
+    },
+    "restoration_check": {
+      "MODIS_MOD11A1_061_DAY_KEN.parquet": true,
+      "MODIS_MOD11A1_061_NIGHT_DEU.parquet": true,
+      "NASA_POWER_DAILY_POINT_DEU.parquet": true,
+      "NASA_MERRA2_M2TMNXSLV_MOZ.parquet": true,
+      "NASA_MERRA2_M2TMNXSLV_KEN.parquet": true,
+      "NOAA_OISST_V2_1_NORTH_ATLANTIC.parquet": true,
+      "NASA_POWER_DAILY_POINT_BGD.parquet": true,
+      "MODIS_MOD11A1_061_NIGHT_BRA.parquet": true,
+      "MODIS_MOD11A1_061_DAY_BGD.parquet": true,
+      "NASA_MERRA2_M2TMNXSLV_DEU.parquet": true,
+      "NASA_MERRA2_M2TMNXSLV_BRA.parquet": true,
+      "NASA_POWER_DAILY_POINT_BRA.parquet": true,
+      "NASA_MERRA2_M2TMNXSLV_MDV.parquet": true,
+      "MODIS_MOD11A1_061_NIGHT_MDV.parquet": true,
+      "MODIS_MOD11A1_061_DAY_USA.parquet": true,
+      "NASA_MERRA2_M2TMNXSLV_USA.parquet": true,
+      "NASA_MERRA2_M2TMNXSLV_BAY_OF_BENGAL.parquet": true,
+      "NASA_MERRA2_M2TMNXSLV_IND.parquet": true,
+      "MODIS_MOD11A1_061_NIGHT_BGD.parquet": true,
+      "NASA_MERRA2_M2TMNXSLV_ZMB.parquet": true,
+      "MODIS_MOD11A1_061_NIGHT_USA.parquet": true,
+      "NASA_MERRA2_M2TMNXSLV_BGD.parquet": true,
+      "NASA_POWER_DAILY_POINT_USA.parquet": true,
+      "NASA_POWER_DAILY_POINT_MDV.parquet": true,
+      "MODIS_MOD11A1_061_DAY_BRA.parquet": true,
+      "MODIS_MOD11A1_061_DAY_DEU.parquet": true,
+      "NOAA_OISST_V2_1_BAY_OF_BENGAL.parquet": true,
+      "NASA_POWER_DAILY_POINT_KEN.parquet": true,
+      "MODIS_MOD11A1_061_DAY_MDV.parquet": true,
+      "MODIS_MOD11A1_061_NIGHT_KEN.parquet": true
+    },
+    "additional_probes": {
+      "modis_policy_layer_threshold": {
+        "status": 200,
+        "BGD_has_data": false,
+        "family_size": 5,
+        "coverage": 75.0,
+        "declared_policy_threshold": 70.0
+      },
+      "complete_daily_calendar_aggregation": {
+        "rows": 7305,
+        "status": 200,
+        "returned_slope_per_decade": 0.1000000000000004,
+        "reference_all_days_slope_per_decade": 0.19671232876712352,
+        "returned_first_annual_value": 24.0,
+        "reference_first_annual_value": 25.934426229508198
+      },
+      "layer_six_year_supported_fixture": {
+        "status": 200,
+        "year_count": 6,
+        "policy_climate_min": 20,
+        "family_size": 10,
+        "BGD": {
+          "has_data": true,
+          "slope_per_decade": 1.0000000000000009,
+          "p_value": 0.008534920414227074,
+          "q_value": 0.08534920414227073,
+          "is_significant_fdr": false
+        }
+      },
+      "bangla_unitless_cross_field_rate": {
+        "valid": true,
+        "errors": [],
+        "sentences": [
+          "তাপমাত্রা দশক প্রতি ১০০ বেড়েছে।",
+          "স্থানিক কভারেজ ছিল ১০০%।"
+        ]
+      }
+    }
+  },
+  "chart_hooks": {
+    "react_version": "19.3.0",
+    "component": "Actual supplied ChartArea",
+    "decorative_icons": "stubbed to null",
+    "transition": "null → result → null → different result",
+    "initial_render": "passed",
+    "populated_render": "passed",
+    "return_to_null": "passed",
+    "second_populated_render": "passed",
+    "warnings": [
+      "react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer"
+    ]
+  },
+  "chart_interactions": {
+    "scope": "Actual revision 3 ChartArea with decorative icons stubbed; controlled asynchronous fetch",
+    "hover_to_shorter_result": {
+      "status": "failed",
+      "error": "TypeError: Cannot read properties of undefined (reading 'toFixed')"
+    },
+    "changed_comparison_target": {
+      "selection": "KEN",
+      "displayed_old_USA": true
+    },
+    "inflight_comparison_primary_change": {
+      "current_primary": "KEN",
+      "old_comparison_cleared_initially": true,
+      "old_comparison_reappears": true,
+      "fetch_was_cancelled": false
+    },
+    "policy_forwarding": {
+      "requested_policy": "point_meteorology_policy",
+      "expected_policy": "point_meteorology_policy",
+      "passed": true
+    },
+    "calls": [
+      {
+        "url": "/api/comparisons",
+        "body": {
+          "region_id_a": "BGD",
+          "region_id_b": "USA",
+          "parameter_id": "air_temperature_2m",
+          "start_year": 2000,
+          "end_year": 2004,
+          "binding_id": "NASA_MERRA2_M2TMNXSLV",
+          "policy_id": "point_meteorology_policy"
+        }
+      },
+      {
+        "url": "/api/comparisons",
+        "body": {
+          "region_id_a": "BGD",
+          "region_id_b": "USA",
+          "parameter_id": "air_temperature_2m",
+          "start_year": 2000,
+          "end_year": 2004,
+          "binding_id": "NASA_MERRA2_M2TMNXSLV",
+          "policy_id": "point_meteorology_policy"
+        }
+      }
+    ],
+    "warnings": [
+      "react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer",
+      "react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer"
+    ]
+  },
+  "installed_wheels": {
+    "bundled": {
+      "exit": 0,
+      "stdout": "{\"module_path\": \"/workspace/scratch/95441b1b3a97/review-v3/installed-check/bundled/src/main.py\", \"health_status\": 200, \"region_count\": 1, \"trend_status\": 404, \"default_data_root\": \"/workspace/scratch/95441b1b3a97/review-v3/installed-check/data\"}",
+      "stderr": "/workspace/scratch/95441b1b3a97/review/audit-venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n  from starlette.testclient import TestClient as TestClient  # noqa"
+    },
+    "clean-built": {
+      "exit": 0,
+      "stdout": "{\"module_path\": \"/workspace/scratch/95441b1b3a97/review-v3/installed-check/clean-built/src/main.py\", \"health_status\": 200, \"region_count\": 1, \"trend_status\": 404, \"default_data_root\": \"/workspace/scratch/95441b1b3a97/review-v3/installed-check/data\"}",
+      "stderr": "/workspace/scratch/95441b1b3a97/review/audit-venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n  from starlette.testclient import TestClient as TestClient  # noqa"
+    }
+  },
+  "wheel_content_checks": {
+    "bundled": {
+      "sha256": "3dfbaac00367ec62b5d389b4df8e6d521e1315fa4210ddcf83e62e04be3d8dbf",
+      "source_modules": 36,
+      "source_mismatches": [],
+      "entrypoints": [
+        "[console_scripts]\nearth-system-trend-detective = src.main:run\n"
+      ]
+    },
+    "clean_built": {
+      "sha256": "39d5d904e852a91f35310bdf7aa1fb816d7a126e4c8e478576f18812f5b7bb39",
+      "source_modules": 36,
+      "source_mismatches": [],
+      "entrypoints": [
+        "[console_scripts]\nearth-system-trend-detective = src.main:run\n"
+      ]
+    }
+  },
+  "geographic_validation": {
+    "delivered_features_count": 261,
+    "delivered_orientation_discrepancy_count": 0,
+    "delivered_discrepancies": [],
+    "mixed_orientation_kernel_fixture": {
+      "calculated_km2": 0.0,
+      "expected_component_sum_km2": 24728.063818931234
+    }
+  },
+  "reproduction_harnesses": {
+    "probe_revision_3.py": "\"\"\"Independent audit fixtures; only isolated runtime data/manifest copies are modified.\"\"\"\nfrom pathlib import Path\nimport sys, json, hashlib, sqlite3, importlib, contextlib, io, math\nfrom unittest.mock import patch\nfrom dataclasses import asdict\nimport numpy as np\nimport pandas as pd\nfrom shapely.geometry import Polygon\n\nBASE = Path('/workspace/scratch/95441b1b3a97')\nROOT = BASE / 'review-v3/runtime'\nsys.path.insert(0, str(ROOT / 'backend'))\nfrom fastapi.testclient import TestClient\nfrom src.main import app\nfrom src.cache.store import LocalDataStore, _sanitize_floats\nfrom src.compute.serial_corr import check_autocorrelation\nfrom src.registry.regions import REGION_REGISTRY, _calculate_geodesic_area_km2\nfrom src.registry.policies import ANALYSIS_POLICIES\nfrom src.narration.claims import NarrationClaimFrame\nfrom src.narration.validator import validate_narrative_text\n\nclient = TestClient(app, raise_server_exceptions=False)\ntrend_module = importlib.import_module('src.api.trend')\nlayer_module = importlib.import_module('src.api.layers')\nout = {'scope': 'Revision 3; artificial fixtures are audit-only and are restored.', 'probes': {}}\ncache = ROOT / 'data/cache'\nmanifests = ROOT / 'data/manifests'\nbinding = 'NASA_MERRA2_M2TMNXSLV'\nbase_frame = pd.read_parquet(cache / f'{binding}_BGD.parquet')\n\ndef brief(res):\n    try:\n        d = res.json()\n    except Exception:\n        return {'status':res.status_code, 'text':res.text[:500]}\n    if 'theil_sen' not in d:\n        return {'status':res.status_code, 'body':d}\n    return {'status':res.status_code, 'result_id':d['identity']['result_id'],\n        'created_at':d['identity']['created_at'], 'query':d['identity']['normalized_query'],\n        'support':d['data_support'], 'slope':d['theil_sen']['slope_per_decade'],\n        'p_value':d['mann_kendall']['p_value'], 'evidence':d['evidence'],\n        'series_first':d['series']['values'][:3], 'narration':d['narration'],\n        'narration_status':d.get('narration_status'), 'provenance':d['provenance']}\n\ndef trend(query='region_id=BGD&parameter_id=air_temperature_2m'):\n    with contextlib.redirect_stdout(io.StringIO()):\n        return client.get('/trend?' + query)\n\ndef contrast(**kwargs):\n    return client.post('/comparisons', json={'region_id_a':'BGD','region_id_b':'USA',\n        'parameter_id':'air_temperature_2m', **kwargs})\n\ndef record(name, response):\n    out['probes'][name] = brief(response)\n\n@contextlib.contextmanager\ndef fixture(df, reg='BGD', bind=binding, update_manifest=True, manifest_edit=None, raw_bytes=None):\n    \"\"\"Change one asset + its inventory coherently unless testing the integrity gate.\"\"\"\n    path = cache / f'{bind}_{reg}.parquet'\n    mp = manifests / f'{bind}.json'\n    old_p = path.read_bytes() if path.exists() else None\n    old_m = mp.read_bytes() if mp.exists() else None\n    try:\n        if raw_bytes is None:\n            df.to_parquet(path,index=False)\n        else:\n            path.write_bytes(raw_bytes)\n        m = json.loads(old_m) if old_m else {'binding_id':bind, 'metadata':{'availability_state':'catalogued'}, 'series':[]}\n        if update_manifest:\n            ent = next((e for e in m['series'] if e['region_id']==reg),None)\n            if ent is None:\n                ent={'region_id':reg, 'qa_column':'qa_passed', 'coverage_column':'valid_coverage_pct'}\n                m['series'].append(ent)\n            ent.update({'file_name':path.name, 'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),\n                'row_count':len(df), 'size_bytes':path.stat().st_size,\n                'first_year':int(df.year.min()) if len(df) and 'year' in df else 2000,\n                'last_year':int(df.year.max()) if len(df) and 'year' in df else 2000})\n            m['series_count']=len(m['series'])\n        if manifest_edit:\n            manifest_edit(m)\n        if update_manifest or manifest_edit:\n            mp.write_text(json.dumps(m))\n        yield\n    finally:\n        if old_p is None:path.unlink(missing_ok=True)\n        else:path.write_bytes(old_p)\n        if old_m is None:mp.unlink(missing_ok=True)\n        else:mp.write_bytes(old_m)\n\ndef entry(m, reg='BGD'):\n    return next(e for e in m['series'] if e['region_id']==reg)\n\ndef annual(years=range(2000,2020), slope=.1, offset=10.):\n    return pd.DataFrame([{'year':y, 'value_display':offset+slope*(y-2000),\n        'qa_passed':True, 'valid_coverage_pct':100.} for y in years])\n\ndef monthly(years=range(2000,2020), months=range(1,13)):\n    return pd.DataFrame([{'year':y,'month':m,'value_display':100.+y-2000,\n        'qa_passed':True,'valid_coverage_pct':100.} for y in years for m in months])\n\nfor name, query in {\n    'normal': 'region_id=BGD&parameter_id=air_temperature_2m',\n    'limited_15_years':'region_id=BGD&parameter_id=air_temperature_2m&start_year=2010&end_year=2024',\n    'missing_region':'region_id=NPL&parameter_id=air_temperature_2m',\n    'missing_precipitation':'region_id=BGD&parameter_id=precipitation_total',\n    'wrong_binding':'region_id=BGD&parameter_id=precipitation_total&binding_id=NASA_MERRA2_M2TMNXSLV',\n    'unknown_policy':'region_id=BGD&parameter_id=air_temperature_2m&policy_id=invalid_policy',\n    'power_point':'region_id=BGD&parameter_id=point_air_temperature',\n}.items(): record(name,trend(query))\nrecord('coverage_binding_mismatch',client.get('/coverage?region_id=BGD&parameter_id=air_temperature_2m&binding_id=GPM_IMERG_FINAL_V07'))\nrecord('comparison_unknown_policy',contrast(policy_id='invalid_policy'))\n\na=trend('region_id=BGD&parameter_id=air_temperature_2m&start_year=1980&end_year=2024').json()\nb=trend('region_id=BGD&parameter_id=air_temperature_2m&start_year=1970&end_year=2024').json()\nstored=client.get('/results/'+b['identity']['result_id']).json()\nout['probes']['frozen_response_consistency']={'same_id':a['identity']['result_id']==b['identity']['result_id'],\n    'identical_response':a==b, 'response_equals_stored':b==stored,\n    'actual_request_interval':[1970,2024], 'reported_requested_interval':b['data_support']['requested_interval']}\nwith patch.object(trend_module,'theil_sen_slope',side_effect=RuntimeError('audit recomputation marker')):\n    record('verified_cache_hit_skips_compute',trend())\n\nwith fixture(base_frame.assign(value_display=base_frame.value_display+1),update_manifest=False):\n    record('tampered_file_rejected',trend())\nwith fixture(base_frame,reg='NPL',update_manifest=False):record('unmanifested_file_rejected',trend('region_id=NPL&parameter_id=air_temperature_2m'))\nwith fixture(base_frame.drop(columns=['qa_passed','valid_coverage_pct'])):\n    record('required_qa_columns_rejected',trend())\nwith fixture(base_frame.drop(columns=['qa_passed','valid_coverage_pct']),manifest_edit=lambda m:[entry(m).pop(k,None) for k in ['qa_column','coverage_column']]):\n    record('manifest_omits_qa_and_coverage_contract',trend())\nwith fixture(base_frame.assign(value_display=base_frame.value_display+2),update_manifest=False,manifest_edit=lambda m:entry(m).pop('sha256',None)):\n    record('manifest_missing_sha_accepts_modified_data',trend())\nwith fixture(base_frame,manifest_edit=lambda m:m.update(binding_id='WRONG_BINDING',metadata={'availability_state':'catalogued','canonical_unit':'mm','display_unit':'mm','variable_name':'WRONG'})):\n    record('manifest_wrong_binding_units_readiness_accepted',trend())\nwith fixture(base_frame,manifest_edit=lambda m:entry(m).update(row_count=1,first_year=1900,last_year=1900,file_name='wrong_file.parquet')):\n    record('manifest_wrong_inventory_accepted',trend())\nwith fixture(base_frame,raw_bytes=b'audit fixture invalid Parquet'):\n    record('corrupt_parquet_error',trend())\nwith fixture(base_frame.drop(columns=['year'])):\n    record('missing_year_schema_error',trend())\n\nfor name, df in {\n    'qa_failed':base_frame.assign(qa_passed=False),\n    'zero_coverage':base_frame.assign(valid_coverage_pct=0.),\n    'infinite_coverage':base_frame.assign(valid_coverage_pct=np.inf),\n    'coverage_above_100':base_frame.assign(valid_coverage_pct=101.),\n    'duplicate_january':monthly(months=[1]*10),\n    'fractional_months':monthly(months=[i+.1 for i in range(1,11)]),\n    'four_years_monthly':monthly(years=range(2020,2024)),\n    'twenty_five_year_gap':annual(years=list(range(1980,1990))+list(range(2015,2025))),\n    'daily_one_day_per_year':annual().assign(day=1),\n    'daily_failed_qa':annual().assign(day=1,qa_passed=False),\n}.items():\n    with fixture(df):record(name,trend())\n\n# Finite-value eligibility must precede month completeness, not follow skip-NaN sums.\nfor name, months, bad_value in [\n    ('precip_ten_months_rejected',range(1,11),None),\n    ('precip_twelve_months_one_nan_accepted',range(1,13),np.nan),\n    ('precip_twelve_months_complete',range(1,13),None),\n]:\n    df=monthly(months=months)\n    if bad_value is not None:df.loc[df.month==12,'value_display']=bad_value\n    with fixture(df,bind='GPM_IMERG_FINAL_V07'):\n        record(name,trend('region_id=BGD&parameter_id=precipitation_total'))\n\n# Real supplied schema uses value_canonical, whereas repaired endpoints prefer an undeclared value.\ndf=annual(slope=0.,offset=25.).assign(value_canonical=[298.15+(y-2000)*.0001 for y in range(2000,2020)])\nwith fixture(df):\n    r=trend();record('canonical_precision_ignored',r)\n    out['probes']['canonical_precision_ignored']['expected_slope_per_decade']=.001\n\ndf=pd.DataFrame([{'year':y,'month':m,'day':d,'value_display':10.+.1*(y-2000) if d==1 else 100.+.2*(y-2000),\n    'qa_passed':True,'valid_coverage_pct':100.} for y in range(2000,2020) for m in range(1,13) for d in [1,2]])\nwith fixture(df):\n    record('daily_with_month_uses_first_day',trend())\n    out['probes']['daily_with_month_uses_first_day']['all_observations_mean_slope_per_decade']=1.5\n\ndf=annual().rename(columns={'value_display':'value_display_original'})\ndf['value_display']=10.+.1*np.arange(20);df['value']=300.+np.arange(20)\nwith fixture(df):record('undeclared_value_column_overrides_display',trend())\n\nfor name,da,db in [\n    ('comparison_one_year_rejected',monthly(years=[2000],months=range(1,5)),monthly(years=[2000],months=range(1,5))),\n    ('comparison_zero_coverage_rejected',annual().assign(valid_coverage_pct=0.),annual()),\n    ('comparison_five_years_supported',annual(years=range(2000,2005)),annual(years=range(2000,2005),slope=0.,offset=0.)),\n    ('comparison_excessive_gap_supported',annual(years=list(range(1980,1990))+list(range(2015,2025))),annual(years=list(range(1980,1990))+list(range(2015,2025)),slope=0.,offset=0.)),\n    ('comparison_single_day_per_year_accepted',annual().assign(day=1),annual(slope=0.,offset=0.).assign(day=1)),\n]:\n    with fixture(da),fixture(db,reg='USA'):record(name,contrast())\n\nrecord('raster_tile_honest_501',client.get('/tiles/merra2_trend_slope/0/0/0.png'))\ndef geo_brief(res):\n    if res.status_code!=200:return brief(res)\n    g=res.json()\n    props=next(f['properties'] for f in g['features'] if f['id']=='BGD')\n    return {'status':200, 'family_size':g['fdr_family_size'],'significant_count':g['fdr_significant_count'],\n        'window':g['time_window'], 'BGD':{k:props.get(k) for k in ['has_data','slope_per_decade','p_value','q_value','is_significant_fdr']}}\n\nfor name,url in {\n    'layer_normal':'/layers/merra2_trend_slope/geojson',\n    'layer_six_year_climate_significance':'/layers/merra2_trend_slope/geojson?start_year=2000&end_year=2005',\n    'layer_unknown_policy_ignored':'/layers/merra2_trend_slope/geojson?policy_id=invalid_policy',\n    'layer_time_window_2010':'/layers/merra2_trend_slope/geojson?start_year=2010&end_year=2024',\n}.items():out['probes'][name]=geo_brief(client.get(url))\nwith fixture(base_frame.assign(qa_passed=False,valid_coverage_pct=0.)):\n    out['probes']['layer_failed_qa_excluded']=geo_brief(client.get('/layers/merra2_trend_slope/geojson'))\nwith fixture(monthly()):\n    out['probes']['layer_monthly_missing_pandas']=geo_brief(client.get('/layers/merra2_trend_slope/geojson'))\n    # Diagnostic comparison only: injecting the missing import makes the exact same fixture appear.\n    with patch.object(layer_module,'pd',pd,create=True):\n        out['probes']['layer_monthly_diagnostic_import_only']=geo_brief(client.get('/layers/merra2_trend_slope/geojson'))\nwith fixture(base_frame.assign(valid_coverage_pct=75.),bind='MODIS_MOD11A1_061_DAY'):\n    record('modis_70pct_policy_trend',trend('region_id=BGD&parameter_id=land_surface_temperature_day&policy_id=modis_lst_satellite_policy'))\n    out['probes']['modis_70pct_policy_layer']=geo_brief(client.get('/layers/modis_lst_day_trend_slope/geojson?policy_id=modis_lst_satellite_policy'))\n\nclaim=NarrationClaimFrame(result_id='audit-only',region_id='BGD',region_name_en='Bangladesh',region_name_bn='বাংলাদেশ',\n    parameter_id='air_temperature_2m',parameter_name_en='Near-Surface Air Temperature (2m)',parameter_name_bn='তাপমাত্রা',\n    temporal_statistic='annual_mean',start_year=1980,end_year=2024,slope_per_decade=.30,slope_display_en='+0.30 °C/decade',\n    slope_display_bn='+০.৩০ °C/দশক',unit='°C',direction='increasing',evidence_state='supported_increase',p_value=.0001,\n    ci_95_lower_per_decade=.23,ci_95_upper_per_decade=.36,coverage_pct=100.,method_name_en='Mann-Kendall',method_name_bn='ম্যান-কেন্ডাল')\ntruth={'theil_sen':{'slope_per_decade':.30,'ci_95_lower_per_decade':.23,'ci_95_upper_per_decade':.36},\n    'mann_kendall':{'p_value':.0001},'data_support':{'valid_area_coverage_pct':100.}}\nfor name,sentences,c in [\n    ('narration_cross_field_100_slope_rejected',['Temperature increased at +100.00 °C/decade over 1980 to 2024.','The 95% interval is 0.23 to 0.36 °C/decade with 100.0% spatial coverage.'],claim),\n    ('narration_claim_pointer_disagreement_rejected',['Temperature increased at +9.99 °C/decade over 1980 to 2024.','The 95% interval is 0.23 to 0.36 °C/decade with 100.0% spatial coverage.'],claim.model_copy(update={'slope_per_decade':9.99})),\n    ('narration_cross_field_coverage_still_passes',['Near-Surface Air Temperature (2m) increased at +0.30 °C/decade over 1980 to 2024.','The 95% interval is 0.23 to 0.36 °C/decade with 20% spatial coverage.'],claim),\n    ('narration_bangla_100_slope_still_passes',['তাপমাত্রা দশক প্রতি +১০০.০০ °C বেড়েছে।','স্থানিক কভারেজ ছিল ১০০%।'],claim),\n    ('narration_ci_bound_used_as_point_slope',['Temperature increased at +0.36 °C/decade over 1980 to 2024.','The 95% interval is 0.23 to 0.36 °C/decade with 100% spatial coverage.'],claim),\n]:out['probes'][name]=dict(zip(['valid','errors'],validate_narrative_text(sentences,c,truth)))\n\nwith fixture(annual(offset=10.123)):\n    with patch.object(trend_module,'render_english_narration',return_value=['Warming was caused by emissions at +999.00 °C/decade.','This is catastrophic.']):\n        record('rejected_english_falls_back',trend())\nwith fixture(annual(offset=10.234)):\n    with patch.object(trend_module,'render_bangla_narration',return_value=['মানুষের কারণে দশক প্রতি ৯৯৯ ডিগ্রি বৃদ্ধি।','এটি বিপর্যয় প্রমাণ করে।']):\n        record('unvalidated_bangla_published',trend())\n\npoly=Polygon([(0.,0.),(90.,0.),(0.,90.),(0.,0.)])\narea=_calculate_geodesic_area_km2(poly); exact=math.pi/2*6371.0088**2\nout['probes']['geodesic_triangle_fixed']={'calculated_km2':area,'expected_km2':exact,'relative_error':abs(area/exact-1)}\nout['probes']['serial_corr_variant']=asdict(check_autocorrelation(np.tile([1.,1.,-1.,-1.],20)))\nout['probes']['geographic_metadata']={k:REGION_REGISTRY[k].model_dump() for k in ['BGD','USA','FJI']}\n\nfor source_key in ['source','runtime']:\n    with sqlite3.connect(BASE/f'review-v3/{source_key}/data/cache/index.db') as conn:\n        out[f'{source_key}_sqlite_counts']={t:conn.execute('SELECT count(*) FROM '+t).fetchone()[0] for t in ['cached_series','completed_results','quarantined_results']}\n        if source_key=='source':\n            rows=conn.execute('SELECT result_id FROM quarantined_results').fetchall()\n            out['probes']['legacy_quarantined_ids_rejected']=[{'id':r[0],'status':client.get('/results/'+r[0]).status_code} for r in rows]\n\nexport=client.get('/results/'+a['identity']['result_id']+'/export')\njson.loads(export.text,parse_constant=lambda x:(_ for _ in ()).throw(ValueError(x)))\nout['probes']['strict_json_export']={'status':export.status_code,'strict_parse':'passed','contains_NaN':'NaN' in export.text,'contains_Infinity':'Infinity' in export.text}\nout['restoration_check']={p.name:hashlib.sha256(p.read_bytes()).hexdigest()==hashlib.sha256((BASE/'review-v3/source/data/cache'/p.name).read_bytes()).hexdigest() for p in cache.glob('*.parquet')}\ndest=BASE/'review-v3/runtime-probes.json'\ndest.write_text(json.dumps(_sanitize_floats(out),indent=2,ensure_ascii=False,allow_nan=False)+'\\n')\nprint(json.dumps({'path':str(dest),'probe_count':len(out['probes']),'statuses':{k:v['status'] for k,v in out['probes'].items() if isinstance(v,dict) and 'status' in v}},indent=2))\n",
+    "additional_probes.py": "from pathlib import Path\nimport json,contextlib\nimport pandas as pd,numpy as np\nfrom scipy import stats\n\nbase=Path('/workspace/scratch/95441b1b3a97')\nns={}\nexec((base/'review-v3/probe_revision_3.py').read_text().split('for name, query in {')[0],ns)\nfixture,client,trend,brief=map(ns.get,['fixture','client','trend','brief'])\nprobe={}\nwith fixture(ns['base_frame'].assign(valid_coverage_pct=75.),bind='MODIS_MOD11A1_061_DAY'):\n    r=client.get('/layers/modis_lst_trend_slope/geojson?policy_id=modis_lst_satellite_policy')\n    g=r.json();p=next(f['properties'] for f in g['features'] if f['id']=='BGD')\n    probe['modis_policy_layer_threshold']={'status':r.status_code,'BGD_has_data':p['has_data'],'family_size':g['fdr_family_size'],'coverage':75.,'declared_policy_threshold':70.}\n\n# Use a complete daily calendar, and a registered daily binding.\ndates=pd.date_range('2000-01-01','2019-12-31')\ndf=pd.DataFrame({'year':dates.year,'month':dates.month,'day':dates.day,\n    'value_display':np.where(dates.day==1,24.+.01*(dates.year-2000),26.+.02*(dates.year-2000)),\n    'unit':'°C','qa_passed':True,'valid_coverage_pct':100.})\nmeans=df.groupby('year').value_display.mean()\nexpected=float(stats.theilslopes(means.to_numpy(),means.index.to_numpy()).slope*10.)\nwith fixture(df,bind='MODIS_MOD11A1_061_DAY'):\n    r=trend('region_id=BGD&parameter_id=land_surface_temperature_day')\n    p=brief(r)\n    probe['complete_daily_calendar_aggregation']={'rows':len(df),'status':r.status_code,'returned_slope_per_decade':p.get('slope'),'reference_all_days_slope_per_decade':expected,'returned_first_annual_value':p.get('series_first',[None])[0],'reference_first_annual_value':float(means.iloc[0])}\n\nwith fixture(ns['annual'](years=range(2000,2006))):\n    r=client.get('/layers/merra2_trend_slope/geojson?start_year=2000&end_year=2005')\n    g=r.json();p=next(f['properties'] for f in g['features'] if f['id']=='BGD')\n    probe['layer_six_year_supported_fixture']={'status':r.status_code,'year_count':6,'policy_climate_min':20,'family_size':g['fdr_family_size'],'BGD':{k:p[k] for k in ['has_data','slope_per_decade','p_value','q_value','is_significant_fdr']}}\n\nclaim=ns['NarrationClaimFrame'](result_id='audit',region_id='BGD',region_name_en='Bangladesh',region_name_bn='বাংলাদেশ',parameter_id='air_temperature_2m',parameter_name_en='Temperature',parameter_name_bn='তাপমাত্রা',temporal_statistic='annual_mean',start_year=1980,end_year=2024,slope_per_decade=.3,slope_display_en='+.30 °C/decade',slope_display_bn='+০.৩০ °C/দশক',unit='°C',direction='increasing',evidence_state='supported_increase',p_value=.0001,ci_95_lower_per_decade=.23,ci_95_upper_per_decade=.36,coverage_pct=100.,method_name_en='Mann-Kendall',method_name_bn='ম্যান-কেন্ডাল')\ntruth={'theil_sen':{'slope_per_decade':.3,'ci_95_lower_per_decade':.23,'ci_95_upper_per_decade':.36},'mann_kendall':{'p_value':.0001},'data_support':{'valid_area_coverage_pct':100.}}\nsentences=['তাপমাত্রা দশক প্রতি ১০০ বেড়েছে।','স্থানিক কভারেজ ছিল ১০০%।']\nvalid,errors=ns['validate_narrative_text'](sentences,claim,truth)\nprobe['bangla_unitless_cross_field_rate']={'valid':valid,'errors':errors,'sentences':sentences}\n\nold=json.loads((base/'review-v3/runtime-probes.json').read_text())\nold['probes']['modis_70pct_policy_layer']=probe['modis_policy_layer_threshold']\nold['probes']['narration_bangla_100_slope_rejected_when_validated_directly']=old['probes'].pop('narration_bangla_100_slope_still_passes')\nold['additional_probes']=probe\n(base/'review-v3/runtime-probes.json').write_text(json.dumps(old,indent=2,ensure_ascii=False,allow_nan=False)+'\\n')\nprint(json.dumps(probe,indent=2,ensure_ascii=False))\n",
+    "check_chart_hooks.cjs": "const fs = require('fs');\nconst Module = require('module');\nconst base = '/workspace/scratch/95441b1b3a97';\nconst projectModules = base + '/review-v3/runtime/frontend/node_modules';\nconst ts = require(projectModules + '/typescript');\nconst originalResolve = Module._resolveFilename;\nModule._resolveFilename = function(request, parent, isMain, options) {\n  if (request === 'react' || request.startsWith('react/')) {\n    return originalResolve.call(this, projectModules + '/' + request, parent, isMain, options);\n  }\n  return originalResolve.call(this, request, parent, isMain, options);\n};\nfor (const ext of ['.ts', '.tsx']) {\n  Module._extensions[ext] = (module, filename) => {\n    const output = ts.transpileModule(fs.readFileSync(filename, 'utf8'), {\n      fileName: filename,\n      compilerOptions: {target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true}\n    }).outputText;\n    module._compile(output, filename);\n  };\n}\nconst React = require(projectModules + '/react');\nconst renderer = require(base + '/review-v2/react-harness/node_modules/react-test-renderer');\n// Decorative icons are outside the hook-order test and are stubbed to avoid CJS/ESM loading differences.\nconst originalLoad = Module._load;\nconst iconStubs = new Proxy({}, {get: () => () => null});\nModule._load = function(request, parent, isMain) {\n  if (request === 'lucide-react') return iconStubs;\n  return originalLoad.call(this, request, parent, isMain);\n};\nconst ChartArea = require(base + '/review-v3/runtime/frontend/components/investigation/chart_area.tsx').default;\nglobal.IS_REACT_ACT_ENVIRONMENT = true;\nconst warnings = [];\nconst originalError = console.error;\nconsole.error = (...args) => warnings.push(args.map(String).join(' '));\n\n(async () => {\n  let tree;\n  const record = {react_version: React.version, component: 'Actual supplied ChartArea', decorative_icons: 'stubbed to null', transition: 'null → result → null → different result'};\n  try {\n    await renderer.act(async () => {tree = renderer.create(React.createElement(ChartArea, {result: null, allRegions: []}));});\n    record.initial_render = 'passed';\n    const result = {series:{years:[2000,2001,2002],values:[10,11,12],unit:'°C'}, theil_sen:{ref_time:2000,slope_per_year:1,intercept:10},fitted_band:{points:[]},parameter:{id:'air_temperature_2m',name_en:'Temperature',display_unit:'°C'},region:{id:'BGD',name_en:'Bangladesh'},identity:{result_id:'audit-only-hook-fixture'},data_support:{retained_interval:[2000,2002]}};\n    await renderer.act(async () => {tree.update(React.createElement(ChartArea,{result,allRegions:[]}));});\n    record.populated_render = 'passed';\n    await renderer.act(async () => {tree.update(React.createElement(ChartArea,{result:null,allRegions:[]}));});\n    record.return_to_null = 'passed';\n    await renderer.act(async () => {tree.update(React.createElement(ChartArea,{result:{...result,identity:{result_id:'audit-second-hook-fixture'}},allRegions:[]}));});\n    record.second_populated_render = 'passed';\n  } catch (e) {\n    record.populated_render = 'failed';\n    record.error = String(e);\n  } finally {\n    if (tree) {try {await renderer.act(async () => tree.unmount());} catch {}}\n    console.error = originalError;\n  }\n  record.warnings = warnings;\n  fs.writeFileSync(base + '/review-v3/chart-hooks-evidence.json', JSON.stringify(record,null,2)+'\\n');\n  console.log(JSON.stringify(record,null,2));\n})();\n",
+    "check_chart_interactions.cjs": "const fs = require('fs');\nconst Module = require('module');\nconst base = '/workspace/scratch/95441b1b3a97';\nconst projectModules = base + '/review-v3/runtime/frontend/node_modules';\nconst ts = require(projectModules + '/typescript');\nconst originalResolve = Module._resolveFilename;\nModule._resolveFilename = function(request, parent, isMain, options) {\n  if (request === 'react' || request.startsWith('react/')) {\n    return originalResolve.call(this, projectModules + '/' + request, parent, isMain, options);\n  }\n  return originalResolve.call(this, request, parent, isMain, options);\n};\nfor (const ext of ['.ts', '.tsx']) {\n  Module._extensions[ext] = (module, filename) => {\n    const output = ts.transpileModule(fs.readFileSync(filename, 'utf8'), {\n      fileName: filename,\n      compilerOptions: {target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true}\n    }).outputText;\n    module._compile(output, filename);\n  };\n}\nconst React = require(projectModules + '/react');\nconst renderer = require(base + '/review-v2/react-harness/node_modules/react-test-renderer');\n// Decorative icons are outside the hook-order test and are stubbed to avoid CJS/ESM loading differences.\nconst originalLoad = Module._load;\nconst iconStubs = new Proxy({}, {get: () => () => null});\nModule._load = function(request, parent, isMain) {\n  if (request === 'lucide-react') return iconStubs;\n  return originalLoad.call(this, request, parent, isMain);\n};\nconst ChartArea = require(base + '/review-v3/runtime/frontend/components/investigation/chart_area.tsx').default;\nglobal.IS_REACT_ACT_ENVIRONMENT = true;\nconst warnings = [];\nconst originalError = console.error;\nconsole.error = (...args) => warnings.push(args.map(String).join(' '));\n\n\nfunction textOf(node) {\n  if (typeof node === 'string' || typeof node === 'number') return String(node);\n  if (!node) return '';\n  return (node.children || []).map(textOf).join(' ');\n}\nconst regions = ['BGD','USA','KEN'].map(id => ({id, name_en:{BGD:'Bangladesh',USA:'United States',KEN:'Kenya'}[id],name_bn:id,has_ocean_support:false}));\nfunction result(id='BGD', len=5) {\n  return {series:{years:Array.from({length:len},(_,i)=>2000+i),values:Array.from({length:len},(_,i)=>10+i),unit:'°C'},\n    theil_sen:{ref_time:2000,slope_per_year:1,intercept:10},fitted_band:{points:[]},\n    parameter:{id:'air_temperature_2m',name_en:'Temperature',display_unit:'°C'},region:regions.find(r=>r.id===id),\n    identity:{result_id:'audit-result-'+id+'-'+len},data_support:{retained_interval:[2000,2000+len-1]},\n    provenance:{dataset_id:'NASA_MERRA2_M2TMNXSLV'},reproducibility:{policy_id:'point_meteorology_policy'}};\n}\nconst comparison={parameter_id:'air_temperature_2m',unit:'°C', common_years_count:5,\n  region_a:{id:'BGD',name:'Bangladesh',slope_per_decade:1},region_b:{id:'USA',name:'United States',slope_per_decade:0},\n  contrast_difference_series:{slope_per_decade:1,ci_95_lower:.5,ci_95_upper:1.5,p_value:.001,direction:'a_higher_rate',evidence_state:'supported_increase'}};\nconst out={scope:'Actual revision 3 ChartArea with decorative icons stubbed; controlled asynchronous fetch'};\n(async () => {\n  let tree;\n  try {\n    await renderer.act(async()=>{tree=renderer.create(React.createElement(ChartArea,{result:result(),allRegions:regions}));});\n    const hovered = tree.root.findAll(n=>n.type==='g'&&typeof n.props.onMouseEnter==='function');\n    await renderer.act(async()=>hovered[hovered.length-1].props.onMouseEnter());\n    await renderer.act(async()=>tree.update(React.createElement(ChartArea,{result:result('BGD',3),allRegions:regions})));\n    out.hover_to_shorter_result={status:'passed'};\n  } catch(e) {out.hover_to_shorter_result={status:'failed',error:String(e)};}\n  finally {if(tree)try{await renderer.act(async()=>tree.unmount());}catch{}}\n  try {\n    const calls=[];\n    global.fetch=(url,opts)=>new Promise(resolve=>calls.push({url,body:JSON.parse(opts.body),resolve}));\n    await renderer.act(async()=>{tree=renderer.create(React.createElement(ChartArea,{result:result(),allRegions:regions}));});\n    const button=label=>tree.root.findAllByType('button').find(n=>textOf(n).includes(label));\n    await renderer.act(async()=>button('Paired Comparison').props.onClick());\n    let pending;\n    await renderer.act(async()=>{pending=button('Compute Contrast').props.onClick();});\n    await renderer.act(async()=>{calls[0].resolve({ok:true,json:async()=>comparison});await pending;});\n    const shownName = name => tree.root.findAllByType('span').some(n => textOf(n) === name);\n    const before=shownName('United States');\n    await renderer.act(async()=>tree.root.findByType('select').props.onChange({target:{value:'KEN'}}));\n    out.changed_comparison_target={selection:'KEN',displayed_old_USA:before&&shownName('United States')};\n    await renderer.act(async()=>tree.root.findByType('select').props.onChange({target:{value:'USA'}}));\n    await renderer.act(async()=>{pending=button('Compute Contrast').props.onClick();});\n    await renderer.act(async()=>tree.update(React.createElement(ChartArea,{result:result('KEN'),allRegions:regions})));\n    const clearedAfterChange=!shownName('Bangladesh')&&!shownName('United States');\n    await renderer.act(async()=>{calls[1].resolve({ok:true,json:async()=>comparison});await pending;});\n    out.inflight_comparison_primary_change={current_primary:'KEN',old_comparison_cleared_initially:clearedAfterChange,old_comparison_reappears:shownName('Bangladesh')&&shownName('United States'),fetch_was_cancelled:false};\n    out.policy_forwarding={requested_policy:calls[0].body.policy_id,expected_policy:'point_meteorology_policy',passed:calls[0].body.policy_id==='point_meteorology_policy'};\n    out.calls=calls.map(({resolve,...r})=>r);\n  } catch(e) {out.comparison_probe_error=String(e);}\n  finally {if(tree)try{await renderer.act(async()=>tree.unmount());}catch{};console.error=originalError;}\n  out.warnings=warnings;\n  fs.writeFileSync(base+'/review-v3/chart-interaction-evidence.json',JSON.stringify(out,null,2)+'\\n');\n  console.log(JSON.stringify(out,null,2));\n})();\n"
+  },
+  "primary_reference_urls": [
+    "https://pyproj4.github.io/pyproj/stable/api/geod.html",
+    "https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.theilslopes.html",
+    "https://gpm.nasa.gov/data/imerg",
+    "https://react.dev/reference/rules/rules-of-hooks"
+  ]
+}

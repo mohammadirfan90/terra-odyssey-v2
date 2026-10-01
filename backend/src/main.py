@@ -98,7 +98,10 @@ async def rfc9457_http_exception_handler(request: Request, exc: HTTPException):
     )
 
 
-# Mount routers
+from pathlib import Path
+from fastapi.staticfiles import StaticFiles
+
+# Mount routers at root for contract tests and direct access
 app.include_router(regions_router)
 app.include_router(parameters_router)
 app.include_router(coverage_router)
@@ -108,8 +111,19 @@ app.include_router(results_router)
 app.include_router(layers_router)
 app.include_router(sources_router)
 
+# Mount routers under /api for unified single-port frontend client requests
+app.include_router(regions_router, prefix="/api")
+app.include_router(parameters_router, prefix="/api")
+app.include_router(coverage_router, prefix="/api")
+app.include_router(trend_router, prefix="/api")
+app.include_router(comparisons_router, prefix="/api")
+app.include_router(results_router, prefix="/api")
+app.include_router(layers_router, prefix="/api")
+app.include_router(sources_router, prefix="/api")
+
 
 @app.get("/health", tags=["Health"])
+@app.get("/api/health", tags=["Health"])
 def health_check():
     """Health check endpoint disclosing offline status and runtime version."""
     offline_active = os.environ.get("OFFLINE", "1").strip().lower() in ("1", "true", "yes")
@@ -121,11 +135,17 @@ def health_check():
     }
 
 
+# Mount static frontend export if available for single-port delivery (e.g. at port 8005)
+frontend_out = (Path(__file__).resolve().parents[2] / "frontend" / "out").resolve()
+if frontend_out.exists() and (frontend_out / "index.html").exists():
+    app.mount("/", StaticFiles(directory=str(frontend_out), html=True), name="frontend")
+
+
 def run():
     """CLI entrypoint launching the FastAPI server with uvicorn."""
     import uvicorn
 
-    port = int(os.environ.get("PORT", "8000"))
+    port = int(os.environ.get("PORT", "8005"))
     uvicorn.run("src.main:app", host="0.0.0.0", port=port, reload=False)
 
 

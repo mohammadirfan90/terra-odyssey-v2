@@ -44,3 +44,13 @@ earth-system-trend-detective = "src.main:run"
 where = ["."]
 include = ["src", "src.*"]
 
+[tool.pyright]
+include = ["src", "tests"]
+extraPaths = [
+    ".",
+    "src",
+    "C:/Python313/Lib/site-packages",
+    "C:/Users/ghotc/AppData/Roaming/Python/Python313/site-packages"
+]
+pythonPath = "C:/Python313/python.exe"
+

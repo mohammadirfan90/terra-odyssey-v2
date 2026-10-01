@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import sqlite3
 from datetime import datetime, timezone
@@ -21,6 +22,7 @@ import pandas as pd
 
 import numpy as np
 from ..registry.bindings import DATASET_BINDINGS, DatasetBinding
+from ..registry.parameters import PARAMETER_REGISTRY
 from ..registry.regions import REGION_REGISTRY, RegionDefinition
 
 
@@ -73,10 +75,14 @@ def _sanitize_floats(obj: Any) -> Any:
 class LocalDataStore:
     """Manages access to local Parquet files, acquisition manifests, and SQLite results."""
 
-    def __init__(self, data_root: Optional[Path] = None):
+    def __init__(self, data_root: Optional[Path | str] = None):
         if data_root is None:
-            backend_dir = Path(__file__).resolve().parents[2]
-            self.data_root = (backend_dir.parent / "data").resolve()
+            env_data = os.environ.get("DATA_ROOT")
+            if env_data:
+                self.data_root = Path(env_data).resolve()
+            else:
+                backend_dir = Path(__file__).resolve().parents[2]
+                self.data_root = (backend_dir.parent / "data").resolve()
         else:
             self.data_root = Path(data_root).resolve()
 
@@ -140,15 +146,22 @@ class LocalDataStore:
                 try:
                     obj = json.loads(res_json)
                     prov = obj.get("provenance", {})
+                    if "region_a_data_sha256" in prov and not prov.get("data_sha256"):
+                        prov["data_sha256"] = f"{prov['region_a_data_sha256']}_{prov.get('region_b_data_sha256', '')}"
+                        obj["provenance"] = prov
+                        res_json = json.dumps(obj)
+                        cursor.execute("UPDATE completed_results SET result_json = ? WHERE result_id = ?", (res_json, r_id))
+
                     d_sha = prov.get("data_sha256")
                     doi = prov.get("doi", "")
-                    if not d_sha or doi == "10.5067/0JRLVL8YV2Y4":
+                    code_rev = obj.get("reproducibility", {}).get("code_revision", "v1.0.0")
+                    if not d_sha or doi == "10.5067/0JRLVL8YV2Y4" or code_rev == "v1.0.0":
                         cursor.execute(
                             """
                             INSERT OR REPLACE INTO quarantined_results (result_id, query_json, created_at, result_json, quarantine_reason)
                             VALUES (?, ?, ?, ?, ?)
                             """,
-                            (r_id, q_json, c_at, res_json, "Legacy unverified provenance or missing data SHA-256"),
+                            (r_id, q_json, c_at, res_json, f"Legacy result superseded by code revision v1.4.0 (was {code_rev})"),
                         )
                         cursor.execute("DELETE FROM completed_results WHERE result_id = ?", (r_id,))
                 except Exception:
@@ -256,12 +269,22 @@ class LocalDataStore:
             parquet_path = self.get_series_path(binding_id, region_id)
             if not parquet_path.exists() or parquet_path.stat().st_size == 0:
                 return False
+            manifest = self.get_manifest(binding_id)
+            if not manifest or manifest.get("binding_id") != binding_id:
+                return False
+            if "metadata" not in manifest or not isinstance(manifest.get("metadata"), dict) or not manifest["metadata"]:
+                return False
+            meta = manifest["metadata"]
+            if meta.get("availability_state") not in ("analysis_ready", "display_ready"):
+                return False
             entry = self.get_manifest_entry(binding_id, region_id)
             if not entry:
                 return False
-            actual_sha = self.get_series_bytes_sha256(binding_id, region_id)
             expected_sha = entry.get("sha256")
-            if expected_sha and actual_sha != expected_sha:
+            if not expected_sha or not isinstance(expected_sha, str) or len(expected_sha) != 64:
+                return False
+            actual_sha = self.get_series_bytes_sha256(binding_id, region_id)
+            if actual_sha.lower() != expected_sha.lower():
                 return False
             return True
         except (InvalidPathSecurityError, ValueError):
@@ -282,7 +305,7 @@ class LocalDataStore:
             CacheMissOfflineError: If file is not present locally.
             ManifestEntryNotFoundError: If series is not declared in a verified manifest.
             ManifestChecksumMismatchError: If file SHA-256 does not match manifest.
-            ManifestSchemaError: If required manifest columns are missing from file.
+            ManifestSchemaError: If required manifest columns or metadata violate contracts.
             InvalidPathSecurityError: If path security check fails.
         """
         manifest = self.get_manifest(binding_id)
@@ -309,25 +332,131 @@ class LocalDataStore:
 
         actual_sha = self.get_series_bytes_sha256(binding_id, region_id)
         expected_sha = entry.get("sha256")
-        if expected_sha and actual_sha != expected_sha:
+        if not expected_sha or not isinstance(expected_sha, str) or len(expected_sha) != 64:
+            raise ManifestChecksumMismatchError(
+                f"Manifest entry for {binding_id}_{region_id} is missing a valid 64-character SHA-256 digest."
+            )
+        if actual_sha.lower() != expected_sha.lower():
             raise ManifestChecksumMismatchError(
                 f"Data integrity violation for {binding_id}_{region_id}: "
                 f"actual Parquet SHA-256 '{actual_sha}' does not match verified manifest '{expected_sha}'."
             )
 
-        df = pd.read_parquet(parquet_path)
+        manifest_binding = manifest.get("binding_id")
+        if manifest_binding != binding_id:
+            raise ManifestSchemaError(
+                f"Manifest declared binding_id '{manifest_binding}' does not match requested binding '{binding_id}'."
+            )
+
+        if "metadata" not in manifest or not isinstance(manifest.get("metadata"), dict) or not manifest["metadata"]:
+            raise ManifestSchemaError(
+                f"Manifest for binding '{binding_id}' violates schema: required 'metadata' object is missing."
+            )
+
+        meta = manifest["metadata"]
+        avail = meta.get("availability_state")
+        if avail not in ("analysis_ready", "display_ready"):
+            raise ManifestSchemaError(
+                f"Dataset binding '{binding_id}' is in availability_state '{avail}', not ready for analysis."
+            )
+
+        if binding_id in DATASET_BINDINGS:
+            expected_binding = DATASET_BINDINGS[binding_id]
+            if meta.get("canonical_unit") and meta.get("canonical_unit") != expected_binding.canonical_unit:
+                raise ManifestSchemaError(
+                    f"Manifest canonical unit '{meta.get('canonical_unit')}' does not match binding definition '{expected_binding.canonical_unit}'."
+                )
+            if meta.get("variable_name") and meta.get("variable_name") != expected_binding.variable_name:
+                raise ManifestSchemaError(
+                    f"Manifest variable name '{meta.get('variable_name')}' does not match binding definition '{expected_binding.variable_name}'."
+                )
+            expected_param = PARAMETER_REGISTRY.get(expected_binding.parameter_id)
+            if expected_param and meta.get("display_unit") and meta.get("display_unit") != expected_param.display_unit:
+                raise ManifestSchemaError(
+                    f"Manifest display unit '{meta.get('display_unit')}' does not match parameter definition '{expected_param.display_unit}'."
+                )
+            if meta.get("temporal_cadence") and meta.get("temporal_cadence") != expected_binding.temporal_cadence:
+                raise ManifestSchemaError(
+                    f"Manifest temporal cadence '{meta.get('temporal_cadence')}' does not match binding definition '{expected_binding.temporal_cadence}'."
+                )
+
+        expected_filename = entry.get("file_name")
+        if expected_filename and expected_filename != parquet_path.name:
+            raise ManifestSchemaError(
+                f"Manifest entry file_name '{expected_filename}' does not match actual file name '{parquet_path.name}'."
+            )
+
+        try:
+            df = pd.read_parquet(parquet_path)
+        except Exception as e:
+            raise ManifestSchemaError(
+                f"Corrupt or unreadable Parquet file for {binding_id}_{region_id}: {str(e)}"
+            ) from e
+
+        if "year" not in df.columns:
+            raise ManifestSchemaError(
+                f"Parquet file {parquet_path.name} violates schema: required column 'year' is missing."
+            )
+
+        # Validate 'year' column numeric integer types
+        try:
+            year_series = pd.to_numeric(df["year"], errors="raise")
+            if not np.all(np.isfinite(year_series.to_numpy())):
+                raise ManifestSchemaError("Column 'year' contains non-finite values.")
+            if not np.all(np.equal(np.mod(year_series.to_numpy(), 1), 0)):
+                raise ManifestSchemaError("Column 'year' must contain integer values.")
+            df["year"] = year_series.astype(int)
+        except ManifestSchemaError:
+            raise
+        except Exception as e:
+            raise ManifestSchemaError(f"Column 'year' contains non-numeric values: {e}")
+
+        manifest_rows = entry.get("row_count")
+        if manifest_rows is not None and manifest_rows != len(df):
+            raise ManifestSchemaError(
+                f"Parquet row count ({len(df)}) does not match verified manifest row count ({manifest_rows})."
+            )
+        first_yr = entry.get("first_year")
+        if first_yr is not None and len(df) > 0 and int(df["year"].min()) != int(first_yr):
+            raise ManifestSchemaError(
+                f"Parquet first year ({int(df['year'].min())}) does not match manifest first year ({first_yr})."
+            )
+        last_yr = entry.get("last_year")
+        if last_yr is not None and len(df) > 0 and int(df["year"].max()) != int(last_yr):
+            raise ManifestSchemaError(
+                f"Parquet last year ({int(df['year'].max())}) does not match manifest last year ({last_yr})."
+            )
 
         # Enforce source schema contract
         qa_col = entry.get("qa_column")
+        cov_col = entry.get("coverage_column")
+        if binding_id in DATASET_BINDINGS:
+            b_def = DATASET_BINDINGS[binding_id]
+            if b_def.qa_band_name or b_def.is_gridded:
+                qa_col = qa_col or "qa_passed"
+                cov_col = cov_col or "valid_coverage_pct"
+
         if qa_col and qa_col not in df.columns:
             raise ManifestSchemaError(
-                f"Parquet file {entry.get('file_name')} violates manifest contract: required QA column '{qa_col}' missing."
+                f"Parquet file {entry.get('file_name', parquet_path.name)} violates manifest contract: required QA column '{qa_col}' missing."
             )
-        cov_col = entry.get("coverage_column")
         if cov_col and cov_col not in df.columns:
             raise ManifestSchemaError(
-                f"Parquet file {entry.get('file_name')} violates manifest contract: required coverage column '{cov_col}' missing."
+                f"Parquet file {entry.get('file_name', parquet_path.name)} violates manifest contract: required coverage column '{cov_col}' missing."
             )
+
+        # Map declared alternative QA column to canonical 'qa_passed'
+        if qa_col and qa_col in df.columns and qa_col != "qa_passed":
+            df["qa_passed"] = df[qa_col].astype(bool)
+
+        # Map declared alternative coverage column to canonical 'valid_coverage_pct'
+        cov_col_to_check = cov_col or ("valid_coverage_pct" if "valid_coverage_pct" in df.columns else None)
+        if cov_col_to_check and cov_col_to_check in df.columns:
+            try:
+                cov_series = pd.to_numeric(df[cov_col_to_check], errors="raise")
+                df["valid_coverage_pct"] = cov_series
+            except Exception as e:
+                raise ManifestSchemaError(f"Coverage column contains non-numeric values: {e}")
 
         if start_year is not None:
             df = df[df["year"] >= start_year]
@@ -380,7 +509,7 @@ class LocalDataStore:
             if row:
                 res = json.loads(row[0])
                 prov = res.get("provenance", {})
-                d_sha = prov.get("data_sha256")
+                d_sha = prov.get("data_sha256") or prov.get("region_a_data_sha256")
                 doi = prov.get("doi", "")
                 if not d_sha or doi == "10.5067/0JRLVL8YV2Y4":
                     return None

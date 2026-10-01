@@ -1,12 +1,14 @@
 """GET /trend primary scientific computation endpoint.
 
-Implements Section 10.3, Table 17, and Table 18; resolves Findings F01, F03, F04, F05, F06, F09, F12, F13:
+Implements Section 10.3, Table 17, and Table 18; resolves Findings F01, F03, F04, F05, F06, F09, F12, F13, and Audit R04, R07, R08:
 - Synchronous bounded scientific computation over verified local cached observations
 - Zero synthetic data generation (returns typed Problem Details on cache miss)
 - Strict validation of parameter bindings and analysis policy
 - Enforces QA gates, coverage thresholds, unique calendar years, and minimum eligible years
-- Content-based SHA-256 immutable result hashing
-- Deterministic bilingual English and Bangla narration with strict numerical verification
+- Shared aggregation logic for daily, monthly, and annual observations with calendar verification
+- Preserves full precision from canonical variables
+- Truthful requested vs retained intervals in immutable hashing and data support
+- Deterministic bilingual English and Bangla narration with strict numerical verification in both languages
 """
 
 from __future__ import annotations
@@ -36,6 +38,7 @@ from ..compute.mann_kendall import mann_kendall_test
 from ..compute.theil_sen import theil_sen_slope
 from ..compute.serial_corr import check_autocorrelation
 from ..compute.uncertainty import calculate_fitted_line_band
+from ..compute.aggregation import aggregate_annual_series
 from ..narration.claims import NarrationClaimFrame
 from ..narration.templates_en import render_english_narration
 from ..narration.templates_bn import render_bangla_narration
@@ -72,30 +75,18 @@ def calculate_trend(
     reg_id = effective_region_id.upper().strip()
     param_id = parameter_id.lower().strip()
 
-    # Validate region
+    # Validate registry existence
     if reg_id not in REGION_REGISTRY:
-        matched = None
-        for r in REGION_REGISTRY.values():
-            if r.iso_a2 == reg_id or r.iso_a3 == reg_id:
-                matched = r
-                break
-        if matched:
-            reg_id = matched.id
-        else:
-            raise HTTPException(
-                status_code=404,
-                detail={
-                    "type": "https://errors.earthtrenddetective.org/REGION_NOT_FOUND",
-                    "title": "Region Not Found",
-                    "status": 404,
-                    "detail": f"Region '{effective_region_id}' is not in the recognized registry.",
-                    "code": "REGION_NOT_FOUND",
-                },
-            )
-
-    region = REGION_REGISTRY[reg_id]
-
-    # Validate parameter
+        raise HTTPException(
+            status_code=404,
+            detail={
+                "type": "https://errors.earthtrenddetective.org/REGION_NOT_FOUND",
+                "title": "Region Not Found",
+                "status": 404,
+                "detail": f"Region '{reg_id}' is not in the recognized geographical boundary registry.",
+                "code": "REGION_NOT_FOUND",
+            },
+        )
     if param_id not in PARAMETER_REGISTRY:
         raise HTTPException(
             status_code=404,
@@ -103,14 +94,15 @@ def calculate_trend(
                 "type": "https://errors.earthtrenddetective.org/PARAMETER_NOT_FOUND",
                 "title": "Parameter Not Found",
                 "status": 404,
-                "detail": f"Physical parameter '{param_id}' is not catalogued.",
+                "detail": f"Physical parameter '{param_id}' is not in the physical parameter registry.",
                 "code": "PARAMETER_NOT_FOUND",
             },
         )
 
+    region = REGION_REGISTRY[reg_id]
     param = PARAMETER_REGISTRY[param_id]
 
-    # Validate spatial support
+    # Validate spatial support compatibility (Resolves Finding F08)
     if param.valid_spatial_support == "ocean" and not region.has_ocean_support:
         raise HTTPException(
             status_code=400,
@@ -118,12 +110,12 @@ def calculate_trend(
                 "type": "https://errors.earthtrenddetective.org/INCOMPATIBLE_SPATIAL_SUPPORT",
                 "title": "Incompatible Spatial Support",
                 "status": 400,
-                "detail": f"Parameter '{param.name_en}' requires an ocean region, but '{region.name_en}' is terrestrial.",
+                "detail": f"Parameter '{param.name_en}' is valid only over oceanic bodies, but '{region.name_en}' is a terrestrial region.",
                 "code": "INCOMPATIBLE_SPATIAL_SUPPORT",
             },
         )
 
-    # Resolve and validate binding
+    # Resolve dataset binding
     bind_id = binding_id or param.default_binding_id
     if bind_id not in DATASET_BINDINGS:
         raise HTTPException(
@@ -132,7 +124,7 @@ def calculate_trend(
                 "type": "https://errors.earthtrenddetective.org/UNSUPPORTED_BINDING",
                 "title": "Unsupported Dataset Binding",
                 "status": 400,
-                "detail": f"Binding '{bind_id}' is not registered.",
+                "detail": f"Dataset binding '{bind_id}' is not registered.",
                 "code": "UNSUPPORTED_BINDING",
             },
         )
@@ -151,7 +143,11 @@ def calculate_trend(
         )
 
     # Resolve and validate policy
-    default_pol = "precipitation_total_policy" if param_id == "precipitation_total" else "standard_climate_temperature"
+    default_pol = (
+        "modis_lst_satellite_policy"
+        if "MODIS" in bind_id
+        else ("precipitation_total_policy" if param_id == "precipitation_total" else "standard_climate_temperature")
+    )
     pol_id = policy_id or default_pol
     if pol_id not in ANALYSIS_POLICIES:
         raise HTTPException(
@@ -204,68 +200,23 @@ def calculate_trend(
             },
         )
 
-    # 1. Quality & Coverage Gating (Resolves Finding F04, F09)
-    # Filter by QA passed if available
-    if "qa_passed" in df.columns:
-        df = df[df["qa_passed"] == True]
+    # 1. Scientific aggregation and completeness checks (Resolves Audit R04)
+    try:
+        ann_df = aggregate_annual_series(df, param_id=param_id, policy=policy, binding_id=bind_id)
+    except ManifestSchemaError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "type": "https://errors.earthtrenddetective.org/DATA_INTEGRITY_ERROR",
+                "title": "Data Integrity Violation During Aggregation",
+                "status": 422,
+                "detail": str(exc),
+                "code": "DATA_INTEGRITY_ERROR",
+            },
+        )
 
-    has_cov = "valid_coverage_pct" in df.columns
-    if has_cov:
-        # Strict finite bounds check [0, 100]
-        df = df[np.isfinite(df["valid_coverage_pct"].to_numpy(dtype=float))]
-        df = df[(df["valid_coverage_pct"] >= 0.0) & (df["valid_coverage_pct"] <= 100.0)]
-        df = df[df["valid_coverage_pct"] >= policy.min_annual_coverage_pct]
-
-    is_precip = (param_id == "precipitation_total") or (pol_id == "precipitation_total_policy") or (param.supported_temporal_statistics[0] in ("annual_total", "total"))
-    min_months = 12 if is_precip else 10
-
-    # Monthly aggregation if monthly rows are present
-    if "month" in df.columns:
-        df = df[df["month"].between(1, 12)]
-        annual_rows = []
-        for yr, grp in df.groupby("year"):
-            # Deduplicate by month so duplicate copies of January do not inflate valid month count
-            unique_months = grp.drop_duplicates(subset=["month"])
-            if len(unique_months) >= min_months:
-                val_col = "value" if "value" in unique_months.columns else "value_display"
-                stat_val = float(unique_months[val_col].sum()) if is_precip else float(unique_months[val_col].mean())
-                cov_val = float(unique_months["valid_coverage_pct"].mean()) if has_cov else 100.0
-                annual_rows.append({
-                    "year": int(yr),
-                    "value_display": round(stat_val, 2),
-                    "value_scientific": stat_val,
-                    "valid_coverage_pct": cov_val,
-                })
-        df = pd.DataFrame(annual_rows)
-        if df.empty:
-            df = pd.DataFrame(columns=["year", "value_display", "value_scientific", "valid_coverage_pct"])
-    else:
-        # Daily or already annual
-        if "day" in df.columns or len(df) > 100:
-            annual_rows = []
-            for yr, grp in df.groupby("year"):
-                val_col = "value" if "value" in grp.columns else "value_display"
-                stat_val = float(grp[val_col].sum()) if is_precip else float(grp[val_col].mean())
-                cov_val = float(grp["valid_coverage_pct"].mean()) if has_cov else 100.0
-                annual_rows.append({
-                    "year": int(yr),
-                    "value_display": round(stat_val, 2),
-                    "value_scientific": stat_val,
-                    "valid_coverage_pct": cov_val,
-                })
-            df = pd.DataFrame(annual_rows)
-        else:
-            val_col = "value" if "value" in df.columns else "value_display"
-            df["value_scientific"] = df[val_col].astype(float)
-            if "valid_coverage_pct" not in df.columns:
-                df["valid_coverage_pct"] = 100.0
-
-    # Retain unique calendar years and drop NaNs / Infs (Resolves Finding F09)
-    df = df.drop_duplicates(subset=["year"]).dropna(subset=["value_scientific"])
-    df = df[np.isfinite(df["value_scientific"].to_numpy(dtype=float))]
-
-    years = df["year"].to_numpy(dtype=float)
-    values = df["value_scientific"].to_numpy(dtype=float)
+    years = ann_df["year"].to_numpy(dtype=float)
+    values = ann_df["val"].to_numpy(dtype=float)
     n_samples = len(values)
 
     if n_samples < 3:
@@ -283,6 +234,9 @@ def calculate_trend(
     start_ret = int(years.min())
     end_ret = int(years.max())
 
+    req_start = start_year if start_year is not None else start_ret
+    req_end = end_year if end_year is not None else end_ret
+
     # Check maximum missing consecutive year gap (Resolves Finding F04 / Audit R04)
     sorted_years = np.sort(years)
     year_diffs = np.diff(sorted_years)
@@ -295,10 +249,11 @@ def calculate_trend(
         region_id=reg_id,
         parameter_id=param_id,
         binding_id=bind_id,
-        start_date=str(start_ret),
-        end_date=str(end_ret),
+        start_date=str(req_start),
+        end_date=str(req_end),
         policy_id=policy.id,
         data_sha256=data_sha,
+        code_revision="v1.4.0",
         policy_settings=policy.model_dump(),
     )
     cached_result = store.get_result(result_id)
@@ -329,9 +284,9 @@ def calculate_trend(
     # 5. Evidence State Determination (Resolves Finding F06, R04)
     if n_samples < policy.exploratory_min_years:
         evidence_state = "insufficient"
-    elif n_samples < policy.min_eligible_years_climate:
-        evidence_state = "limited"
     elif has_excessive_gap:
+        evidence_state = "limited"
+    elif n_samples < policy.min_eligible_years_climate:
         evidence_state = "limited"
     else:
         evidence_state = mk_res.evidence_state
@@ -358,37 +313,28 @@ def calculate_trend(
         p_value=mk_res.p_value,
         ci_95_lower_per_decade=ts_res.ci_95_lower_per_decade,
         ci_95_upper_per_decade=ts_res.ci_95_upper_per_decade,
-        coverage_pct=float(df["valid_coverage_pct"].mean()) if "valid_coverage_pct" in df.columns else 100.0,
-        method_name_en=f"Mann-Kendall test ({'Hamed-Rao adjusted' if auto_adj else 'continuity-corrected'})",
-        method_name_bn="অটোকরিলেশন সমন্বিত ম্যান-কেন্ডাল পরীক্ষা" if auto_adj else "ম্যান-কেন্ডাল পরীক্ষা",
+        coverage_pct=float(ann_df["coverage"].mean()) if "coverage" in ann_df.columns else 100.0,
+        method_name_en="Mann-Kendall",
+        method_name_bn="ম্যান-কেন্ডাল",
     )
 
     narration_en = render_english_narration(claim)
     narration_bn = render_bangla_narration(claim)
 
-    # 6. Immutable Content-Based Result Hashing (Resolves Finding F05)
-    data_sha = store.get_series_bytes_sha256(bind_id, reg_id)
-    result_id = compute_result_hash(
-        region_id=reg_id,
-        parameter_id=param_id,
-        binding_id=bind_id,
-        start_date=str(start_ret),
-        end_date=str(end_ret),
-        policy_id=policy.id,
-        data_sha256=data_sha,
-        policy_settings=policy.model_dump(),
-    )
     claim.result_id = result_id
-
     created_iso = datetime.now(timezone.utc).isoformat()
 
-    # Interpretation text
+    # Interpretation text (Resolves Audit R04)
     if evidence_state in ("supported_increase", "supported_decrease"):
         interp_en = f"Statistically supported {mk_res.direction} trend over {start_ret}-{end_ret}."
         interp_bn = f"{start_ret}-{end_ret} সময়কালে পরিসংখ্যানগতভাবে সমর্থিত প্রবণতা।"
     elif evidence_state == "limited":
-        interp_en = f"Exploratory trend evidence over {start_ret}-{end_ret} (record span < {policy.min_eligible_years_climate} years)."
-        interp_bn = f"{start_ret}-{end_ret} সময়কালে প্রাথমিক অনুসন্ধানী প্রমাণ (সময়কাল < {policy.min_eligible_years_climate} বছর)।"
+        if has_excessive_gap:
+            interp_en = f"Exploratory trend evidence over {start_ret}-{end_ret} (consecutive missing gap > {policy.max_consecutive_missing_gap} years)."
+            interp_bn = f"{start_ret}-{end_ret} সময়কালে অনুসন্ধানী প্রমাণ (অনুপস্থিত ব্যবধান > {policy.max_consecutive_missing_gap} বছর)।"
+        else:
+            interp_en = f"Exploratory trend evidence over {start_ret}-{end_ret} (record span < {policy.min_eligible_years_climate} years)."
+            interp_bn = f"{start_ret}-{end_ret} সময়কালে প্রাথমিক অনুসন্ধানী প্রমাণ (সময়কাল < {policy.min_eligible_years_climate} বছর)।"
     elif evidence_state == "flat":
         interp_en = f"No monotonic change detected over {start_ret}-{end_ret}; slope is near-zero."
         interp_bn = f"{start_ret}-{end_ret} সময়কালে কোনো ধারাবাহিক একক পরিবর্তন নেই; পরিবর্তনের হার প্রায় শূন্য।"
@@ -406,8 +352,8 @@ def calculate_trend(
                 "region_id": reg_id,
                 "parameter_id": param_id,
                 "binding_id": bind_id,
-                "start_year": start_ret,
-                "end_year": end_ret,
+                "start_year": req_start,
+                "end_year": req_end,
                 "policy_id": policy.id,
             },
         },
@@ -433,7 +379,7 @@ def calculate_trend(
             "observation_type": param.observation_type,
         },
         "data_support": {
-            "requested_interval": [start_year or start_ret, end_year or end_ret],
+            "requested_interval": [req_start, req_end],
             "retained_interval": [start_ret, end_ret],
             "sample_count": n_samples,
             "native_spatial_resolution": binding.native_spatial_resolution,
@@ -511,29 +457,44 @@ def calculate_trend(
             "data_sha256": data_sha,
         },
         "reproducibility": {
-            "code_revision": "v1.0.0",
+            "code_revision": "v1.4.0",
             "policy_id": policy.id,
             "bootstrap_seed": policy.bootstrap_seed,
             "bootstrap_replicates": policy.bootstrap_replicates,
         },
     }
 
-    # Validate generated narration against result pointers (Resolves Finding F12 / Audit R07)
-    is_valid, val_errors = validate_narrative_text(narration_en, claim, result)
-    if not is_valid:
+    # Validate generated narration in BOTH English and Bangla (Resolves Finding F12 / Audit R07)
+    valid_en, err_en = validate_narrative_text(narration_en, claim, result)
+    valid_bn, err_bn = validate_narrative_text(narration_bn, claim, result)
+    if not (valid_en and valid_bn):
         # Fallback to pure deterministic claim facts if validation detects anomaly; never publish rejected sentences
         sign_char = "+" if (ts_res.slope_per_decade or 0) > 0 else ""
         slope_str = f"{sign_char}{(ts_res.slope_per_decade or 0):.2f}"
+        slope_bn = slope_str.translate(str.maketrans("0123456789", "০১২৩৪৫৬৭৮৯"))
+        start_bn = str(start_ret).translate(str.maketrans("0123456789", "০১২৩৪৫৬৭৮৯"))
+        end_bn = str(end_ret).translate(str.maketrans("0123456789", "০১২৩৪৫৬৭৮৯"))
+
+        evidence_bn_labels = {
+            "supported_increase": "পরিসংখ্যানগতভাবে সমর্থিত বৃদ্ধি",
+            "supported_decrease": "পরিসংখ্যানগতভাবে সমর্থিত হ্রাস",
+            "limited": "প্রাথমিক অনুসন্ধানী প্রমাণ",
+            "insufficient": "অপর্যাপ্ত তথ্য",
+            "inconclusive": "অমীমাংসিত",
+            "flat": "স্থিতিশীল",
+        }
+        ev_bn = evidence_bn_labels.get(evidence_state, evidence_state)
+
         result["narration"]["en"] = [
             f"Over {start_ret} to {end_ret}, {region.name_en} {param.name_en.lower()} had an estimated rate of {slope_str} {param.display_unit}/decade.",
             f"The statistical evidence is categorized as {evidence_state}.",
         ]
         result["narration"]["bn"] = [
-            f"{start_ret} থেকে {end_ret} সময়কালে {region.name_bn}-এ {param.name_bn}-এর পরিবর্তনের হার ছিল দশক প্রতি {slope_str} {param.display_unit}।",
-            f"পরিসংখ্যানগত প্রমাণের অবস্থা: {evidence_state}।",
+            f"{start_bn} থেকে {end_bn} সময়কালে {region.name_bn}-এ {param.name_bn}-এর পরিবর্তনের হার ছিল দশক প্রতি {slope_bn} {param.display_unit}।",
+            f"পরিসংখ্যানগত প্রমাণের অবস্থা: {ev_bn}।",
         ]
         result["narration_status"] = "fallback"
-        result["narration_validation_errors"] = val_errors
+        result["narration_validation_errors"] = err_en + err_bn
 
     # Persist immutable result in SQLite (Append-Only)
     store.save_result(result_id, result["identity"]["normalized_query"], result)

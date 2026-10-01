@@ -11,6 +11,7 @@ Implements Chapter 4 and resolves Finding F14:
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Dict, List, Literal, Optional, Tuple
 import numpy as np
@@ -92,9 +93,13 @@ def load_regions() -> Dict[str, RegionDefinition]:
     """Load all regions from data/regions/countries.geojson and enrich with metadata."""
     registry: Dict[str, RegionDefinition] = {}
 
-    geojson_path = Path(__file__).resolve().parents[3] / "data" / "regions" / "countries.geojson"
-    if not geojson_path.exists():
-        geojson_path = Path(__file__).resolve().parents[2] / "data" / "regions" / "countries.geojson"
+    env_data = os.environ.get("DATA_ROOT")
+    if env_data:
+        geojson_path = Path(env_data).resolve() / "regions" / "countries.geojson"
+    else:
+        geojson_path = Path(__file__).resolve().parents[3] / "data" / "regions" / "countries.geojson"
+        if not geojson_path.exists():
+            geojson_path = Path(__file__).resolve().parents[2] / "data" / "regions" / "countries.geojson"
 
     if geojson_path.exists():
         try:

@@ -1,10 +1,12 @@
 """Narration safeguard validator ensuring factual alignment with result JSON Pointers.
 
-Implements Chapter 11.2 and resolves Finding F12:
+Implements Chapter 11.2 and resolves Finding F12 and Audit R07:
 - Rejects numbers absent from the result or attached to the wrong field
 - Strictly blocks causal claims ("caused by", "due to human emissions", "proved")
-- Prohibits sensationalized superlatives ("unprecedented", "catastrophic", "worst ever")
+- Prohibits sensationalized superlatives ("unprecedented", "catastrophic", "worst ever", "বিপর্যয়")
 - Validates extracted numerical claims against exact claim and result pointers
+- Enforces strict field binding: point slope, coverage percentage, and interval bounds are distinct
+- Fully bilingual: normalizes Bengali numerals to enforce identical validation in English and Bangla
 """
 
 from __future__ import annotations
@@ -29,7 +31,10 @@ FORBIDDEN_CAUSAL_PHRASES = [
     "disastrous",
     "কারণে",
     "প্রমাণ করে",
+    "বিপর্যয়",
 ]
+
+BN_TO_EN = str.maketrans("০১২৩৪৫৬৭৮৯", "0123456789")
 
 
 def resolve_json_pointer(doc: Dict[str, Any], pointer: str) -> Any:
@@ -67,11 +72,13 @@ def validate_narrative_text(
     - Field-specific numerical validation preventing cross-field number leakage
     """
     errors: List[str] = []
-    combined_text = " ".join(sentences).lower()
+    combined_raw = " ".join(sentences).lower()
+    # Normalize Bengali numerals to English digits for consistent regex analysis
+    combined_text = combined_raw.translate(BN_TO_EN)
 
     # 1. Check for unverified causal language and unapproved superlatives
     for forbidden in FORBIDDEN_CAUSAL_PHRASES:
-        if forbidden in combined_text:
+        if forbidden in combined_raw:
             errors.append(f"Forbidden causal or sensationalized claim detected: '{forbidden}'")
 
     # 2. Check sentence count constraint (exactly two sentences per language)
@@ -118,32 +125,94 @@ def validate_narrative_text(
         elif claim.slope_per_decade < -0.05 and "increased" in combined_text:
             errors.append("Inconsistency: Negative slope described as 'increased'")
 
-    # 5. Field-specific numerical fact validation (Resolves Finding F12 / Audit R07)
-    # Check rate/slope numbers specifically: they must not borrow from coverage or other fields
-    slope_matches = re.findall(
-        r"([+-]?\d+(?:\.\d+)?)\s*(?:°c/decade|°c|mm/decade|mm|/decade|দশক প্রতি)",
-        combined_text,
-    )
-    for s_match in slope_matches:
-        try:
-            s_num = float(s_match)
-            allowed_slopes = [claim.slope_per_decade]
-            if claim.ci_95_lower_per_decade is not None:
-                allowed_slopes.append(claim.ci_95_lower_per_decade)
-            if claim.ci_95_upper_per_decade is not None:
-                allowed_slopes.append(claim.ci_95_upper_per_decade)
+    # 5. Field-specific numerical fact validation (Resolves Finding F12, Audit R07, Finding V4-06)
+    # 5a. Check point slope and CI bounds:
+    # Numbers immediately before °C/decade or °C/দশক preceded by "to" or "থেকে" are CI upper endpoints.
+    # Numbers explicitly in point slope position must match claim.slope_per_decade strictly.
+    explicit_slope_patterns = [
+        r"(?:increased at|decreased at|rate of|rate was|slope of)\s*([+-]?\d+(?:\.\d+)?)",
+        r"(?:দশক প্রতি|প্রতি দশকে|প্রতি দশক)\s*([+-]?\d+(?:\.\d+)?)",
+    ]
+    for pattern in explicit_slope_patterns:
+        for s_match in re.findall(pattern, combined_text):
+            try:
+                s_num = float(s_match)
+                if claim.slope_per_decade is not None:
+                    if abs(s_num - claim.slope_per_decade) >= 0.05:
+                        errors.append(
+                            f"Factual mismatch: Extracted slope quantity {s_num} does not match verified slope "
+                            f"{claim.slope_per_decade} (cross-field or invented number)."
+                        )
+            except ValueError:
+                continue
 
-            valid_matches = [v for v in allowed_slopes if v is not None and abs(s_num - v) < 0.05]
-            if not valid_matches:
-                errors.append(
-                    f"Factual mismatch: Extracted slope quantity {s_num} does not match verified slope "
-                    f"{claim.slope_per_decade} (cross-field or invented number)."
-                )
+    # Unit-bound rate patterns: distinguish CI upper bound from point slope
+    # E.g. "0.23 to 0.36 °C/decade" vs "+0.30 °C/decade"
+    unit_rate_pattern = r"((?:to|থেকে)\s+)?([+-]?\d+(?:\.\d+)?)\s*(?:°c/decade|°c/দশক|mm/decade|mm/দশক|/decade|/দশক)"
+    for prefix, num_str in re.findall(unit_rate_pattern, combined_text):
+        try:
+            val = float(num_str)
+            if prefix:
+                # Preceded by "to" or "থেকে" -> this is the CI upper bound!
+                if claim.ci_95_upper_per_decade is not None:
+                    if abs(val - claim.ci_95_upper_per_decade) >= 0.05:
+                        errors.append(
+                            f"Factual mismatch: Extracted CI upper endpoint {val} does not match verified CI upper "
+                            f"{claim.ci_95_upper_per_decade}."
+                        )
+            else:
+                # Not preceded by "to" or "থেকে" -> this is the point slope estimate!
+                if claim.slope_per_decade is not None:
+                    if abs(val - claim.slope_per_decade) >= 0.05:
+                        errors.append(
+                            f"Factual mismatch: Extracted slope quantity {val} does not match verified slope "
+                            f"{claim.slope_per_decade} (cross-field or invented number)."
+                        )
         except ValueError:
             continue
 
-    # Global number pool for remaining tokens (years, intervals, coverage)
-    num_matches = re.findall(r"[-+]?\d+(?:\.\d+)?", " ".join(sentences))
+    # 5b. Check explicit CI bounds clauses (e.g. "interval of 0.23 to 0.36"):
+    ci_clause_pattern = r"(?:confidence interval of|interval of|ব্যবধান ছিল|ব্যবধান)\s*([+-]?\d+(?:\.\d+)?)\s*(?:to|থেকে)\s*([+-]?\d+(?:\.\d+)?)"
+    for low_str, up_str in re.findall(ci_clause_pattern, combined_text):
+        try:
+            low_val = float(low_str)
+            up_val = float(up_str)
+            if claim.ci_95_lower_per_decade is not None:
+                if abs(low_val - claim.ci_95_lower_per_decade) >= 0.05:
+                    errors.append(
+                        f"Factual mismatch: Extracted CI lower endpoint {low_val} does not match verified CI lower {claim.ci_95_lower_per_decade}."
+                    )
+            if claim.ci_95_upper_per_decade is not None:
+                if abs(up_val - claim.ci_95_upper_per_decade) >= 0.05:
+                    errors.append(
+                        f"Factual mismatch: Extracted CI upper endpoint {up_val} does not match verified CI upper {claim.ci_95_upper_per_decade}."
+                    )
+        except ValueError:
+            continue
+
+    # 5c. Check coverage percentages specifically:
+    # Must match claim.coverage_pct strictly; cannot borrow duration numbers like 20 or 10.
+    cov_patterns = [
+        r"(\d+(?:\.\d+)?)\s*%\s*(?:spatial coverage|coverage|স্থানিক কভারেজ|কভারেজ|প্রাপ্যতা)",
+        r"(?:spatial coverage|coverage|স্থানিক কভারেজ|কভারেজ|প্রাপ্যতা)\s*(?:was|ছিল|হলো)?\s*(\d+(?:\.\d+)?)\s*%",
+        r"with\s*(\d+(?:\.\d+)?)\s*%\s*spatial coverage",
+    ]
+    for pattern in cov_patterns:
+        for c_match in re.findall(pattern, combined_text):
+            try:
+                c_num = float(c_match)
+                if claim.coverage_pct is not None:
+                    if abs(c_num - claim.coverage_pct) >= 1.0:
+                        errors.append(
+                            f"Factual mismatch: Extracted coverage quantity {c_num}% does not match verified coverage "
+                            f"{claim.coverage_pct}%."
+                        )
+            except ValueError:
+                continue
+
+    # 6. Global number pool for remaining tokens
+    # Build strict set of allowed numbers
+    num_matches = re.findall(r"[-+]?\d+(?:\.\d+)?", combined_text)
     allowed_numbers = set()
     for val in [
         claim.start_year,
@@ -154,9 +223,8 @@ def validate_narrative_text(
         claim.ci_95_upper_per_decade,
         claim.coverage_pct,
         claim.end_year - claim.start_year + 1,
+        claim.end_year - claim.start_year,
         95.0,  # 95% confidence interval
-        20.0,  # 20-year climate assessment
-        10.0,
     ]:
         if val is not None:
             try:
@@ -166,10 +234,17 @@ def validate_narrative_text(
             except (ValueError, TypeError):
                 pass
 
+    # Only allow 10.0 or 20.0 if explicitly mentioned in a duration/span context
+    if re.search(r"\b20[- ](?:year|বছর)", combined_text):
+        allowed_numbers.add(20.0)
+    if re.search(r"\b10[- ](?:year|বছর)", combined_text):
+        allowed_numbers.add(10.0)
+
     # Allow numbers that are part of verified parameter or region metadata (e.g., 2m air temperature)
     for text_source in [claim.parameter_name_en, claim.region_name_en, claim.parameter_name_bn, claim.region_name_bn]:
         if text_source:
-            for n in re.findall(r"[-+]?\d+(?:\.\d+)?", text_source):
+            norm_source = text_source.translate(BN_TO_EN)
+            for n in re.findall(r"[-+]?\d+(?:\.\d+)?", norm_source):
                 try:
                     allowed_numbers.add(round(float(n), 2))
                     allowed_numbers.add(round(float(n), 1))

@@ -7,22 +7,20 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 from fastapi import APIRouter, HTTPException, Response
 import numpy as np
+import pandas as pd
 
 from ..registry.layers import LAYER_REGISTRY, LayerDefinition
 from ..registry.parameters import PARAMETER_REGISTRY
+from ..registry.policies import ANALYSIS_POLICIES, AnalysisPolicy
 from ..registry.regions import REGION_REGISTRY
 from ..cache.store import LocalDataStore
 from ..compute.theil_sen import theil_sen_slope
 from ..compute.mann_kendall import mann_kendall_test
+from ..compute.serial_corr import check_autocorrelation
 from ..compute.multiple_testing import false_discovery_rate_correction
+from ..compute.aggregation import aggregate_annual_series
 
 router = APIRouter(tags=["Layers"])
-
-# Minimal 1x1 transparent PNG tile (68 bytes) to fulfill tile requests offline
-_TRANSPARENT_1X1_PNG = (
-    b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00\x00\x00\x1f\x15c4"
-    b"\x00\x00\x00\rIDATx\x9cc`\x00\x00\x00\x02\x00\x01H\xaf\xa4q\x00\x00\x00\x00IEND\xaeB`\x82"
-)
 
 
 @router.get("/layers", response_model=List[LayerDefinition])
@@ -46,7 +44,13 @@ def get_layer_tilejson(layer_id: str) -> Dict[str, Any]:
         "version": "1.0.0",
         "attribution": layer.attribution,
         "scheme": "xyz",
-        "tiles": [f"/tiles/{layer.id}/{{z}}/{{x}}/{{y}}"],
+        "tiles": [],
+        "vector_layers": [
+            {
+                "id": layer.id,
+                "description": f"Vector GeoJSON available at /layers/{layer.id}/geojson",
+            }
+        ],
         "minzoom": 0,
         "maxzoom": 6,
         "bounds": [-180.0, -85.0511, 180.0, 85.0511],
@@ -101,17 +105,42 @@ def get_layer_geojson(
         raise HTTPException(status_code=404, detail=f"Parameter '{param_id}' not found.")
 
     bind_id = param.default_binding_id
+
+    # Validate analysis policy
+    if policy_id:
+        if policy_id not in ANALYSIS_POLICIES:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "type": "https://errors.earthtrenddetective.org/UNKNOWN_POLICY",
+                    "title": "Unknown Analysis Policy",
+                    "status": 400,
+                    "detail": f"Policy '{policy_id}' is not recognized in the policy registry.",
+                    "code": "UNKNOWN_POLICY",
+                },
+            )
+        policy = ANALYSIS_POLICIES[policy_id]
+    else:
+        default_pol = (
+            "modis_lst_satellite_policy"
+            if "MODIS" in bind_id
+            else ("precipitation_total_policy" if param_id == "precipitation_total" else "standard_climate_temperature")
+        )
+        policy = ANALYSIS_POLICIES.get(default_pol, ANALYSIS_POLICIES["standard_climate_temperature"])
+
     store = LocalDataStore()
 
-    # Load countries.geojson
-    geojson_path = Path(__file__).resolve().parents[3] / "data" / "regions" / "countries.geojson"
+    # Load countries.geojson (respecting DATA_ROOT if set)
+    geojson_path = store.regions_dir / "countries.geojson"
+    if not geojson_path.exists():
+        geojson_path = Path(__file__).resolve().parents[3] / "data" / "regions" / "countries.geojson"
     if not geojson_path.exists():
         geojson_path = Path(__file__).resolve().parents[2] / "data" / "regions" / "countries.geojson"
 
     with open(geojson_path, "r", encoding="utf-8") as f:
         geo_data = json.load(f)
 
-    # Compute slopes and p-values across cached regions applying time-window and QA filtering
+    # Compute slopes and p-values across cached regions applying shared aggregation and QA filtering
     region_results: Dict[str, Dict[str, Any]] = {}
     p_values_list = []
     reg_keys = []
@@ -120,42 +149,42 @@ def get_layer_geojson(
         if store.has_series(bind_id, reg_id):
             try:
                 df = store.load_series(bind_id, reg_id, start_year=start_year, end_year=end_year)
-                # QA & Coverage filter
-                if "qa_passed" in df.columns:
-                    df = df[df["qa_passed"] == True]
-                if "valid_coverage_pct" in df.columns:
-                    df = df[np.isfinite(df["valid_coverage_pct"].to_numpy(dtype=float))]
-                    df = df[(df["valid_coverage_pct"] >= 0.0) & (df["valid_coverage_pct"] <= 100.0)]
-                    df = df[df["valid_coverage_pct"] >= 80.0]
+                ann_df = aggregate_annual_series(df, param_id=param_id, policy=policy, binding_id=bind_id)
+                if len(ann_df) >= 3:
+                    years = ann_df["year"].to_numpy(dtype=float)
+                    vals = ann_df["val"].to_numpy(dtype=float)
+                    ts = theil_sen_slope(years, vals, alpha=policy.alpha)
+                    ref_t = ts.ref_time
+                    slope = ts.slope_per_year if ts.slope_per_year is not None else 0.0
+                    intercept = ts.intercept if ts.intercept is not None else 0.0
+                    residuals = vals - (intercept + slope * (years - ref_t))
+                    corr_diag = check_autocorrelation(residuals, alpha=policy.alpha)
 
-                if "month" in df.columns:
-                    df = df[df["month"].between(1, 12)]
-                    annual_rows = []
-                    for yr, grp in df.groupby("year"):
-                        unique_m = grp.drop_duplicates(subset=["month"])
-                        if len(unique_m) >= 10:
-                            val_col = "value" if "value" in unique_m.columns else "value_display"
-                            annual_rows.append({
-                                "year": int(yr),
-                                "val": float(unique_m[val_col].mean()),
-                            })
-                    df = pd.DataFrame(annual_rows)
-                else:
-                    val_col = "value" if "value" in df.columns else "value_display"
-                    df["val"] = df[val_col].astype(float)
+                    vif = corr_diag.vif if policy.dependence_handling == "hamed_rao" else 1.0
+                    auto_adj = policy.dependence_handling == "hamed_rao" and corr_diag.is_autocorrelated
 
-                df = df.drop_duplicates(subset=["year"]).dropna(subset=["val"])
-                df = df[np.isfinite(df["val"].to_numpy(dtype=float))]
+                    mk = mann_kendall_test(vals, alpha=policy.alpha, vif=vif, autocorrelation_adjusted=auto_adj)
 
-                if len(df) >= 5:
-                    years = df["year"].to_numpy(dtype=float)
-                    vals = df["val"].to_numpy(dtype=float)
-                    ts = theil_sen_slope(years, vals)
-                    mk = mann_kendall_test(vals)
+                    # Determine evidence state matching trend.py
+                    has_gap = False
+                    s_years = np.sort(years)
+                    y_diffs = np.diff(s_years)
+                    if len(y_diffs) > 0 and int(np.max(y_diffs) - 1) > policy.max_consecutive_missing_gap:
+                        has_gap = True
+
+                    if len(ann_df) < policy.exploratory_min_years:
+                        ev_state = "insufficient"
+                    elif has_gap or len(ann_df) < policy.min_eligible_years_climate:
+                        ev_state = "limited"
+                    else:
+                        ev_state = mk.evidence_state
+
                     region_results[reg_id] = {
                         "slope_per_decade": ts.slope_per_decade,
                         "p_value": mk.p_value,
                         "direction": mk.direction,
+                        "year_count": len(ann_df),
+                        "evidence_state": ev_state,
                     }
                     p_values_list.append(mk.p_value)
                     reg_keys.append(reg_id)
@@ -164,11 +193,17 @@ def get_layer_geojson(
 
     # Apply FDR correction (Section 6.7)
     if p_values_list:
-        fdr_res = false_discovery_rate_correction(p_values_list, method="benjamini_hochberg", fdr_threshold=0.05)
+        fdr_res = false_discovery_rate_correction(p_values_list, method="benjamini_hochberg", fdr_threshold=policy.alpha)
         for i, reg_id in enumerate(reg_keys):
             q_val = fdr_res.q_values[i]
+            y_count = region_results[reg_id].get("year_count", 0)
+            is_sig = (
+                q_val is not None
+                and q_val <= policy.alpha
+                and y_count >= policy.min_eligible_years_climate
+            )
             region_results[reg_id]["q_value"] = q_val
-            region_results[reg_id]["is_significant_fdr"] = q_val is not None and q_val <= 0.05
+            region_results[reg_id]["is_significant_fdr"] = is_sig
 
     # Enrich features
     enriched_features = []
@@ -182,12 +217,14 @@ def get_layer_geojson(
             props["p_value"] = stats["p_value"]
             props["q_value"] = stats.get("q_value")
             props["is_significant_fdr"] = stats.get("is_significant_fdr", False)
+            props["evidence_state"] = stats.get("evidence_state", "insufficient")
         else:
             props["has_data"] = False
             props["slope_per_decade"] = None
             props["p_value"] = None
             props["q_value"] = None
             props["is_significant_fdr"] = False
+            props["evidence_state"] = "unavailable"
 
         enriched_features.append({
             "type": "Feature",
@@ -205,4 +242,3 @@ def get_layer_geojson(
         "fdr_significant_count": sum(1 for r in region_results.values() if r.get("is_significant_fdr")),
         "features": enriched_features,
     }
-
