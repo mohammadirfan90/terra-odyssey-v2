@@ -250,7 +250,10 @@ export default function ResultPanel({
         <div className="flex items-center justify-between text-xs text-slate-400 border-t border-slate-800/80 pt-2">
           <span>{isBangla ? "৯৫% আত্মবিশ্বাস ব্যবধান" : "95% Confidence Interval"}</span>
           <span className="font-mono text-slate-300">
-            {theil_sen.ci_95_lower_per_decade !== null && theil_sen.ci_95_upper_per_decade !== null ? (
+            {typeof theil_sen?.ci_95_lower_per_decade === "number" &&
+            typeof theil_sen?.ci_95_upper_per_decade === "number" &&
+            !isNaN(theil_sen.ci_95_lower_per_decade) &&
+            !isNaN(theil_sen.ci_95_upper_per_decade) ? (
               isBangla
                 ? `[${toBengaliDigits(theil_sen.ci_95_lower_per_decade.toFixed(2))}, ${toBengaliDigits(theil_sen.ci_95_upper_per_decade.toFixed(2))}]`
                 : `[${theil_sen.ci_95_lower_per_decade.toFixed(2)}, ${theil_sen.ci_95_upper_per_decade.toFixed(2)}]`
@@ -270,25 +273,36 @@ export default function ResultPanel({
         <div className="p-2.5 rounded-lg bg-slate-950/50 border border-slate-800">
           <span className="text-[10px] text-slate-400 block font-medium">Mann-Kendall p-value</span>
           <span className="font-mono font-bold text-slate-200 text-sm mt-0.5 block">
-            {formatPValue(mann_kendall.p_value, isBangla)}
+            {formatPValue(mann_kendall?.p_value, isBangla)}
           </span>
         </div>
         <div className="p-2.5 rounded-lg bg-slate-950/50 border border-slate-800">
           <span className="text-[10px] text-slate-400 block font-medium">Standardized Z</span>
           <span className="font-mono font-bold text-slate-200 text-sm mt-0.5 block">
-            {mann_kendall.z_score !== null ? (isBangla ? toBengaliDigits(mann_kendall.z_score.toFixed(2)) : mann_kendall.z_score.toFixed(2)) : "N/A"}
+            {(() => {
+              const zVal = mann_kendall?.Z ?? mann_kendall?.z_score;
+              return typeof zVal === "number" && !isNaN(zVal)
+                ? (isBangla ? toBengaliDigits(zVal.toFixed(2)) : zVal.toFixed(2))
+                : "N/A";
+            })()}
           </span>
         </div>
         <div className="p-2.5 rounded-lg bg-slate-950/50 border border-slate-800">
           <span className="text-[10px] text-slate-400 block font-medium">Autocorrelation VIF</span>
           <span className="font-mono font-bold text-slate-200 text-sm mt-0.5 block">
-            {diagnostics.vif !== null ? (isBangla ? toBengaliDigits(diagnostics.vif.toFixed(2)) : diagnostics.vif.toFixed(2)) : "1.00"}
+            {typeof diagnostics?.vif === "number" && !isNaN(diagnostics.vif)
+              ? (isBangla ? toBengaliDigits(diagnostics.vif.toFixed(2)) : diagnostics.vif.toFixed(2))
+              : "1.00"}
           </span>
         </div>
         <div className="p-2.5 rounded-lg bg-slate-950/50 border border-slate-800">
           <span className="text-[10px] text-slate-400 block font-medium">Valid Coverage</span>
           <span className="font-mono font-bold text-slate-200 text-sm mt-0.5 block">
-            {isBangla ? `${toBengaliDigits(Math.round(data_support.average_coverage_pct))}%` : `${Math.round(data_support.average_coverage_pct)}%`}
+            {data_support?.average_coverage_pct !== undefined && data_support?.average_coverage_pct !== null
+              ? (isBangla
+                  ? `${toBengaliDigits(Math.round(data_support.average_coverage_pct))}%`
+                  : `${Math.round(data_support.average_coverage_pct)}%`)
+              : "100%"}
           </span>
         </div>
       </div>

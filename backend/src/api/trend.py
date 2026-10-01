@@ -406,6 +406,7 @@ def calculate_trend(
             "S": mk_res.S,
             "variance": mk_res.var_S,
             "Z": mk_res.Z,
+            "z_score": mk_res.Z,
             "p_value": mk_res.p_value,
             "alpha": mk_res.alpha,
             "method": mk_res.method,
