@@ -1,0 +1,89 @@
+{
+  "manifest_schema_version": "1.0.0",
+  "binding_id": "MODIS_MOD11A1_061_NIGHT",
+  "metadata": {
+    "collection_id": "MOD11A1",
+    "collection_name": "MODIS/Terra Land Surface Temperature/Emissivity Daily L3 Global 1km SIN Grid V061",
+    "version": "061",
+    "doi": "10.5067/MODIS/MOD11A1.061",
+    "provider": "NASA LP DAAC",
+    "source_url": "https://doi.org/10.5067/MODIS/MOD11A1.061",
+    "citation": "Wan, Z., Hook, S., Hulley, G. (2021). MOD11A1 MODIS/Terra Land Surface Temperature/Emissivity Daily L3 Global 1km SIN Grid V061. NASA EOSDIS LP DAAC.",
+    "variable_name": "LST_Night_1km",
+    "canonical_unit": "K",
+    "display_unit": "\u00b0C",
+    "native_spatial_resolution": "1 km sinusoidal (~0.01\u00b0)",
+    "temporal_cadence": "daily",
+    "availability_state": "analysis_ready"
+  },
+  "verified_at_utc": "2026-10-01T08:00:00Z",
+  "series_count": 6,
+  "series": [
+    {
+      "region_id": "BGD",
+      "file_name": "MODIS_MOD11A1_061_NIGHT_BGD.parquet",
+      "sha256": "d9612ea8be4ca0805605240d75d00dfb924614abadeb0a5d4843b1a6ff672767",
+      "size_bytes": 4571,
+      "row_count": 25,
+      "first_year": 2000,
+      "last_year": 2024,
+      "qa_column": "qa_passed",
+      "coverage_column": "valid_coverage_pct"
+    },
+    {
+      "region_id": "BRA",
+      "file_name": "MODIS_MOD11A1_061_NIGHT_BRA.parquet",
+      "sha256": "db86117ac005a406f758a0900c63c866687f8ba06c709d1b225431cbda7793fa",
+      "size_bytes": 4573,
+      "row_count": 25,
+      "first_year": 2000,
+      "last_year": 2024,
+      "qa_column": "qa_passed",
+      "coverage_column": "valid_coverage_pct"
+    },
+    {
+      "region_id": "DEU",
+      "file_name": "MODIS_MOD11A1_061_NIGHT_DEU.parquet",
+      "sha256": "6d0c2d082ab6735ebf89c739ed2c242841a0ab69327332683673240e97b40223",
+      "size_bytes": 4566,
+      "row_count": 25,
+      "first_year": 2000,
+      "last_year": 2024,
+      "qa_column": "qa_passed",
+      "coverage_column": "valid_coverage_pct"
+    },
+    {
+      "region_id": "KEN",
+      "file_name": "MODIS_MOD11A1_061_NIGHT_KEN.parquet",
+      "sha256": "c50e79715387830a627d470a8b7957976857e31ebf7e9f0717faf0c22baade33",
+      "size_bytes": 4567,
+      "row_count": 25,
+      "first_year": 2000,
+      "last_year": 2024,
+      "qa_column": "qa_passed",
+      "coverage_column": "valid_coverage_pct"
+    },
+    {
+      "region_id": "MDV",
+      "file_name": "MODIS_MOD11A1_061_NIGHT_MDV.parquet",
+      "sha256": "213f6395a6df61755e6998cbf61ba755f44d3b0ed2c78e797c5861190ff6b739",
+      "size_bytes": 4573,
+      "row_count": 25,
+      "first_year": 2000,
+      "last_year": 2024,
+      "qa_column": "qa_passed",
+      "coverage_column": "valid_coverage_pct"
+    },
+    {
+      "region_id": "USA",
+      "file_name": "MODIS_MOD11A1_061_NIGHT_USA.parquet",
+      "sha256": "f7f67f2e8a7231db28f3c4ca7eeb0c97b3e43f630696c4a5793e059b3565feb5",
+      "size_bytes": 4562,
+      "row_count": 25,
+      "first_year": 2000,
+      "last_year": 2024,
+      "qa_column": "qa_passed",
+      "coverage_column": "valid_coverage_pct"
+    }
+  ]
+}

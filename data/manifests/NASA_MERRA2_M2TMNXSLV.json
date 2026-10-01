@@ -1,0 +1,133 @@
+{
+  "manifest_schema_version": "1.0.0",
+  "binding_id": "NASA_MERRA2_M2TMNXSLV",
+  "metadata": {
+    "collection_id": "M2TMNXSLV",
+    "collection_name": "MERRA-2 tavgM_2d_slv_Nx: 2d, Monthly mean, Time-Averaged, Single-Level, Assimilation, Diagnostics V5.12.4",
+    "version": "5.12.4",
+    "doi": "10.5067/AP1B0BA5PD2K",
+    "provider": "NASA GMAO",
+    "source_url": "https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2/M2TMNXSLV.5.12.4/",
+    "citation": "Global Modeling and Assimilation Office (GMAO) (2015), MERRA-2 tavgM_2d_slv_Nx, Goddard Earth Sciences Data and Information Services Center (GES DISC), doi:10.5067/AP1B0BA5PD2K.",
+    "variable_name": "T2M",
+    "canonical_unit": "K",
+    "display_unit": "\u00b0C",
+    "native_spatial_resolution": "0.5\u00b0 latitude x 0.625\u00b0 longitude",
+    "temporal_cadence": "monthly",
+    "availability_state": "analysis_ready"
+  },
+  "verified_at_utc": "2026-10-01T08:00:00Z",
+  "series_count": 10,
+  "series": [
+    {
+      "region_id": "BAY_OF_BENGAL",
+      "file_name": "NASA_MERRA2_M2TMNXSLV_BAY_OF_BENGAL.parquet",
+      "sha256": "5ed10f797c199be1ed3ee01ec1c725c74848282bf80e1e3b1270b8e725080d1a",
+      "size_bytes": 4996,
+      "row_count": 45,
+      "first_year": 1980,
+      "last_year": 2024,
+      "qa_column": "qa_passed",
+      "coverage_column": "valid_coverage_pct"
+    },
+    {
+      "region_id": "BGD",
+      "file_name": "NASA_MERRA2_M2TMNXSLV_BGD.parquet",
+      "sha256": "be335e3408d33b9488a30ca64688a1a113351caf89fa1f4f6c78425eb5a344ed",
+      "size_bytes": 5014,
+      "row_count": 45,
+      "first_year": 1980,
+      "last_year": 2024,
+      "qa_column": "qa_passed",
+      "coverage_column": "valid_coverage_pct"
+    },
+    {
+      "region_id": "BRA",
+      "file_name": "NASA_MERRA2_M2TMNXSLV_BRA.parquet",
+      "sha256": "63178be027c93171e124a0548266bcb7d8f7df35d0662ae91565cc577a6141a8",
+      "size_bytes": 4999,
+      "row_count": 45,
+      "first_year": 1980,
+      "last_year": 2024,
+      "qa_column": "qa_passed",
+      "coverage_column": "valid_coverage_pct"
+    },
+    {
+      "region_id": "DEU",
+      "file_name": "NASA_MERRA2_M2TMNXSLV_DEU.parquet",
+      "sha256": "f5bef9b35d1ad9eb3d780b49cced90c6c5f1c7349c31e7b9b8e28dd3a473b30a",
+      "size_bytes": 5011,
+      "row_count": 45,
+      "first_year": 1980,
+      "last_year": 2024,
+      "qa_column": "qa_passed",
+      "coverage_column": "valid_coverage_pct"
+    },
+    {
+      "region_id": "IND",
+      "file_name": "NASA_MERRA2_M2TMNXSLV_IND.parquet",
+      "sha256": "c65e5d530df10d50a89f7ee2289d3393047e65b277bb13dc539b0d96a1597a98",
+      "size_bytes": 4978,
+      "row_count": 45,
+      "first_year": 1980,
+      "last_year": 2024,
+      "qa_column": "qa_passed",
+      "coverage_column": "valid_coverage_pct"
+    },
+    {
+      "region_id": "KEN",
+      "file_name": "NASA_MERRA2_M2TMNXSLV_KEN.parquet",
+      "sha256": "26c71e88c23fb6a45c39bbbc7d48b5a4ae4860cfa4cdc7d7d7b12f47866efdfd",
+      "size_bytes": 4992,
+      "row_count": 45,
+      "first_year": 1980,
+      "last_year": 2024,
+      "qa_column": "qa_passed",
+      "coverage_column": "valid_coverage_pct"
+    },
+    {
+      "region_id": "MDV",
+      "file_name": "NASA_MERRA2_M2TMNXSLV_MDV.parquet",
+      "sha256": "b189dc1e13263c37eb888a3c44025b9fb555dd9ee6cfd139c4ebea084193276a",
+      "size_bytes": 5011,
+      "row_count": 45,
+      "first_year": 1980,
+      "last_year": 2024,
+      "qa_column": "qa_passed",
+      "coverage_column": "valid_coverage_pct"
+    },
+    {
+      "region_id": "MOZ",
+      "file_name": "NASA_MERRA2_M2TMNXSLV_MOZ.parquet",
+      "sha256": "451b1f86b58522c59a2dc9106893c8c61e43caddde0c4f96439c035b5efc6be8",
+      "size_bytes": 4993,
+      "row_count": 45,
+      "first_year": 1980,
+      "last_year": 2024,
+      "qa_column": "qa_passed",
+      "coverage_column": "valid_coverage_pct"
+    },
+    {
+      "region_id": "USA",
+      "file_name": "NASA_MERRA2_M2TMNXSLV_USA.parquet",
+      "sha256": "bfb95abf4d9d9e3412f4ac2d3489c797754c2d95d3afd7baa166b473922ea5b4",
+      "size_bytes": 4982,
+      "row_count": 45,
+      "first_year": 1980,
+      "last_year": 2024,
+      "qa_column": "qa_passed",
+      "coverage_column": "valid_coverage_pct"
+    },
+    {
+      "region_id": "ZMB",
+      "file_name": "NASA_MERRA2_M2TMNXSLV_ZMB.parquet",
+      "sha256": "afdbbfed9268247e6d155afe1026a024f1d530e30c6f90b8ee0276cbd11dc05c",
+      "size_bytes": 5008,
+      "row_count": 45,
+      "first_year": 1980,
+      "last_year": 2024,
+      "qa_column": "qa_passed",
+      "coverage_column": "valid_coverage_pct"
+    }
+  ]
+}

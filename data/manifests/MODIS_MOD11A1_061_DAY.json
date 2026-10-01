@@ -1,0 +1,89 @@
+{
+  "manifest_schema_version": "1.0.0",
+  "binding_id": "MODIS_MOD11A1_061_DAY",
+  "metadata": {
+    "collection_id": "MOD11A1",
+    "collection_name": "MODIS/Terra Land Surface Temperature/Emissivity Daily L3 Global 1km SIN Grid V061",
+    "version": "061",
+    "doi": "10.5067/MODIS/MOD11A1.061",
+    "provider": "NASA LP DAAC",
+    "source_url": "https://doi.org/10.5067/MODIS/MOD11A1.061",
+    "citation": "Wan, Z., Hook, S., Hulley, G. (2021). MOD11A1 MODIS/Terra Land Surface Temperature/Emissivity Daily L3 Global 1km SIN Grid V061. NASA EOSDIS Land Processes Distributed Active Archive Center.",
+    "variable_name": "LST_Day_1km",
+    "canonical_unit": "K",
+    "display_unit": "\u00b0C",
+    "native_spatial_resolution": "1 km sinusoidal (~0.01\u00b0)",
+    "temporal_cadence": "daily",
+    "availability_state": "analysis_ready"
+  },
+  "verified_at_utc": "2026-10-01T08:00:00Z",
+  "series_count": 6,
+  "series": [
+    {
+      "region_id": "BGD",
+      "file_name": "MODIS_MOD11A1_061_DAY_BGD.parquet",
+      "sha256": "d9c3388b399545c0ab5f17fbe5a181818144c023ec70ed134f858eb693a5cdcc",
+      "size_bytes": 4566,
+      "row_count": 25,
+      "first_year": 2000,
+      "last_year": 2024,
+      "qa_column": "qa_passed",
+      "coverage_column": "valid_coverage_pct"
+    },
+    {
+      "region_id": "BRA",
+      "file_name": "MODIS_MOD11A1_061_DAY_BRA.parquet",
+      "sha256": "8ffd15e35355cdcd5ae98efb921a8ad7f7555908b9bcac91d4d87335a8726b05",
+      "size_bytes": 4566,
+      "row_count": 25,
+      "first_year": 2000,
+      "last_year": 2024,
+      "qa_column": "qa_passed",
+      "coverage_column": "valid_coverage_pct"
+    },
+    {
+      "region_id": "DEU",
+      "file_name": "MODIS_MOD11A1_061_DAY_DEU.parquet",
+      "sha256": "73f1ab3995da28b05af0941da434b38a6921afbf86472348a99b659135dcc316",
+      "size_bytes": 4566,
+      "row_count": 25,
+      "first_year": 2000,
+      "last_year": 2024,
+      "qa_column": "qa_passed",
+      "coverage_column": "valid_coverage_pct"
+    },
+    {
+      "region_id": "KEN",
+      "file_name": "MODIS_MOD11A1_061_DAY_KEN.parquet",
+      "sha256": "8fd9290b4ad9a41a2680213327c9c84dcc215555ba33572c6b2c315d5940dea0",
+      "size_bytes": 4566,
+      "row_count": 25,
+      "first_year": 2000,
+      "last_year": 2024,
+      "qa_column": "qa_passed",
+      "coverage_column": "valid_coverage_pct"
+    },
+    {
+      "region_id": "MDV",
+      "file_name": "MODIS_MOD11A1_061_DAY_MDV.parquet",
+      "sha256": "47fa859289ed429aff7f1e367a09affae1a7d4b42c074f6fae19c8934284c000",
+      "size_bytes": 4565,
+      "row_count": 25,
+      "first_year": 2000,
+      "last_year": 2024,
+      "qa_column": "qa_passed",
+      "coverage_column": "valid_coverage_pct"
+    },
+    {
+      "region_id": "USA",
+      "file_name": "MODIS_MOD11A1_061_DAY_USA.parquet",
+      "sha256": "d7366fae39801bd8bda7ff43601361a11247e58c9a9f8a745412ef636ceeddab",
+      "size_bytes": 4559,
+      "row_count": 25,
+      "first_year": 2000,
+      "last_year": 2024,
+      "qa_column": "qa_passed",
+      "coverage_column": "valid_coverage_pct"
+    }
+  ]
+}
