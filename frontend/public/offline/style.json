@@ -1,0 +1,87 @@
+{
+  "version": 8,
+  "name": "Offline Scientific 2D World Basemap",
+  "sources": {
+    "offline-regions": {
+      "type": "geojson",
+      "data": "/offline/geojson/countries.json",
+      "generateId": true
+    },
+    "offline-lakes": {
+      "type": "geojson",
+      "data": "/offline/geojson/lakes.json",
+      "generateId": true
+    }
+  },
+  "layers": [
+    {
+      "id": "ocean-background",
+      "type": "background",
+      "paint": {
+        "background-color": "#070c18"
+      }
+    },
+    {
+      "id": "regions-fill",
+      "type": "fill",
+      "source": "offline-regions",
+      "paint": {
+        "fill-color": [
+          "case",
+          ["==", ["get", "type"], "ocean_basin"],
+          [
+            "case",
+            ["boolean", ["feature-state", "hover"], false],
+            "rgba(14, 116, 144, 0.25)",
+            "rgba(0, 0, 0, 0)"
+          ],
+          [
+            "case",
+            ["boolean", ["feature-state", "hover"], false],
+            "#253b59",
+            "#162338"
+          ]
+        ],
+        "fill-opacity": [
+          "case",
+          ["==", ["get", "type"], "ocean_basin"],
+          [
+            "case",
+            ["boolean", ["feature-state", "hover"], false],
+            0.6,
+            0.0
+          ],
+          1.0
+        ]
+      }
+    },
+    {
+      "id": "regions-borders",
+      "type": "line",
+      "source": "offline-regions",
+      "filter": ["!=", ["get", "type"], "ocean_basin"],
+      "paint": {
+        "line-color": "#2c3e55",
+        "line-width": 0.8
+      }
+    },
+    {
+      "id": "lakes-fill",
+      "type": "fill",
+      "source": "offline-lakes",
+      "paint": {
+        "fill-color": "#070c18",
+        "fill-opacity": 1.0
+      }
+    },
+    {
+      "id": "lakes-borders",
+      "type": "line",
+      "source": "offline-lakes",
+      "paint": {
+        "line-color": "#2c3e55",
+        "line-width": 0.8
+      }
+    }
+  ]
+}
