@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "earth-system-trend-detective"
+version = "0.1.0"
+description = "Scientifically rigorous, offline-first Earth system trend investigation backend"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115.0",
+    "pydantic>=2.9.0",
+    "uvicorn[standard]>=0.30.0",
+    "numpy>=1.26.0",
+    "scipy>=1.14.0",
+    "pandas>=2.2.0",
+    "pyarrow>=17.0.0",
+    "xarray>=2024.7.0",
+    "zarr>=2.18.0",
+    "shapely>=2.0.6",
+    "pyproj>=3.6.0",
+    "statsmodels>=0.14.2",
+    "httpx>=0.27.0",
+    "python-multipart>=0.0.9",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+pythonpath = ["src", "."]
+asyncio_mode = "auto"
+
+[project.scripts]
+earth-system-trend-detective = "src.main:run"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src", "src.*"]
+
