@@ -16,6 +16,7 @@ from ..registry.regions import REGION_REGISTRY
 from ..cache.store import LocalDataStore
 from ..compute.theil_sen import theil_sen_slope
 from ..compute.mann_kendall import mann_kendall_test
+from ..compute.serial_corr import check_autocorrelation
 from ..compute.multiple_testing import false_discovery_rate_correction
 from ..compute.aggregation import aggregate_annual_series
 
@@ -153,12 +154,37 @@ def get_layer_geojson(
                     years = ann_df["year"].to_numpy(dtype=float)
                     vals = ann_df["val"].to_numpy(dtype=float)
                     ts = theil_sen_slope(years, vals, alpha=policy.alpha)
-                    mk = mann_kendall_test(vals, alpha=policy.alpha)
+                    ref_t = ts.ref_time
+                    slope = ts.slope_per_year if ts.slope_per_year is not None else 0.0
+                    intercept = ts.intercept if ts.intercept is not None else 0.0
+                    residuals = vals - (intercept + slope * (years - ref_t))
+                    corr_diag = check_autocorrelation(residuals, alpha=policy.alpha)
+
+                    vif = corr_diag.vif if policy.dependence_handling == "hamed_rao" else 1.0
+                    auto_adj = policy.dependence_handling == "hamed_rao" and corr_diag.is_autocorrelated
+
+                    mk = mann_kendall_test(vals, alpha=policy.alpha, vif=vif, autocorrelation_adjusted=auto_adj)
+
+                    # Determine evidence state matching trend.py
+                    has_gap = False
+                    s_years = np.sort(years)
+                    y_diffs = np.diff(s_years)
+                    if len(y_diffs) > 0 and int(np.max(y_diffs) - 1) > policy.max_consecutive_missing_gap:
+                        has_gap = True
+
+                    if len(ann_df) < policy.exploratory_min_years:
+                        ev_state = "insufficient"
+                    elif has_gap or len(ann_df) < policy.min_eligible_years_climate:
+                        ev_state = "limited"
+                    else:
+                        ev_state = mk.evidence_state
+
                     region_results[reg_id] = {
                         "slope_per_decade": ts.slope_per_decade,
                         "p_value": mk.p_value,
                         "direction": mk.direction,
                         "year_count": len(ann_df),
+                        "evidence_state": ev_state,
                     }
                     p_values_list.append(mk.p_value)
                     reg_keys.append(reg_id)
@@ -171,7 +197,11 @@ def get_layer_geojson(
         for i, reg_id in enumerate(reg_keys):
             q_val = fdr_res.q_values[i]
             y_count = region_results[reg_id].get("year_count", 0)
-            is_sig = q_val is not None and q_val <= policy.alpha and y_count >= policy.exploratory_min_years
+            is_sig = (
+                q_val is not None
+                and q_val <= policy.alpha
+                and y_count >= policy.min_eligible_years_climate
+            )
             region_results[reg_id]["q_value"] = q_val
             region_results[reg_id]["is_significant_fdr"] = is_sig
 
@@ -187,12 +217,14 @@ def get_layer_geojson(
             props["p_value"] = stats["p_value"]
             props["q_value"] = stats.get("q_value")
             props["is_significant_fdr"] = stats.get("is_significant_fdr", False)
+            props["evidence_state"] = stats.get("evidence_state", "insufficient")
         else:
             props["has_data"] = False
             props["slope_per_decade"] = None
             props["p_value"] = None
             props["q_value"] = None
             props["is_significant_fdr"] = False
+            props["evidence_state"] = "unavailable"
 
         enriched_features.append({
             "type": "Feature",

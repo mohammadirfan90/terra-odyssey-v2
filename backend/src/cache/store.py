@@ -22,6 +22,7 @@ import pandas as pd
 
 import numpy as np
 from ..registry.bindings import DATASET_BINDINGS, DatasetBinding
+from ..registry.parameters import PARAMETER_REGISTRY
 from ..registry.regions import REGION_REGISTRY, RegionDefinition
 
 
@@ -145,15 +146,22 @@ class LocalDataStore:
                 try:
                     obj = json.loads(res_json)
                     prov = obj.get("provenance", {})
+                    if "region_a_data_sha256" in prov and not prov.get("data_sha256"):
+                        prov["data_sha256"] = f"{prov['region_a_data_sha256']}_{prov.get('region_b_data_sha256', '')}"
+                        obj["provenance"] = prov
+                        res_json = json.dumps(obj)
+                        cursor.execute("UPDATE completed_results SET result_json = ? WHERE result_id = ?", (res_json, r_id))
+
                     d_sha = prov.get("data_sha256")
                     doi = prov.get("doi", "")
-                    if not d_sha or doi == "10.5067/0JRLVL8YV2Y4":
+                    code_rev = obj.get("reproducibility", {}).get("code_revision", "v1.0.0")
+                    if not d_sha or doi == "10.5067/0JRLVL8YV2Y4" or code_rev == "v1.0.0":
                         cursor.execute(
                             """
                             INSERT OR REPLACE INTO quarantined_results (result_id, query_json, created_at, result_json, quarantine_reason)
                             VALUES (?, ?, ?, ?, ?)
                             """,
-                            (r_id, q_json, c_at, res_json, "Legacy unverified provenance or missing data SHA-256"),
+                            (r_id, q_json, c_at, res_json, f"Legacy result superseded by code revision v1.4.0 (was {code_rev})"),
                         )
                         cursor.execute("DELETE FROM completed_results WHERE result_id = ?", (r_id,))
                 except Exception:
@@ -264,7 +272,9 @@ class LocalDataStore:
             manifest = self.get_manifest(binding_id)
             if not manifest or manifest.get("binding_id") != binding_id:
                 return False
-            meta = manifest.get("metadata", {})
+            if "metadata" not in manifest or not isinstance(manifest.get("metadata"), dict) or not manifest["metadata"]:
+                return False
+            meta = manifest["metadata"]
             if meta.get("availability_state") not in ("analysis_ready", "display_ready"):
                 return False
             entry = self.get_manifest_entry(binding_id, region_id)
@@ -338,9 +348,14 @@ class LocalDataStore:
                 f"Manifest declared binding_id '{manifest_binding}' does not match requested binding '{binding_id}'."
             )
 
-        meta = manifest.get("metadata", {})
+        if "metadata" not in manifest or not isinstance(manifest.get("metadata"), dict) or not manifest["metadata"]:
+            raise ManifestSchemaError(
+                f"Manifest for binding '{binding_id}' violates schema: required 'metadata' object is missing."
+            )
+
+        meta = manifest["metadata"]
         avail = meta.get("availability_state")
-        if avail is not None and avail not in ("analysis_ready", "display_ready"):
+        if avail not in ("analysis_ready", "display_ready"):
             raise ManifestSchemaError(
                 f"Dataset binding '{binding_id}' is in availability_state '{avail}', not ready for analysis."
             )
@@ -350,6 +365,19 @@ class LocalDataStore:
             if meta.get("canonical_unit") and meta.get("canonical_unit") != expected_binding.canonical_unit:
                 raise ManifestSchemaError(
                     f"Manifest canonical unit '{meta.get('canonical_unit')}' does not match binding definition '{expected_binding.canonical_unit}'."
+                )
+            if meta.get("variable_name") and meta.get("variable_name") != expected_binding.variable_name:
+                raise ManifestSchemaError(
+                    f"Manifest variable name '{meta.get('variable_name')}' does not match binding definition '{expected_binding.variable_name}'."
+                )
+            expected_param = PARAMETER_REGISTRY.get(expected_binding.parameter_id)
+            if expected_param and meta.get("display_unit") and meta.get("display_unit") != expected_param.display_unit:
+                raise ManifestSchemaError(
+                    f"Manifest display unit '{meta.get('display_unit')}' does not match parameter definition '{expected_param.display_unit}'."
+                )
+            if meta.get("temporal_cadence") and meta.get("temporal_cadence") != expected_binding.temporal_cadence:
+                raise ManifestSchemaError(
+                    f"Manifest temporal cadence '{meta.get('temporal_cadence')}' does not match binding definition '{expected_binding.temporal_cadence}'."
                 )
 
         expected_filename = entry.get("file_name")
@@ -369,6 +397,19 @@ class LocalDataStore:
             raise ManifestSchemaError(
                 f"Parquet file {parquet_path.name} violates schema: required column 'year' is missing."
             )
+
+        # Validate 'year' column numeric integer types
+        try:
+            year_series = pd.to_numeric(df["year"], errors="raise")
+            if not np.all(np.isfinite(year_series.to_numpy())):
+                raise ManifestSchemaError("Column 'year' contains non-finite values.")
+            if not np.all(np.equal(np.mod(year_series.to_numpy(), 1), 0)):
+                raise ManifestSchemaError("Column 'year' must contain integer values.")
+            df["year"] = year_series.astype(int)
+        except ManifestSchemaError:
+            raise
+        except Exception as e:
+            raise ManifestSchemaError(f"Column 'year' contains non-numeric values: {e}")
 
         manifest_rows = entry.get("row_count")
         if manifest_rows is not None and manifest_rows != len(df):
@@ -403,6 +444,19 @@ class LocalDataStore:
             raise ManifestSchemaError(
                 f"Parquet file {entry.get('file_name', parquet_path.name)} violates manifest contract: required coverage column '{cov_col}' missing."
             )
+
+        # Map declared alternative QA column to canonical 'qa_passed'
+        if qa_col and qa_col in df.columns and qa_col != "qa_passed":
+            df["qa_passed"] = df[qa_col].astype(bool)
+
+        # Map declared alternative coverage column to canonical 'valid_coverage_pct'
+        cov_col_to_check = cov_col or ("valid_coverage_pct" if "valid_coverage_pct" in df.columns else None)
+        if cov_col_to_check and cov_col_to_check in df.columns:
+            try:
+                cov_series = pd.to_numeric(df[cov_col_to_check], errors="raise")
+                df["valid_coverage_pct"] = cov_series
+            except Exception as e:
+                raise ManifestSchemaError(f"Coverage column contains non-numeric values: {e}")
 
         if start_year is not None:
             df = df[df["year"] >= start_year]
@@ -455,7 +509,7 @@ class LocalDataStore:
             if row:
                 res = json.loads(row[0])
                 prov = res.get("provenance", {})
-                d_sha = prov.get("data_sha256")
+                d_sha = prov.get("data_sha256") or prov.get("region_a_data_sha256")
                 doi = prov.get("doi", "")
                 if not d_sha or doi == "10.5067/0JRLVL8YV2Y4":
                     return None

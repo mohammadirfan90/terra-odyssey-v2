@@ -21,7 +21,7 @@ def compute_result_hash(
     policy_id: str,
     data_sha256: str = "",
     geometry_sha256: str = "",
-    code_revision: str = "v1.0.0",
+    code_revision: str = "v1.4.0",
     policy_settings: Optional[Dict[str, Any]] = None,
     extra_settings: Optional[Dict[str, Any]] = None,
 ) -> str:

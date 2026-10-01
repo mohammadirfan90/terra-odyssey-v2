@@ -253,6 +253,7 @@ def calculate_trend(
         end_date=str(req_end),
         policy_id=policy.id,
         data_sha256=data_sha,
+        code_revision="v1.4.0",
         policy_settings=policy.model_dump(),
     )
     cached_result = store.get_result(result_id)
@@ -456,7 +457,7 @@ def calculate_trend(
             "data_sha256": data_sha,
         },
         "reproducibility": {
-            "code_revision": "v1.0.0",
+            "code_revision": "v1.4.0",
             "policy_id": policy.id,
             "bootstrap_seed": policy.bootstrap_seed,
             "bootstrap_replicates": policy.bootstrap_replicates,

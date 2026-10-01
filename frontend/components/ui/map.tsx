@@ -25,7 +25,9 @@ export default function Scientific2DMap({
   const [cursorCoords, setCursorCoords] = useState<{ lat: number; lon: number } | null>(null);
   const hoveredFeatureIdRef = useRef<string | number | null>(null);
   const onSelectRegionRef = useRef(onSelectRegion);
-  onSelectRegionRef.current = onSelectRegion;
+  useEffect(() => {
+    onSelectRegionRef.current = onSelectRegion;
+  }, [onSelectRegion]);
   const geojsonCacheRef = useRef<any>(null);
 
   useEffect(() => {

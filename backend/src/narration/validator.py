@@ -125,20 +125,18 @@ def validate_narrative_text(
         elif claim.slope_per_decade < -0.05 and "increased" in combined_text:
             errors.append("Inconsistency: Negative slope described as 'increased'")
 
-    # 5. Field-specific numerical fact validation (Resolves Finding F12 / Audit R07)
-    # 5a. Check point slope numbers specifically:
-    # Must match claim.slope_per_decade strictly; cannot borrow CI bounds, coverage, or years.
-    slope_patterns = [
+    # 5. Field-specific numerical fact validation (Resolves Finding F12, Audit R07, Finding V4-06)
+    # 5a. Check point slope and CI bounds:
+    # Numbers immediately before °C/decade or °C/দশক preceded by "to" or "থেকে" are CI upper endpoints.
+    # Numbers explicitly in point slope position must match claim.slope_per_decade strictly.
+    explicit_slope_patterns = [
         r"(?:increased at|decreased at|rate of|rate was|slope of)\s*([+-]?\d+(?:\.\d+)?)",
-        r"([+-]?\d+(?:\.\d+)?)\s*(?:°c/decade|°c/দশক|mm/decade|mm/দশক|/decade|/দশক)",
-        r"(?:দশক প্রতি|প্রতি দশক)\s*([+-]?\d+(?:\.\d+)?)",
-        r"([+-]?\d+(?:\.\d+)?)\s*(?:দশক প্রতি|প্রতি দশক)",
+        r"(?:দশক প্রতি|প্রতি দশকে|প্রতি দশক)\s*([+-]?\d+(?:\.\d+)?)",
     ]
-    for pattern in slope_patterns:
+    for pattern in explicit_slope_patterns:
         for s_match in re.findall(pattern, combined_text):
             try:
                 s_num = float(s_match)
-                # Point slope MUST match claim.slope_per_decade (CI bounds are NOT allowed as point slope)
                 if claim.slope_per_decade is not None:
                     if abs(s_num - claim.slope_per_decade) >= 0.05:
                         errors.append(
@@ -148,7 +146,51 @@ def validate_narrative_text(
             except ValueError:
                 continue
 
-    # 5b. Check coverage percentages specifically:
+    # Unit-bound rate patterns: distinguish CI upper bound from point slope
+    # E.g. "0.23 to 0.36 °C/decade" vs "+0.30 °C/decade"
+    unit_rate_pattern = r"((?:to|থেকে)\s+)?([+-]?\d+(?:\.\d+)?)\s*(?:°c/decade|°c/দশক|mm/decade|mm/দশক|/decade|/দশক)"
+    for prefix, num_str in re.findall(unit_rate_pattern, combined_text):
+        try:
+            val = float(num_str)
+            if prefix:
+                # Preceded by "to" or "থেকে" -> this is the CI upper bound!
+                if claim.ci_95_upper_per_decade is not None:
+                    if abs(val - claim.ci_95_upper_per_decade) >= 0.05:
+                        errors.append(
+                            f"Factual mismatch: Extracted CI upper endpoint {val} does not match verified CI upper "
+                            f"{claim.ci_95_upper_per_decade}."
+                        )
+            else:
+                # Not preceded by "to" or "থেকে" -> this is the point slope estimate!
+                if claim.slope_per_decade is not None:
+                    if abs(val - claim.slope_per_decade) >= 0.05:
+                        errors.append(
+                            f"Factual mismatch: Extracted slope quantity {val} does not match verified slope "
+                            f"{claim.slope_per_decade} (cross-field or invented number)."
+                        )
+        except ValueError:
+            continue
+
+    # 5b. Check explicit CI bounds clauses (e.g. "interval of 0.23 to 0.36"):
+    ci_clause_pattern = r"(?:confidence interval of|interval of|ব্যবধান ছিল|ব্যবধান)\s*([+-]?\d+(?:\.\d+)?)\s*(?:to|থেকে)\s*([+-]?\d+(?:\.\d+)?)"
+    for low_str, up_str in re.findall(ci_clause_pattern, combined_text):
+        try:
+            low_val = float(low_str)
+            up_val = float(up_str)
+            if claim.ci_95_lower_per_decade is not None:
+                if abs(low_val - claim.ci_95_lower_per_decade) >= 0.05:
+                    errors.append(
+                        f"Factual mismatch: Extracted CI lower endpoint {low_val} does not match verified CI lower {claim.ci_95_lower_per_decade}."
+                    )
+            if claim.ci_95_upper_per_decade is not None:
+                if abs(up_val - claim.ci_95_upper_per_decade) >= 0.05:
+                    errors.append(
+                        f"Factual mismatch: Extracted CI upper endpoint {up_val} does not match verified CI upper {claim.ci_95_upper_per_decade}."
+                    )
+        except ValueError:
+            continue
+
+    # 5c. Check coverage percentages specifically:
     # Must match claim.coverage_pct strictly; cannot borrow duration numbers like 20 or 10.
     cov_patterns = [
         r"(\d+(?:\.\d+)?)\s*%\s*(?:spatial coverage|coverage|স্থানিক কভারেজ|কভারেজ|প্রাপ্যতা)",

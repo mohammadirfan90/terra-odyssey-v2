@@ -39,6 +39,7 @@ export default function ChartArea({
     setComparisonData(null);
     setComparisonError(null);
     setHoveredIndex(null);
+    setIsComparing(false);
   }, [result?.identity?.result_id]);
 
   if (!result) return null;
@@ -142,9 +143,7 @@ export default function ChartArea({
         setComparisonError("Failed to connect to local comparison service.");
       }
     } finally {
-      if (reqId === currentReqRef.current) {
-        setIsComparing(false);
-      }
+      setIsComparing(false);
     }
   };
 
@@ -368,6 +367,7 @@ export default function ChartArea({
                 setCompareRegionId(e.target.value);
                 setComparisonData(null);
                 setComparisonError(null);
+                setIsComparing(false);
               }}
               className="bg-slate-900 border border-slate-700 rounded px-2.5 py-1 text-xs text-slate-200"
             >

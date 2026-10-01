@@ -11,6 +11,7 @@ Implements Section 6.8 and Table 17; resolves Findings F03, F10, and Audit R05:
 from __future__ import annotations
 
 import hashlib
+import json
 from datetime import datetime, timezone
 from typing import Any, Dict
 from fastapi import APIRouter, HTTPException
@@ -321,14 +322,21 @@ def compare_regions(req: ComparisonRequest) -> Dict[str, Any]:
 
     data_sha_a = store.get_series_bytes_sha256(bind_id, reg_a)
     data_sha_b = store.get_series_bytes_sha256(bind_id, reg_b)
+    policy_dict = policy.model_dump()
+    policy_canonical = json.dumps(policy_dict, sort_keys=True)
     comp_hash = hashlib.sha256(
-        f"{reg_a}_{reg_b}_{param_id}_{bind_id}_{policy.id}_{common_years[0]}_{common_years[-1]}_{data_sha_a}_{data_sha_b}".encode()
+        f"{reg_a}_{reg_b}_{param_id}_{bind_id}_{policy.id}_{policy_canonical}_{common_years[0]}_{common_years[-1]}_{data_sha_a}_{data_sha_b}_v1.4.0".encode()
     ).hexdigest()
 
-    return {
+    cached_comp = store.get_result(comp_hash)
+    if cached_comp is not None:
+        return cached_comp
+
+    created_iso = datetime.now(timezone.utc).isoformat()
+    result_obj = {
         "identity": {
             "comparison_id": comp_hash,
-            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_at": created_iso,
         },
         "parameter_id": param_id,
         "binding_id": bind_id,
@@ -360,6 +368,7 @@ def compare_regions(req: ComparisonRequest) -> Dict[str, Any]:
             "evidence_state": evidence_state,
         },
         "provenance": {
+            "data_sha256": f"{data_sha_a}_{data_sha_b}",
             "region_a_data_sha256": data_sha_a,
             "region_b_data_sha256": data_sha_b,
             "policy_id": policy.id,
@@ -367,4 +376,10 @@ def compare_regions(req: ComparisonRequest) -> Dict[str, Any]:
             "dependence_handling": policy.dependence_handling,
             "vif": vif,
         },
+        "reproducibility": {
+            "code_revision": "v1.4.0",
+            "policy_id": policy.id,
+        },
     }
+    store.save_result(comp_hash, req.model_dump(), result_obj)
+    return result_obj

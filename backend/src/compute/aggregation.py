@@ -1,16 +1,18 @@
 """Shared scientific aggregation and calendar completeness module.
 
 Implements rigorous temporal aggregation conforming to Table 8, Section 6.6:
-- Daily-to-annual aggregation across all valid days (retaining >200 days/year)
+- Daily-to-annual aggregation across unique valid calendar days (enforcing leap-year completeness without arbitrary relaxation)
+- Calendar validation rejecting impossible dates (e.g. Feb 31) and deduplicating calendar days
+- Accurate physical quantity conversions (Kelvin to Celsius for absolute temperature; identity preservation for temperature anomalies)
 - Monthly-to-annual aggregation requiring valid, finite observations across calendar intervals (12 for precip, 10 for temp)
 - Calendar validation rejecting fractional or out-of-range months
-- Precision preservation from declared canonical values (e.g. Kelvin -> Celsius)
-- Explicit exclusion of non-finite/NaN months from completeness counts
+- Cadence determination distinguishing raw daily inputs with 'day' column from pre-aggregated annual series
 """
 
 from __future__ import annotations
 
-from typing import Optional, Tuple
+import calendar
+from typing import Optional
 import numpy as np
 import pandas as pd
 
@@ -31,7 +33,7 @@ def aggregate_annual_series(
     Returns:
         pd.DataFrame with columns: ["year", "val", "coverage"]
     Raises:
-        ManifestSchemaError: If calendar values or required schema columns are invalid.
+        ManifestSchemaError: If calendar values, numeric types, or required schema columns are invalid.
     """
     if df is None or df.empty:
         return pd.DataFrame(columns=["year", "val", "coverage"])
@@ -39,8 +41,12 @@ def aggregate_annual_series(
     if "year" not in df.columns:
         raise ManifestSchemaError("Missing required column 'year'.")
 
-    # Validate integer years
-    year_vals = df["year"].to_numpy()
+    # Validate integer years with strict numeric parsing
+    try:
+        year_vals = pd.to_numeric(df["year"], errors="raise").to_numpy(dtype=float)
+    except Exception as e:
+        raise ManifestSchemaError(f"Column 'year' must contain numeric integer values: {e}")
+
     if not np.all(np.isfinite(year_vals)):
         raise ManifestSchemaError("Column 'year' contains non-finite values.")
     if not np.all(np.equal(np.mod(year_vals, 1), 0)):
@@ -50,24 +56,38 @@ def aggregate_annual_series(
     param = PARAMETER_REGISTRY.get(param_id)
     binding: Optional[DatasetBinding] = DATASET_BINDINGS.get(binding_id) if binding_id else None
 
+    # Determine if parameter is an anomaly (temperature differences: 1 K == 1 °C, NO -273.15 offset)
+    is_anomaly = (
+        (param is not None and getattr(param, "physical_quantity", "") == "temperature_anomaly")
+        or (param_id == "surface_temperature_anomaly")
+        or ("anomaly" in str(param_id).lower())
+    )
+
     # 1. Resolve scientific value with canonical precision
     if "value_canonical" in df.columns:
         can_vals = df["value_canonical"].to_numpy(dtype=float)
-        # Transform canonical Kelvin to display Celsius if appropriate
-        if param and param.canonical_unit == "K" and param.display_unit == "°C":
-            raw_vals = can_vals - 273.15
-        elif binding and binding.canonical_unit == "K" and param and param.display_unit == "°C":
-            raw_vals = can_vals - 273.15
+        # Transform canonical Kelvin to display Celsius ONLY if NOT a temperature anomaly!
+        # For temperature anomalies, 1 K delta == 1 °C delta; absolute offset must not be subtracted.
+        if not is_anomaly:
+            if param and param.canonical_unit == "K" and param.display_unit == "°C":
+                raw_vals = can_vals - 273.15
+            elif binding and binding.canonical_unit == "K" and param and param.display_unit == "°C":
+                raw_vals = can_vals - 273.15
+            else:
+                raw_vals = can_vals
         else:
             raw_vals = can_vals
     elif "value_display" in df.columns:
         raw_vals = df["value_display"].to_numpy(dtype=float)
     elif "value" in df.columns:
         raw_vals = df["value"].to_numpy(dtype=float)
+    elif "val" in df.columns:
+        raw_vals = df["val"].to_numpy(dtype=float)
     else:
-        raise ManifestSchemaError("DataFrame missing recognized value column ('value_canonical', 'value_display', 'value').")
+        raise ManifestSchemaError("DataFrame missing recognized value column ('value_canonical', 'value_display', 'value', 'val').")
 
     working_df = df.copy()
+    working_df["year"] = year_vals.astype(int)
     working_df["_val_sci"] = raw_vals
 
     # 2. Quality and coverage filtering
@@ -76,6 +96,12 @@ def aggregate_annual_series(
 
     has_cov = "valid_coverage_pct" in working_df.columns
     if has_cov:
+        try:
+            cov_vals = pd.to_numeric(working_df["valid_coverage_pct"], errors="raise").to_numpy(dtype=float)
+            working_df["valid_coverage_pct"] = cov_vals
+        except Exception as e:
+            raise ManifestSchemaError(f"Coverage column contains non-numeric values: {e}")
+
         working_df = working_df[np.isfinite(working_df["valid_coverage_pct"].to_numpy(dtype=float))]
         working_df = working_df[
             (working_df["valid_coverage_pct"] >= 0.0) & (working_df["valid_coverage_pct"] <= 100.0)
@@ -87,47 +113,82 @@ def aggregate_annual_series(
 
     # 3. Calendar validation
     if "month" in working_df.columns:
-        month_vals = working_df["month"].to_numpy()
+        try:
+            month_vals = pd.to_numeric(working_df["month"], errors="raise").to_numpy(dtype=float)
+        except Exception as e:
+            raise ManifestSchemaError(f"Column 'month' contains non-numeric values: {e}")
+
         if not np.all(np.isfinite(month_vals)):
             raise ManifestSchemaError("Invalid calendar month: non-finite month values found.")
         if not np.all(np.equal(np.mod(month_vals, 1), 0)):
             raise ManifestSchemaError("Invalid calendar month: month values must be integers between 1 and 12.")
         if np.any(month_vals < 1) or np.any(month_vals > 12):
             raise ManifestSchemaError("Invalid calendar month: month values must be between 1 and 12.")
+        working_df["month"] = month_vals.astype(int)
 
     if "day" in working_df.columns:
-        day_vals = working_df["day"].to_numpy()
+        try:
+            day_vals = pd.to_numeric(working_df["day"], errors="raise").to_numpy(dtype=float)
+        except Exception as e:
+            raise ManifestSchemaError(f"Column 'day' contains non-numeric values: {e}")
+
         if not np.all(np.isfinite(day_vals)):
             raise ManifestSchemaError("Invalid calendar day: non-finite day values found.")
         if not np.all(np.equal(np.mod(day_vals, 1), 0)):
             raise ManifestSchemaError("Invalid calendar day: day values must be integers between 1 and 31.")
         if np.any(day_vals < 1) or np.any(day_vals > 31):
             raise ManifestSchemaError("Invalid calendar day: day values must be between 1 and 31.")
+        working_df["day"] = day_vals.astype(int)
+
+    # Validate that (year, month, day) are real valid calendar dates (reject impossible dates like Feb 31)
+    if "month" in working_df.columns and "day" in working_df.columns:
+        try:
+            date_strings = (
+                working_df["year"].astype(str)
+                + "-"
+                + working_df["month"].astype(str).str.zfill(2)
+                + "-"
+                + working_df["day"].astype(str).str.zfill(2)
+            )
+            parsed_dates = pd.to_datetime(date_strings, format="%Y-%m-%d", errors="coerce")
+            if parsed_dates.isna().any():
+                raise ManifestSchemaError("Invalid calendar date: impossible date found (e.g. Feb 31 or invalid month/day).")
+        except ManifestSchemaError:
+            raise
+        except Exception as e:
+            raise ManifestSchemaError(f"Invalid calendar date parsing error: {e}")
 
     is_precip = (param_id == "precipitation_total") or (policy.id == "precipitation_total_policy")
     if param and param.supported_temporal_statistics and param.supported_temporal_statistics[0] in ("annual_total", "total"):
         is_precip = True
 
     # 4. Cadence determination
-    is_daily = (binding is not None and binding.temporal_cadence == "daily") or ("day" in working_df.columns)
+    # Distinguish raw daily inputs with 'day' column from pre-aggregated annual series
+    has_day = "day" in working_df.columns
+    has_month = "month" in working_df.columns
 
     annual_rows = []
-    if is_daily:
-        # Daily aggregation: compute mean/sum across ALL valid daily observations in each year
-        min_required_days = max(10, int(365 * (policy.min_annual_coverage_pct / 100.0) * 0.7))
-        # For standard 80% coverage policy, min_required_days is ~204 days; for MODIS 70%, ~178 days.
-        # A fixture with only 1 day per year must not satisfy annual completeness.
+    if has_day:
+        # Daily aggregation: compute mean/sum across valid UNIQUE calendar days in each year
         for yr, grp in working_df.groupby("year"):
             finite_grp = grp[np.isfinite(grp["_val_sci"].to_numpy(dtype=float))]
-            if len(finite_grp) >= min_required_days:
-                stat_val = float(finite_grp["_val_sci"].sum()) if is_precip else float(finite_grp["_val_sci"].mean())
-                cov_val = float(finite_grp["valid_coverage_pct"].mean()) if has_cov else 100.0
+            # Deduplicate by calendar day (month, day)
+            unique_days = (
+                finite_grp.drop_duplicates(subset=["month", "day"])
+                if "month" in finite_grp.columns
+                else finite_grp.drop_duplicates(subset=["day"])
+            )
+            total_days_in_year = 366 if calendar.isleap(int(yr)) else 365
+            required_days = int(np.ceil(total_days_in_year * (policy.min_annual_coverage_pct / 100.0)))
+            if len(unique_days) >= required_days:
+                stat_val = float(unique_days["_val_sci"].sum()) if is_precip else float(unique_days["_val_sci"].mean())
+                cov_val = float(unique_days["valid_coverage_pct"].mean()) if has_cov else 100.0
                 annual_rows.append({
                     "year": int(yr),
                     "val": stat_val,
                     "coverage": cov_val,
                 })
-    elif "month" in working_df.columns:
+    elif has_month:
         # Monthly aggregation: require valid, FINITE observations for all required months
         min_months = 12 if is_precip else 10
         for yr, grp in working_df.groupby("year"):
