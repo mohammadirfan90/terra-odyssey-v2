@@ -125,7 +125,7 @@ def run():
     """CLI entrypoint launching the FastAPI server with uvicorn."""
     import uvicorn
 
-    port = int(os.environ.get("PORT", "8000"))
+    port = int(os.environ.get("PORT", "8005"))
     uvicorn.run("src.main:app", host="0.0.0.0", port=port, reload=False)
 
 

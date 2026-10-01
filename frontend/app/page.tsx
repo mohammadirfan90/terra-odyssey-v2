@@ -69,6 +69,7 @@ export default function EarthSystemTrendDetectiveApp() {
     async function loadTrend() {
       setIsLoading(true);
       setError(null);
+      setCurrentResult(null);
       try {
         const url = `/api/trend?region_id=${committedParams.regionId}&parameter_id=${committedParams.parameterId}&start_year=${committedParams.startYear}&end_year=${committedParams.endYear}`;
         const res = await fetch(url, { signal: controller.signal });

@@ -31,11 +31,14 @@ export default function ChartArea({
   const [comparisonData, setComparisonData] = useState<any | null>(null);
   const [isComparing, setIsComparing] = useState(false);
   const [comparisonError, setComparisonError] = useState<string | null>(null);
+  const currentReqRef = React.useRef(0);
 
-  // Reset comparison when primary result changes (Placed before early return to strictly adhere to Rules of Hooks)
+  // Reset comparison and hover when primary result changes (Placed before early return to strictly adhere to Rules of Hooks)
   useEffect(() => {
+    currentReqRef.current++;
     setComparisonData(null);
     setComparisonError(null);
+    setHoveredIndex(null);
   }, [result?.identity?.result_id]);
 
   if (!result) return null;
@@ -95,8 +98,11 @@ export default function ChartArea({
     bandPolygonPoints = `${upperPoints} ${lowerPoints}`;
   }
 
-  // Handle comparison query
+  // Handle comparison query with race condition guards
   const handleRunComparison = async () => {
+    const reqId = ++currentReqRef.current;
+    const targetRegion = compareRegionId;
+    const currentPrimary = region.id;
     setIsComparing(true);
     setComparisonError(null);
     try {
@@ -113,20 +119,32 @@ export default function ChartArea({
           policy_id: result?.reproducibility?.policy_id || result?.identity?.normalized_query?.policy_id || "standard_climate_temperature",
         }),
       });
+      // Guard against stale response if primary result or target region changed
+      if (reqId !== currentReqRef.current || region.id !== currentPrimary) {
+        return;
+      }
       if (res.ok) {
         const data = await res.json();
-        setComparisonData(data);
-        setComparisonError(null);
+        if (reqId === currentReqRef.current) {
+          setComparisonData(data);
+          setComparisonError(null);
+        }
       } else {
         const errJson = await res.json();
-        setComparisonError(errJson.detail?.detail || errJson.detail || "Comparison could not be computed.");
-        setComparisonData(null);
+        if (reqId === currentReqRef.current) {
+          setComparisonError(errJson.detail?.detail || errJson.detail || "Comparison could not be computed.");
+          setComparisonData(null);
+        }
       }
     } catch (err) {
-      console.error("Comparison failed:", err);
-      setComparisonError("Failed to connect to local comparison service.");
+      if (reqId === currentReqRef.current) {
+        console.error("Comparison failed:", err);
+        setComparisonError("Failed to connect to local comparison service.");
+      }
     } finally {
-      setIsComparing(false);
+      if (reqId === currentReqRef.current) {
+        setIsComparing(false);
+      }
     }
   };
 
@@ -314,7 +332,7 @@ export default function ChartArea({
               })}
 
               {/* Hover Tooltip Box */}
-              {hoveredIndex !== null && (
+              {hoveredIndex !== null && hoveredIndex < values.length && values[hoveredIndex] !== undefined && years[hoveredIndex] !== undefined && (
                 <g transform={`translate(${scaleX(years[hoveredIndex])}, ${scaleY(values[hoveredIndex]) - 35})`}>
                   <rect
                     x="-45"
@@ -345,7 +363,12 @@ export default function ChartArea({
             </span>
             <select
               value={compareRegionId}
-              onChange={(e) => setCompareRegionId(e.target.value)}
+              onChange={(e) => {
+                currentReqRef.current++;
+                setCompareRegionId(e.target.value);
+                setComparisonData(null);
+                setComparisonError(null);
+              }}
               className="bg-slate-900 border border-slate-700 rounded px-2.5 py-1 text-xs text-slate-200"
             >
               {allRegions
