@@ -130,8 +130,8 @@ def validate_narrative_text(
     # Numbers immediately before °C/decade or °C/দশক preceded by "to" or "থেকে" are CI upper endpoints.
     # Numbers explicitly in point slope position must match claim.slope_per_decade strictly.
     explicit_slope_patterns = [
-        r"(?:increased at|decreased at|rate of|rate was|slope of)\s*([+-]?\d+(?:\.\d+)?)",
-        r"(?:দশক প্রতি|প্রতি দশকে|প্রতি দশক)\s*([+-]?\d+(?:\.\d+)?)",
+        r"(?:increased at|decreased at|rate of|rate was|slope of|was equal to|equal to)\s*([+-]?\d+(?:\.\d+)?)",
+        r"(?:দশক প্রতি|প্রতি দশকে|প্রতি দশক|সমান)\s*([+-]?\d+(?:\.\d+)?)",
     ]
     for pattern in explicit_slope_patterns:
         for s_match in re.findall(pattern, combined_text):
@@ -146,28 +146,39 @@ def validate_narrative_text(
             except ValueError:
                 continue
 
-    # Unit-bound rate patterns: distinguish CI upper bound from point slope
-    # E.g. "0.23 to 0.36 °C/decade" vs "+0.30 °C/decade"
-    unit_rate_pattern = r"((?:to|থেকে)\s+)?([+-]?\d+(?:\.\d+)?)\s*(?:°c/decade|°c/দশক|mm/decade|mm/দশক|/decade|/দশক)"
-    for prefix, num_str in re.findall(unit_rate_pattern, combined_text):
+    # Distinguish true CI ranges (<num> to <num> °C/decade) from standalone point estimates.
+    # A CI upper bound MUST be preceded by a numeric lower bound (e.g. "0.23 to 0.36 °C/decade" or "0.23 থেকে 0.36 °C/দশক").
+    ci_range_unit_pattern = r"([+-]?\d+(?:\.\d+)?)\s*(?:to|থেকে)\s*([+-]?\d+(?:\.\d+)?)\s*(?:°c/decade|°c/দশক|mm/decade|mm/দশক|/decade|/দশক)"
+    for low_str, up_str in re.findall(ci_range_unit_pattern, combined_text):
         try:
-            val = float(num_str)
-            if prefix:
-                # Preceded by "to" or "থেকে" -> this is the CI upper bound!
-                if claim.ci_95_upper_per_decade is not None:
-                    if abs(val - claim.ci_95_upper_per_decade) >= 0.05:
-                        errors.append(
-                            f"Factual mismatch: Extracted CI upper endpoint {val} does not match verified CI upper "
-                            f"{claim.ci_95_upper_per_decade}."
-                        )
-            else:
-                # Not preceded by "to" or "থেকে" -> this is the point slope estimate!
-                if claim.slope_per_decade is not None:
-                    if abs(val - claim.slope_per_decade) >= 0.05:
-                        errors.append(
-                            f"Factual mismatch: Extracted slope quantity {val} does not match verified slope "
-                            f"{claim.slope_per_decade} (cross-field or invented number)."
-                        )
+            low_val = float(low_str)
+            up_val = float(up_str)
+            if claim.ci_95_lower_per_decade is not None:
+                if abs(low_val - claim.ci_95_lower_per_decade) >= 0.05:
+                    errors.append(
+                        f"Factual mismatch: Extracted CI lower endpoint {low_val} does not match verified CI lower {claim.ci_95_lower_per_decade}."
+                    )
+            if claim.ci_95_upper_per_decade is not None:
+                if abs(up_val - claim.ci_95_upper_per_decade) >= 0.05:
+                    errors.append(
+                        f"Factual mismatch: Extracted CI upper endpoint {up_val} does not match verified CI upper {claim.ci_95_upper_per_decade}."
+                    )
+        except ValueError:
+            continue
+
+    # Standalone rate before unit (e.g. "+0.30 °C/decade", "equal to 0.36 °C/decade")
+    # Mask out the already-validated <num> to <num> ranges so their upper bound isn't re-checked as a standalone slope
+    masked_text = re.sub(ci_range_unit_pattern, " ", combined_text)
+    standalone_rate_pattern = r"(?:(?:was\s+)?equal\s+to\s+)?([+-]?\d+(?:\.\d+)?)\s*(?:°c/decade|°c/দশক|mm/decade|mm/দশক|/decade|/দশক)"
+    for r_match in re.findall(standalone_rate_pattern, masked_text):
+        try:
+            val = float(r_match)
+            if claim.slope_per_decade is not None:
+                if abs(val - claim.slope_per_decade) >= 0.05:
+                    errors.append(
+                        f"Factual mismatch: Extracted slope quantity {val} does not match verified slope "
+                        f"{claim.slope_per_decade} (cross-field or invented number)."
+                    )
         except ValueError:
             continue
 

@@ -43,6 +43,8 @@ def calculate_fitted_line_band(
     alpha: float = 0.05,
     n_bootstrap: int = 500,
     seed: int = 42,
+    block_bootstrap: bool = False,
+    block_length: Optional[int] = None,
 ) -> FittedBandResult:
     """Compute pointwise fitted-line uncertainty band using residual bootstrap.
 
@@ -53,6 +55,8 @@ def calculate_fitted_line_band(
         alpha: Two-sided error rate (default: 0.05 -> 95% band).
         n_bootstrap: Number of bootstrap replications (default: 500).
         seed: Random seed for exact reproducibility.
+        block_bootstrap: Whether to use moving-block bootstrap for autocorrelated residuals.
+        block_length: Length of moving blocks (defaults to ceil(n^(1/3))).
 
     Returns:
         FittedBandResult with pointwise fitted, lower, and upper bounds.
@@ -126,10 +130,18 @@ def calculate_fitted_line_band(
     rng = np.random.default_rng(seed)
     eval_trajectories = np.empty((n_bootstrap, t_eval.size), dtype=np.float64)
 
+    L = block_length or max(2, int(np.ceil(n ** (1 / 3)))) if block_bootstrap else 1
+
     # Residual bootstrap loop
     successful_reps = 0
     for b in range(n_bootstrap):
-        resampled_residuals = rng.choice(residuals, size=n, replace=True)
+        if block_bootstrap and n > L:
+            n_blocks = int(np.ceil(n / L))
+            block_starts = rng.integers(0, n - L + 1, size=n_blocks)
+            resampled_residuals = np.concatenate([residuals[st : st + L] for st in block_starts])[:n]
+        else:
+            resampled_residuals = rng.choice(residuals, size=n, replace=True)
+
         y_boot = (intercept + slope * (t_sorted - ref_time)) + resampled_residuals
         boot_ts = theil_sen_slope(t_sorted, y_boot, alpha=alpha, ref_time=ref_time)
 
@@ -170,7 +182,7 @@ def calculate_fitted_line_band(
     return FittedBandResult(
         points=points,
         coverage=1.0 - alpha,
-        method="pointwise_residual_bootstrap",
+        method="moving_block_residual_bootstrap" if block_bootstrap else "pointwise_residual_bootstrap",
         replicates=successful_reps,
         seed=seed,
         is_valid=True,

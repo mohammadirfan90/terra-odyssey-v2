@@ -143,7 +143,9 @@ export default function ChartArea({
         setComparisonError("Failed to connect to local comparison service.");
       }
     } finally {
-      setIsComparing(false);
+      if (reqId === currentReqRef.current) {
+        setIsComparing(false);
+      }
     }
   };
 

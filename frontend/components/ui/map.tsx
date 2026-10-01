@@ -7,6 +7,7 @@ import { Globe, ZoomIn, ZoomOut, RotateCcw, Crosshair } from "lucide-react";
 
 interface MapProps {
   selectedRegionId?: string;
+  parameterId?: string;
   onSelectRegion: (regionId: string) => void;
   className?: string;
   isBangla?: boolean;
@@ -14,6 +15,7 @@ interface MapProps {
 
 export default function Scientific2DMap({
   selectedRegionId,
+  parameterId,
   onSelectRegion,
   className = "",
   isBangla = false,
@@ -21,7 +23,15 @@ export default function Scientific2DMap({
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
-  const [hoveredCountry, setHoveredCountry] = useState<{ name: string; id: string } | null>(null);
+  const [hoveredCountry, setHoveredCountry] = useState<{
+    name: string;
+    id: string;
+    slope?: number | null;
+    p_value?: number | null;
+    q_value?: number | null;
+    is_fdr?: boolean;
+  } | null>(null);
+  const [layerData, setLayerData] = useState<any | null>(null);
   const [cursorCoords, setCursorCoords] = useState<{ lat: number; lon: number } | null>(null);
   const hoveredFeatureIdRef = useRef<string | number | null>(null);
   const onSelectRegionRef = useRef(onSelectRegion);
@@ -227,6 +237,61 @@ export default function Scientific2DMap({
       .catch((err) => console.error("Error updating selected region boundary:", err));
   }, [selectedRegionId, mapLoaded]);
 
+  // Fetch and display parameter scientific layer
+  useEffect(() => {
+    if (!mapRef.current || !mapLoaded) return;
+    const map = mapRef.current;
+    const layerId = parameterId === "land_surface_temperature_day" ? "modis_lst_trend_slope" : "merra2_trend_slope";
+
+    fetch(`/api/layers/${layerId}/geojson`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!data) return;
+        setLayerData(data);
+        if (map.getSource("scientific-layer-source")) {
+          (map.getSource("scientific-layer-source") as maplibregl.GeoJSONSource).setData(data);
+        } else {
+          map.addSource("scientific-layer-source", {
+            type: "geojson",
+            data: data,
+          });
+          map.addLayer(
+            {
+              id: "scientific-layer-fill",
+              type: "fill",
+              source: "scientific-layer-source",
+              paint: {
+                "fill-color": [
+                  "case",
+                  ["==", ["get", "has_data"], true],
+                  [
+                    "interpolate",
+                    ["linear"],
+                    ["get", "slope_per_decade"],
+                    -0.5,
+                    "#2563eb",
+                    0.0,
+                    "#475569",
+                    0.5,
+                    "#dc2626",
+                  ],
+                  "transparent",
+                ],
+                "fill-opacity": [
+                  "case",
+                  ["==", ["get", "has_data"], true],
+                  0.35,
+                  0.0,
+                ],
+              },
+            },
+            "selected-region-fill"
+          );
+        }
+      })
+      .catch((err) => console.error("Error loading scientific map layer:", err));
+  }, [mapLoaded, parameterId]);
+
   const handleZoomIn = () => mapRef.current?.zoomIn();
   const handleZoomOut = () => mapRef.current?.zoomOut();
   const handleResetView = () => {
@@ -245,11 +310,38 @@ export default function Scientific2DMap({
           <span className="font-mono text-[10px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400">
             {hoveredCountry.id}
           </span>
+          {hoveredCountry.slope !== undefined && hoveredCountry.slope !== null && (
+            <span className="font-mono text-[11px] text-amber-300 pl-1 font-semibold">
+              {hoveredCountry.slope > 0 ? `+${hoveredCountry.slope.toFixed(2)}` : hoveredCountry.slope.toFixed(2)} °C/dec
+            </span>
+          )}
+          {hoveredCountry.is_fdr && (
+            <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/40">
+              FDR
+            </span>
+          )}
           <span className="text-[10px] text-slate-500 italic pl-1">
             {isBangla ? "(ক্লিক করে নির্বাচন করুন)" : "(Click to investigate)"}
           </span>
         </div>
       )}
+
+      {/* Scientific Map Layer Legend */}
+      <div className="absolute bottom-12 left-3 z-10 bg-slate-950/85 backdrop-blur border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-300 shadow-xl pointer-events-none flex flex-col space-y-1">
+        <div className="flex items-center justify-between text-[11px] font-medium text-slate-400">
+          <span>{isBangla ? "পরিবর্তনের হার (°C/দশক)" : "Trend Slope (°C/dec)"}</span>
+          {layerData && (
+            <span className="text-[10px] text-emerald-400 font-mono pl-2">
+              {layerData.fdr_significant_count} FDR Sig
+            </span>
+          )}
+        </div>
+        <div className="flex items-center space-x-1.5 pt-0.5">
+          <span className="text-[10px] font-mono text-blue-400">-0.5</span>
+          <div className="w-28 h-2 rounded bg-gradient-to-r from-blue-600 via-slate-600 to-red-600" />
+          <span className="text-[10px] font-mono text-red-400">+0.5</span>
+        </div>
+      </div>
 
       {/* Floating Map Controls */}
       <div className="absolute top-4 right-4 z-10 flex flex-col space-y-1.5">

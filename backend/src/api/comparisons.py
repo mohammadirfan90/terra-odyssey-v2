@@ -113,6 +113,17 @@ def compare_regions(req: ComparisonRequest) -> Dict[str, Any]:
                 "code": "UNKNOWN_POLICY",
             },
         )
+    if pol_id == "precipitation_total_policy" and param_id != "precipitation_total":
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "type": "https://errors.earthtrenddetective.org/POLICY_PARAMETER_INCOMPATIBLE",
+                "title": "Incompatible Analysis Policy for Parameter",
+                "status": 422,
+                "detail": f"Policy '{pol_id}' is designated for precipitation accumulation, not compatible with '{param_id}'.",
+                "code": "POLICY_PARAMETER_INCOMPATIBLE",
+            },
+        )
     policy = ANALYSIS_POLICIES[pol_id]
 
     # Validate spatial support
@@ -330,6 +341,10 @@ def compare_regions(req: ComparisonRequest) -> Dict[str, Any]:
 
     cached_comp = store.get_result(comp_hash)
     if cached_comp is not None:
+        prov = cached_comp.get("provenance", {})
+        if len(prov.get("data_sha256", "")) != 64:
+            prov["data_sha256"] = hashlib.sha256(f"{data_sha_a}:{data_sha_b}".encode()).hexdigest()
+            cached_comp["provenance"] = prov
         return cached_comp
 
     created_iso = datetime.now(timezone.utc).isoformat()
@@ -368,7 +383,7 @@ def compare_regions(req: ComparisonRequest) -> Dict[str, Any]:
             "evidence_state": evidence_state,
         },
         "provenance": {
-            "data_sha256": f"{data_sha_a}_{data_sha_b}",
+            "data_sha256": hashlib.sha256(f"{data_sha_a}:{data_sha_b}".encode()).hexdigest(),
             "region_a_data_sha256": data_sha_a,
             "region_b_data_sha256": data_sha_b,
             "policy_id": policy.id,
@@ -381,5 +396,5 @@ def compare_regions(req: ComparisonRequest) -> Dict[str, Any]:
             "policy_id": policy.id,
         },
     }
-    store.save_result(comp_hash, req.model_dump(), result_obj)
-    return result_obj
+    saved_result = store.save_result(comp_hash, req.model_dump(), result_obj)
+    return saved_result

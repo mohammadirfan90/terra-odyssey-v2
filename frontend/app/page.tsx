@@ -169,6 +169,7 @@ export default function EarthSystemTrendDetectiveApp() {
           <div className="flex-1 min-h-[380px] flex flex-col">
             <Scientific2DMap
               selectedRegionId={committedParams.regionId}
+              parameterId={committedParams.parameterId}
               onSelectRegion={handleMapSelectRegion}
               isBangla={isBangla}
               className="flex-1 shadow-xl"

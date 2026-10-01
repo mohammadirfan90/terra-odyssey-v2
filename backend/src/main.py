@@ -136,7 +136,29 @@ def health_check():
 
 
 # Mount static frontend export if available for single-port delivery (e.g. at port 8005)
-frontend_out = (Path(__file__).resolve().parents[2] / "frontend" / "out").resolve()
+frontend_env = os.environ.get("FRONTEND_ROOT") or os.environ.get("STATIC_DIR")
+if frontend_env:
+    frontend_out = Path(frontend_env).resolve()
+else:
+    # 1. Source checkout location
+    frontend_out = (Path(__file__).resolve().parents[2] / "frontend" / "out").resolve()
+    # 2. DATA_ROOT sibling location (for installed wheel when DATA_ROOT is configured)
+    if not (frontend_out.exists() and (frontend_out / "index.html").exists()):
+        data_env = os.environ.get("DATA_ROOT")
+        if data_env:
+            dr_cand = (Path(data_env).resolve().parent / "frontend" / "out").resolve()
+            if dr_cand.exists() and (dr_cand / "index.html").exists():
+                frontend_out = dr_cand
+    # 3. Current working directory fallback
+    if not (frontend_out.exists() and (frontend_out / "index.html").exists()):
+        cwd_cand = (Path.cwd() / "frontend" / "out").resolve()
+        if cwd_cand.exists() and (cwd_cand / "index.html").exists():
+            frontend_out = cwd_cand
+        else:
+            out_cand = (Path.cwd() / "out").resolve()
+            if out_cand.exists() and (out_cand / "index.html").exists():
+                frontend_out = out_cand
+
 if frontend_out.exists() and (frontend_out / "index.html").exists():
     app.mount("/", StaticFiles(directory=str(frontend_out), html=True), name="frontend")
 

@@ -39,8 +39,25 @@ def get_result_series(result_id: str) -> Dict[str, Any]:
     if not res:
         raise HTTPException(status_code=404, detail="Result not found.")
 
+    is_comparison = "contrast_difference_series" in res or "region_a" in res
+    if is_comparison:
+        diff_series = res.get("contrast_difference_series", {})
+        return {
+            "result_id": result_id,
+            "result_kind": "paired_comparison",
+            "region_a": res.get("region_a"),
+            "region_b": res.get("region_b"),
+            "parameter_id": res.get("parameter_id"),
+            "unit": res.get("unit"),
+            "common_years_count": res.get("common_years_count"),
+            "contrast_difference_series": diff_series,
+            "years": diff_series.get("years", []),
+            "difference_values": diff_series.get("difference_values", []),
+        }
+
     return {
         "result_id": result_id,
+        "result_kind": "primary_trend",
         "region_id": res["region"]["id"],
         "parameter_id": res["parameter"]["id"],
         "unit": res["parameter"]["display_unit"],
@@ -58,18 +75,33 @@ def export_result(result_id: str, format: str = "json") -> Response:
     if not res:
         raise HTTPException(status_code=404, detail="Result not found.")
 
+    is_comparison = "contrast_difference_series" in res or "region_a" in res
     if format.lower() == "csv":
-        years = res["series"]["years"]
-        vals = res["series"]["values"]
-        unit = res["parameter"]["display_unit"]
-        df = pd.DataFrame({"year": years, f"value_{unit}": vals})
-        csv_buffer = io.StringIO()
-        df.to_csv(csv_buffer, index=False)
-        return Response(
-            content=csv_buffer.getvalue(),
-            media_type="text/csv",
-            headers={"Content-Disposition": f"attachment; filename=trend_{result_id[:8]}.csv"},
-        )
+        if is_comparison:
+            diff_series = res.get("contrast_difference_series", {})
+            years = diff_series.get("years", [])
+            diff_vals = diff_series.get("difference_values", [])
+            unit = res.get("unit", "")
+            df = pd.DataFrame({"year": years, f"difference_{unit}": diff_vals})
+            csv_buffer = io.StringIO()
+            df.to_csv(csv_buffer, index=False)
+            return Response(
+                content=csv_buffer.getvalue(),
+                media_type="text/csv",
+                headers={"Content-Disposition": f"attachment; filename=comparison_{result_id[:8]}.csv"},
+            )
+        else:
+            years = res["series"]["years"]
+            vals = res["series"]["values"]
+            unit = res["parameter"]["display_unit"]
+            df = pd.DataFrame({"year": years, f"value_{unit}": vals})
+            csv_buffer = io.StringIO()
+            df.to_csv(csv_buffer, index=False)
+            return Response(
+                content=csv_buffer.getvalue(),
+                media_type="text/csv",
+                headers={"Content-Disposition": f"attachment; filename=trend_{result_id[:8]}.csv"},
+            )
 
     # Default: Full JSON reproducibility bundle
     export_bundle = {

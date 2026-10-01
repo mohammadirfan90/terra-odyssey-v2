@@ -146,11 +146,15 @@ class LocalDataStore:
                 try:
                     obj = json.loads(res_json)
                     prov = obj.get("provenance", {})
-                    if "region_a_data_sha256" in prov and not prov.get("data_sha256"):
-                        prov["data_sha256"] = f"{prov['region_a_data_sha256']}_{prov.get('region_b_data_sha256', '')}"
-                        obj["provenance"] = prov
-                        res_json = json.dumps(obj)
-                        cursor.execute("UPDATE completed_results SET result_json = ? WHERE result_id = ?", (res_json, r_id))
+                    if "region_a_data_sha256" in prov:
+                        sha_a = prov.get("region_a_data_sha256", "")
+                        sha_b = prov.get("region_b_data_sha256", "")
+                        correct_sha = hashlib.sha256(f"{sha_a}:{sha_b}".encode()).hexdigest()
+                        if prov.get("data_sha256") != correct_sha:
+                            prov["data_sha256"] = correct_sha
+                            obj["provenance"] = prov
+                            res_json = json.dumps(obj)
+                            cursor.execute("UPDATE completed_results SET result_json = ? WHERE result_id = ?", (res_json, r_id))
 
                     d_sha = prov.get("data_sha256")
                     doi = prov.get("doi", "")
@@ -277,6 +281,17 @@ class LocalDataStore:
             meta = manifest["metadata"]
             if meta.get("availability_state") not in ("analysis_ready", "display_ready"):
                 return False
+            for f in ("canonical_unit", "display_unit", "variable_name", "temporal_cadence"):
+                if not meta.get(f):
+                    return False
+            if binding_id in DATASET_BINDINGS:
+                exp_b = DATASET_BINDINGS[binding_id]
+                if meta.get("variable_name") != exp_b.variable_name:
+                    return False
+                if meta.get("canonical_unit") != exp_b.canonical_unit:
+                    return False
+                if meta.get("temporal_cadence") != exp_b.temporal_cadence:
+                    return False
             entry = self.get_manifest_entry(binding_id, region_id)
             if not entry:
                 return False
@@ -360,13 +375,21 @@ class LocalDataStore:
                 f"Dataset binding '{binding_id}' is in availability_state '{avail}', not ready for analysis."
             )
 
+        # Enforce all required metadata fields
+        required_meta_fields = ["canonical_unit", "display_unit", "variable_name", "temporal_cadence"]
+        for f in required_meta_fields:
+            if not meta.get(f):
+                raise ManifestSchemaError(
+                    f"Manifest metadata for binding '{binding_id}' missing required scientific contract field '{f}'."
+                )
+
         if binding_id in DATASET_BINDINGS:
             expected_binding = DATASET_BINDINGS[binding_id]
-            if meta.get("canonical_unit") and meta.get("canonical_unit") != expected_binding.canonical_unit:
+            if meta.get("canonical_unit") != expected_binding.canonical_unit:
                 raise ManifestSchemaError(
                     f"Manifest canonical unit '{meta.get('canonical_unit')}' does not match binding definition '{expected_binding.canonical_unit}'."
                 )
-            if meta.get("variable_name") and meta.get("variable_name") != expected_binding.variable_name:
+            if meta.get("variable_name") != expected_binding.variable_name:
                 raise ManifestSchemaError(
                     f"Manifest variable name '{meta.get('variable_name')}' does not match binding definition '{expected_binding.variable_name}'."
                 )
@@ -375,7 +398,7 @@ class LocalDataStore:
                 raise ManifestSchemaError(
                     f"Manifest display unit '{meta.get('display_unit')}' does not match parameter definition '{expected_param.display_unit}'."
                 )
-            if meta.get("temporal_cadence") and meta.get("temporal_cadence") != expected_binding.temporal_cadence:
+            if meta.get("temporal_cadence") != expected_binding.temporal_cadence:
                 raise ManifestSchemaError(
                     f"Manifest temporal cadence '{meta.get('temporal_cadence')}' does not match binding definition '{expected_binding.temporal_cadence}'."
                 )
@@ -411,6 +434,14 @@ class LocalDataStore:
         except Exception as e:
             raise ManifestSchemaError(f"Column 'year' contains non-numeric values: {e}")
 
+        # Validate observation value column for numeric correctness
+        for cand in ["value_canonical", "value_display", "value", "val"]:
+            if cand in df.columns:
+                try:
+                    df[cand] = pd.to_numeric(df[cand], errors="raise")
+                except Exception as e:
+                    raise ManifestSchemaError(f"Observation values in column '{cand}' contain non-numeric data: {e}")
+
         manifest_rows = entry.get("row_count")
         if manifest_rows is not None and manifest_rows != len(df):
             raise ManifestSchemaError(
@@ -445,9 +476,26 @@ class LocalDataStore:
                 f"Parquet file {entry.get('file_name', parquet_path.name)} violates manifest contract: required coverage column '{cov_col}' missing."
             )
 
+        def decode_qa(val: Any) -> bool:
+            """Decode boolean and enum QA columns avoiding Python string truthiness traps."""
+            if pd.isna(val):
+                return False
+            if isinstance(val, (bool, np.bool_)):
+                return bool(val)
+            if isinstance(val, (int, np.integer, float, np.floating)):
+                return val != 0
+            if isinstance(val, str):
+                v = val.strip().lower()
+                if v in ("true", "1", "t", "yes", "pass", "passed"):
+                    return True
+                if v in ("false", "0", "f", "no", "fail", "failed"):
+                    return False
+                return False
+            return False
+
         # Map declared alternative QA column to canonical 'qa_passed'
-        if qa_col and qa_col in df.columns and qa_col != "qa_passed":
-            df["qa_passed"] = df[qa_col].astype(bool)
+        if qa_col and qa_col in df.columns:
+            df["qa_passed"] = df[qa_col].apply(decode_qa)
 
         # Map declared alternative coverage column to canonical 'valid_coverage_pct'
         cov_col_to_check = cov_col or ("valid_coverage_pct" if "valid_coverage_pct" in df.columns else None)
@@ -472,10 +520,11 @@ class LocalDataStore:
             return ""
         return hashlib.sha256(parquet_path.read_bytes()).hexdigest()
 
-    def save_result(self, result_id: str, query_dict: dict, result_dict: dict) -> None:
+    def save_result(self, result_id: str, query_dict: dict, result_dict: dict) -> dict:
         """Save a computed result object into SQLite using immutable append-only semantics.
 
         If a result with this ID already exists, it is preserved unchanged (INSERT OR IGNORE).
+        Returns the canonical stored winner payload to guarantee concurrency consensus.
         Strictly sanitizes non-finite floats for RFC 8259 JSON compliance.
         """
         created_at = result_dict.get("identity", {}).get("created_at") or datetime.now(timezone.utc).isoformat()
@@ -496,6 +545,17 @@ class LocalDataStore:
                 ),
             )
             conn.commit()
+
+            # If row was ignored because another thread inserted first, return the stored canonical winner
+            if cursor.rowcount == 0:
+                cursor.execute("SELECT result_json FROM completed_results WHERE result_id = ?", (result_id,))
+                row = cursor.fetchone()
+                if row and row[0]:
+                    try:
+                        return json.loads(row[0])
+                    except Exception:
+                        pass
+        return sanitized_result
 
     def get_result(self, result_id: str) -> Optional[dict]:
         """Retrieve stored result by result_id. Rejects quarantined/unverified legacy records."""
