@@ -241,19 +241,67 @@ export default function Scientific2DMap({
   useEffect(() => {
     if (!mapRef.current || !mapLoaded) return;
     const map = mapRef.current;
-    const layerId = parameterId === "land_surface_temperature_day" ? "modis_lst_trend_slope" : "merra2_trend_slope";
+
+    let layerId: string | null = null;
+    if (parameterId === "air_temperature_2m") {
+      layerId = "merra2_trend_slope";
+    } else if (parameterId === "land_surface_temperature_day") {
+      layerId = "modis_lst_trend_slope";
+    } else if (parameterId === "land_surface_temperature_night") {
+      layerId = "modis_lst_night_trend_slope";
+    } else if (parameterId === "sea_surface_temperature") {
+      layerId = "oisst_trend_slope";
+    } else if (parameterId === "point_air_temperature") {
+      layerId = "power_point_trend_slope";
+    }
+
+    if (!layerId) {
+      setLayerData(null);
+      const src = map.getSource("scientific-layer-source") as maplibregl.GeoJSONSource;
+      if (src) {
+        src.setData({ type: "FeatureCollection", features: [] });
+      }
+      return;
+    }
 
     fetch(`/api/layers/${layerId}/geojson`)
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (!data) return;
-        setLayerData(data);
+
+        // Ensure terrestrial parameters do not fill ocean basins (e.g. Bay of Bengal)
+        const isOceanParam = parameterId === "sea_surface_temperature";
+        const oceanIds = new Set(["BAY_OF_BENGAL", "NORTH_ATLANTIC", "INDIAN_OCEAN"]);
+
+        const filteredFeatures = (data.features || []).map((feat: any) => {
+          const fid = feat.id || feat.properties?.id;
+          const isOceanFeat = oceanIds.has(fid);
+          if (!isOceanParam && isOceanFeat) {
+            // Mask out ocean fill for terrestrial land surface temperature
+            return {
+              ...feat,
+              properties: {
+                ...feat.properties,
+                has_data: false,
+                slope_per_decade: null,
+              },
+            };
+          }
+          return feat;
+        });
+
+        const sanitizedData = {
+          ...data,
+          features: filteredFeatures,
+        };
+
+        setLayerData(sanitizedData);
         if (map.getSource("scientific-layer-source")) {
-          (map.getSource("scientific-layer-source") as maplibregl.GeoJSONSource).setData(data);
+          (map.getSource("scientific-layer-source") as maplibregl.GeoJSONSource).setData(sanitizedData);
         } else {
           map.addSource("scientific-layer-source", {
             type: "geojson",
-            data: data,
+            data: sanitizedData,
           });
           map.addLayer(
             {
@@ -327,21 +375,28 @@ export default function Scientific2DMap({
       )}
 
       {/* Scientific Map Layer Legend */}
-      <div className="absolute bottom-12 left-3 z-10 bg-slate-950/85 backdrop-blur border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-300 shadow-xl pointer-events-none flex flex-col space-y-1">
-        <div className="flex items-center justify-between text-[11px] font-medium text-slate-400">
-          <span>{isBangla ? "পরিবর্তনের হার (°C/দশক)" : "Trend Slope (°C/dec)"}</span>
-          {layerData && (
-            <span className="text-[10px] text-emerald-400 font-mono pl-2">
-              {layerData.fdr_significant_count} FDR Sig
-            </span>
-          )}
+      {layerData && (
+        <div className="absolute bottom-12 left-3 z-10 bg-slate-950/90 backdrop-blur-md border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 shadow-2xl pointer-events-none flex flex-col space-y-1.5">
+          <div className="flex items-center justify-between text-[11px] font-semibold text-slate-300">
+            <span>{isBangla ? "পরিবর্তনের মাত্রা (°C/দশক)" : "Trend Slope (°C/dec)"}</span>
+            {layerData.fdr_significant_count > 0 && (
+              <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/40 font-mono ml-2 font-medium">
+                {layerData.fdr_significant_count} FDR Sig
+              </span>
+            )}
+          </div>
+          <div className="flex items-center space-x-2 pt-0.5">
+            <span className="text-[10px] font-mono text-blue-400 font-medium">-0.5</span>
+            <div className="w-32 h-2.5 rounded-full bg-gradient-to-r from-blue-600 via-slate-600 to-red-600 border border-slate-700/50 shadow-inner" />
+            <span className="text-[10px] font-mono text-red-400 font-medium">+0.5</span>
+          </div>
+          <div className="flex justify-between text-[9px] text-slate-400 px-0.5">
+            <span>{isBangla ? "হ্রাস" : "Cooling"}</span>
+            <span>{isBangla ? "নিরপেক্ষ" : "Neutral"}</span>
+            <span>{isBangla ? "বৃদ্ধি" : "Warming"}</span>
+          </div>
         </div>
-        <div className="flex items-center space-x-1.5 pt-0.5">
-          <span className="text-[10px] font-mono text-blue-400">-0.5</span>
-          <div className="w-28 h-2 rounded bg-gradient-to-r from-blue-600 via-slate-600 to-red-600" />
-          <span className="text-[10px] font-mono text-red-400">+0.5</span>
-        </div>
-      </div>
+      )}
 
       {/* Floating Map Controls */}
       <div className="absolute top-4 right-4 z-10 flex flex-col space-y-1.5">

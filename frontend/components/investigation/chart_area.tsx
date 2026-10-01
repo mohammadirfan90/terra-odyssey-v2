@@ -15,12 +15,14 @@ import { toBengaliDigits, formatSlope } from "../../lib/formatters";
 interface ChartAreaProps {
   result: any;
   allRegions: any[];
+  onSelectSampleQuery?: (params: { regionId: string; parameterId: string; startYear: number; endYear: number }) => void;
   isBangla?: boolean;
 }
 
 export default function ChartArea({
   result,
   allRegions,
+  onSelectSampleQuery,
   isBangla = false,
 }: ChartAreaProps) {
   const [activeTab, setActiveTab] = useState<"timeseries" | "comparison" | "seasonal" | "data">("timeseries");
@@ -42,7 +44,105 @@ export default function ChartArea({
     setIsComparing(false);
   }, [result?.identity?.result_id]);
 
-  if (!result) return null;
+  if (!result) {
+    const sampleQueries = [
+      {
+        flag: "🇧🇩",
+        name: "Bangladesh",
+        param: "Air Temperature (2m)",
+        period: "1980–2024",
+        params: { regionId: "BGD", parameterId: "air_temperature_2m", startYear: 1980, endYear: 2024 },
+      },
+      {
+        flag: "🇮🇳",
+        name: "India",
+        param: "Air Temperature (2m)",
+        period: "1980–2024",
+        params: { regionId: "IND", parameterId: "air_temperature_2m", startYear: 1980, endYear: 2024 },
+      },
+      {
+        flag: "🇺🇸",
+        name: "United States",
+        param: "Day LST (MODIS)",
+        period: "2000–2024",
+        params: { regionId: "USA", parameterId: "land_surface_temperature_day", startYear: 2000, endYear: 2024 },
+      },
+      {
+        flag: "🌊",
+        name: "Bay of Bengal",
+        param: "SST (OISST)",
+        period: "1981–2024",
+        params: { regionId: "BAY_OF_BENGAL", parameterId: "sea_surface_temperature", startYear: 1981, endYear: 2024 },
+      },
+      {
+        flag: "🇩🇪",
+        name: "Germany",
+        param: "Night LST (MODIS)",
+        period: "2000–2024",
+        params: { regionId: "DEU", parameterId: "land_surface_temperature_night", startYear: 2000, endYear: 2024 },
+      },
+    ];
+
+    return (
+      <div className="w-full bg-slate-900/90 border border-slate-800 rounded-xl p-6 backdrop-blur shadow-2xl flex flex-col items-center justify-center text-center space-y-5">
+        <div className="max-w-xl space-y-1.5">
+          <h3 className="text-base font-bold text-slate-100 flex items-center justify-center space-x-2">
+            <LineChartIcon className="w-5 h-5 text-cyan-400" />
+            <span>{isBangla ? "সময়কাল বিশ্লেষণ ও প্রমাণ পরীক্ষা" : "Earth Observation Analytics Ready"}</span>
+          </h3>
+          <p className="text-xs text-slate-400 leading-relaxed">
+            {isBangla
+              ? "বৈজ্ঞানিক উপাত্ত বিশ্লেষণ দেখতে বাম পাশের তালিকা থেকে যাচাইকৃত অঞ্চল নির্বাচন করুন অথবা নিচের নমুনা থেকে যেকোনো একটি বেছে নিন:"
+              : "Select a verified offline dataset above to view analytical time-series, Theil-Sen trend lines, moving-block bootstrap uncertainty, and paired regional contrasts, or try one of these ready investigations:"}
+          </p>
+        </div>
+
+        {/* Quick Sample Queries */}
+        {onSelectSampleQuery && (
+          <div className="flex flex-wrap gap-2 justify-center max-w-2xl">
+            {sampleQueries.map((q) => (
+              <button
+                key={q.name + q.param}
+                type="button"
+                onClick={() => onSelectSampleQuery(q.params)}
+                className="px-3.5 py-2 bg-slate-800/90 hover:bg-slate-700 border border-slate-700/80 hover:border-cyan-500/50 rounded-lg text-xs transition-all flex items-center space-x-2 group text-left shadow-sm"
+              >
+                <span className="text-sm">{q.flag}</span>
+                <div>
+                  <div className="font-semibold text-slate-200 group-hover:text-cyan-300 transition-colors">
+                    {q.name}
+                  </div>
+                  <div className="text-[10px] text-slate-400 font-mono">
+                    {q.param} • {q.period}
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Feature Pills */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-[11px] text-slate-400 max-w-3xl w-full pt-2 border-t border-slate-800/80">
+          <div className="bg-slate-950/60 p-2 rounded-lg border border-slate-800/60">
+            <div className="font-semibold text-slate-300">Theil-Sen Estimator</div>
+            <div className="text-[10px] text-slate-400">Median pairwise slopes</div>
+          </div>
+          <div className="bg-slate-950/60 p-2 rounded-lg border border-slate-800/60">
+            <div className="font-semibold text-slate-300">Hamed-Rao MK Test</div>
+            <div className="text-[10px] text-slate-400">Autocorrelation VIF</div>
+          </div>
+          <div className="bg-slate-950/60 p-2 rounded-lg border border-slate-800/60">
+            <div className="font-semibold text-slate-300">Moving-Block Bootstrap</div>
+            <div className="text-[10px] text-slate-400">95% Uncertainty bands</div>
+          </div>
+          <div className="bg-slate-950/60 p-2 rounded-lg border border-slate-800/60">
+            <div className="font-semibold text-slate-300">Paired Regional Contrast</div>
+            <div className="text-[10px] text-slate-400">Common year difference</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const { series, theil_sen, fitted_band, parameter, region, identity, data_support, provenance, time_window } = result;
   const years: number[] = series.years;

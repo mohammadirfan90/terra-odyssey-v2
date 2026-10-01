@@ -120,7 +120,7 @@ export default function EarthSystemTrendDetectiveApp() {
           <div>
             <h1 className="text-sm font-bold tracking-tight text-slate-100 flex items-center space-x-2">
               <span>{isBangla ? "আর্থ সিস্টেম ট্রেন্ড ডিটেকটিভ" : "Earth System Trend Detective"}</span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+              <span className="text-[11px] font-sans font-semibold px-2.5 py-0.5 rounded-full bg-cyan-950/70 text-cyan-300 border border-cyan-500/40 shadow-sm">
                 NASA Research Edition
               </span>
             </h1>
@@ -177,24 +177,26 @@ export default function EarthSystemTrendDetectiveApp() {
           </div>
 
           {/* 3. Right Result Summary Panel */}
-          {error ? (
-            <div className="w-full lg:w-96 p-4 rounded-xl border border-rose-500/30 bg-rose-500/10 text-xs text-rose-300">
-              <h4 className="font-bold text-rose-400 mb-1">{isBangla ? "ত্রুটি" : "Computation Problem"}</h4>
-              <p>{error}</p>
-            </div>
-          ) : (
-            <ResultPanel
-              result={currentResult}
-              onOpenProvenance={() => setIsProvenanceOpen(true)}
-              isBangla={isBangla}
-            />
-          )}
+          <ResultPanel
+            result={currentResult}
+            error={error}
+            currentParams={committedParams}
+            onSwitchSelection={(params) =>
+              setCommittedParams((prev) => ({
+                ...prev,
+                ...params,
+              }))
+            }
+            onOpenProvenance={() => setIsProvenanceOpen(true)}
+            isBangla={isBangla}
+          />
         </div>
 
         {/* Bottom Section: Analytical Time-Series, Uncertainty Band, Comparison, and Data */}
         <ChartArea
           result={currentResult}
           allRegions={regions}
+          onSelectSampleQuery={(params) => setCommittedParams(params)}
           isBangla={isBangla}
         />
       </main>
